@@ -8,7 +8,8 @@
 
 - **Frontend**: [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/)
 - **Backend/API**: Next.js API Routes
-- **Database**: [PostgreSQL/ Supabase](https://www.supabase.com/)
+- **Database**: [PostgreSQL / Supabase](https://www.supabase.com/)
+- **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
 - **UI/UX Design**: [Figma](https://figma.com)
 - **Maps**: [Leaflet.js](https://leafletjs.com/)
 - **Version Control**: Git & GitHub
@@ -24,9 +25,7 @@
 - ✅ Calendar view of **upcoming cultural activities**
 - ✅ Community content submission and admin approval workflow
 - ✅ Offline access support (for future expansion)
-- ✅ Multilingual interface (Kinyarwanda, English, French – planned)
 
----
 
 ## 📦 Folder Structure
 
@@ -34,14 +33,15 @@
 .
 ├── public/             # Static assets
 ├── src/
-│   ├── components/     # Reusable UI components
-│   ├── pages/          # Next.js pages (routes)
-│   ├── styles/         # Tailwind and custom styles
-│   ├── lib/            # Utility functions and API logic
-│   ├── hooks/          # React hooks
-│   └── prisma/         # Database schema & seed files
-├── .env                # Environment variables
-├── prisma/             # Prisma migrations and schema
-├── README.md           # This file
-└── package.json
+│   ├── app/           # Next.js app directory (routes)
+│   ├── components/    # Reusable UI components
+│   ├── lib/           # Utility functions and shared logic
+│   └── db/            # Database related code
+├── drizzle/           # Drizzle ORM migrations and schema
+├── .env               # Environment variables
+├── next.config.ts     # Next.js configuration
+├── tailwind.config.ts # Tailwind CSS configuration
+├── tsconfig.json      # TypeScript configuration
+├── package.json       # Project dependencies and scripts
+└── README.md          # Project documentation
 ```

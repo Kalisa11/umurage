@@ -36,7 +36,7 @@ export default function Home() {
               asChild
               variant="outline"
               size="lg"
-              className="rounded-full bg-orange-400 backdrop-blur-sm hover:bg-orange-500 text-black"
+              className="rounded-full backdrop-blur-sm hover:bg-gray-200"
             >
               <Link href="/explore">Explore the Archive</Link>
             </Button>

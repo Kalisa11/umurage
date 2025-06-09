@@ -1,0 +1,264 @@
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { ArrowRight, BookOpen, Music, Paintbrush, Play } from "lucide-react"
+
+export default function Home() {
+  return (
+    <div className="flex flex-col gap-12 pb-8">
+      {/* Hero Section */}
+      <section className="relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-gray-900/60 to-gray-800 z-10" />
+        <div className="relative h-[70vh] w-full overflow-hidden">
+          <Image
+            src="/image.png?height=800&width=1600"
+            alt="Traditional Rwandan cultural imagery"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        <div className="container mx-auto absolute inset-0 z-20 flex flex-col items-center justify-center text-center">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl text-white drop-shadow-md">
+            Preserving Rwanda's Indigenous Culture
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg text-white drop-shadow-md">
+            Inkomoko is a digital repository for Rwandan indigenous culture, preserving traditional stories, proverbs,
+            songs, artwork, and language for future generations.
+          </p>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Button asChild size="lg" className="rounded-full">
+              <Link href="/contribute">Contribute a Story</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="rounded-full bg-orange-400 backdrop-blur-sm hover:bg-orange-500 text-black"
+            >
+              <Link href="/explore">Explore the Archive</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Content Section */}
+      <section className="container mx-auto">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold tracking-tight">Featured Content</h2>
+          <p className="mt-2 text-muted-foreground">Discover highlighted cultural treasures from our collection</p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Featured Story */}
+          <Card>
+            <CardHeader className="relative h-48 p-0 overflow-hidden">
+              <Image
+                src="/placeholder.png"
+                alt="Traditional storytelling"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                <Badge className="bg-primary hover:bg-primary">Story</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <CardTitle className="line-clamp-1">The Origin of Lake Kivu</CardTitle>
+              <CardDescription className="mt-2 line-clamp-3">
+                A traditional tale about how the beautiful Lake Kivu was formed, passed down through generations in
+                Western Rwanda.
+              </CardDescription>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <div className="text-sm text-muted-foreground">By Elder Mutesi</div>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/content/story-1" className="flex items-center gap-1">
+                  Read <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Featured Song */}
+          <Card>
+            <CardHeader className="relative h-48 p-0 overflow-hidden">
+              <Image
+                src="/placeholder.png"
+                alt="Traditional music performance"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                <Badge className="bg-primary hover:bg-primary">Song</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <CardTitle className="line-clamp-1">Intore Dance Song</CardTitle>
+              <CardDescription className="mt-2 line-clamp-3">
+                A traditional song that accompanies the famous Intore warrior dance, celebrating bravery and cultural
+                pride.
+              </CardDescription>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <div className="text-sm text-muted-foreground">By Kigali Cultural Group</div>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/content/song-1" className="flex items-center gap-1">
+                  Listen <Play className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Featured Artwork */}
+          <Card>
+            <CardHeader className="relative h-48 p-0 overflow-hidden">
+              <Image
+                src="/placeholder.png"
+                alt="Traditional Rwandan artwork"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                <Badge className="bg-primary hover:bg-primary">Artwork</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <CardTitle className="line-clamp-1">Imigongo Patterns</CardTitle>
+              <CardDescription className="mt-2 line-clamp-3">
+                Traditional geometric art forms created using cow dung and natural pigments, featuring bold patterns and
+                earthy colors.
+              </CardDescription>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <div className="text-sm text-muted-foreground">By Nyagatare Artisans</div>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/content/art-1" className="flex items-center gap-1">
+                  View <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="bg-muted py-12">
+        <div className="container mx-auto">
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-bold tracking-tight">Explore Categories</h2>
+            <p className="mt-2 text-muted-foreground">Discover the rich diversity of Rwandan indigenous culture</p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <Link href="/categories/stories" className="group">
+              <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <BookOpen className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold">Stories</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Traditional tales, myths, and legends passed down through generations
+                </p>
+                <div className="mt-4 flex items-center text-sm font-medium text-primary">
+                  Explore Stories
+                  <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/categories/proverbs" className="group">
+              <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-6 w-6"
+                  >
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold">Proverbs</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Wise sayings that reflect cultural values and traditional wisdom
+                </p>
+                <div className="mt-4 flex items-center text-sm font-medium text-primary">
+                  Explore Proverbs
+                  <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/categories/songs" className="group">
+              <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Music className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold">Songs</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Traditional music, and ceremonial songs from different regions
+                </p>
+                <div className="mt-4 flex items-center text-sm font-medium text-primary">
+                  Explore Songs
+                  <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/categories/art" className="group">
+              <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Paintbrush className="h-6 w-6" />
+                </div>
+                <h3 className="text-xl font-bold">Art</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Traditional visual arts, crafts, and cultural artifacts
+                </p>
+                <div className="mt-4 flex items-center text-sm font-medium text-primary">
+                  Explore Art
+                  <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </div>
+            </Link>
+          </div>
+
+          <div className="mt-8 text-center">
+            <Button asChild variant="outline" size="lg">
+              <Link href="/categories">View All Categories</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="container mx-auto">
+        <div className="rounded-lg bg-primary text-primary-foreground">
+          <div className="grid gap-6 p-8 md:grid-cols-2 md:p-12">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">Help Preserve Rwanda's Cultural Heritage</h2>
+              <p className="mt-4 text-primary-foreground/90">
+                Share your knowledge, stories, or family traditions. Every contribution helps preserve our rich cultural
+                heritage for future generations.
+              </p>
+            </div>
+            <div className="flex flex-col items-start gap-4 md:items-end md:justify-center">
+              <Button asChild size="lg" variant="secondary">
+                <Link href="/contribute">Contribute Now</Link>
+              </Button>
+              <p className="text-sm text-primary-foreground/80">No account required to contribute anonymously</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}

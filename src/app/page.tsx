@@ -1,9 +1,16 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRight, BookOpen, Music, Paintbrush, Play } from "lucide-react"
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, BookOpen, Music, Paintbrush, Play } from "lucide-react";
 
 export default function Home() {
   return (
@@ -22,11 +29,12 @@ export default function Home() {
         </div>
         <div className="container mx-auto absolute inset-0 z-20 flex flex-col items-center justify-center text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl text-white drop-shadow-md">
-            Preserving Rwanda's Indigenous Culture
+            Digital Repository for Rwandan Indigenous Culture
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-white drop-shadow-md">
-            Inkomoko is a digital repository for Rwandan indigenous culture, preserving traditional stories, proverbs,
-            songs, artwork, and language for future generations.
+            Umurage is a digital repository for Rwandan indigenous culture,
+            preserving traditional stories, proverbs, songs, artwork, and
+            language for future generations.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" className="rounded-full">
@@ -47,8 +55,12 @@ export default function Home() {
       {/* Featured Content Section */}
       <section className="container mx-auto">
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold tracking-tight">Featured Content</h2>
-          <p className="mt-2 text-muted-foreground">Discover highlighted cultural treasures from our collection</p>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Featured Content
+          </h2>
+          <p className="mt-2 text-muted-foreground">
+            Discover highlighted cultural treasures from our collection
+          </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -66,16 +78,23 @@ export default function Home() {
               </div>
             </CardHeader>
             <CardContent className="pt-6">
-              <CardTitle className="line-clamp-1">The Origin of Lake Kivu</CardTitle>
+              <CardTitle className="line-clamp-1">
+                The Origin of Lake Kivu
+              </CardTitle>
               <CardDescription className="mt-2 line-clamp-3">
-                A traditional tale about how the beautiful Lake Kivu was formed, passed down through generations in
-                Western Rwanda.
+                A traditional tale about how the beautiful Lake Kivu was formed,
+                passed down through generations in Western Rwanda.
               </CardDescription>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">By Elder Mutesi</div>
+              <div className="text-sm text-muted-foreground">
+                By Elder Mutesi
+              </div>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/content/story-1" className="flex items-center gap-1">
+                <Link
+                  href="/content/story-1"
+                  className="flex items-center gap-1"
+                >
                   Read <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -98,14 +117,19 @@ export default function Home() {
             <CardContent className="pt-6">
               <CardTitle className="line-clamp-1">Intore Dance Song</CardTitle>
               <CardDescription className="mt-2 line-clamp-3">
-                A traditional song that accompanies the famous Intore warrior dance, celebrating bravery and cultural
-                pride.
+                A traditional song that accompanies the famous Intore warrior
+                dance, celebrating bravery and cultural pride.
               </CardDescription>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">By Kigali Cultural Group</div>
+              <div className="text-sm text-muted-foreground">
+                By Kigali Cultural Group
+              </div>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/content/song-1" className="flex items-center gap-1">
+                <Link
+                  href="/content/song-1"
+                  className="flex items-center gap-1"
+                >
                   Listen <Play className="h-4 w-4" />
                 </Link>
               </Button>
@@ -128,12 +152,14 @@ export default function Home() {
             <CardContent className="pt-6">
               <CardTitle className="line-clamp-1">Imigongo Patterns</CardTitle>
               <CardDescription className="mt-2 line-clamp-3">
-                Traditional geometric art forms created using cow dung and natural pigments, featuring bold patterns and
-                earthy colors.
+                Traditional geometric art forms created using cow dung and
+                natural pigments, featuring bold patterns and earthy colors.
               </CardDescription>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">By Nyagatare Artisans</div>
+              <div className="text-sm text-muted-foreground">
+                By Nyagatare Artisans
+              </div>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/content/art-1" className="flex items-center gap-1">
                   View <ArrowRight className="h-4 w-4" />
@@ -148,8 +174,12 @@ export default function Home() {
       <section className="bg-muted py-12">
         <div className="container mx-auto">
           <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold tracking-tight">Explore Categories</h2>
-            <p className="mt-2 text-muted-foreground">Discover the rich diversity of Rwandan indigenous culture</p>
+            <h2 className="text-3xl font-bold tracking-tight">
+              Explore Categories
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              Discover the rich diversity of Rwandan indigenous culture
+            </p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -160,7 +190,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold">Stories</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Traditional tales, myths, and legends passed down through generations
+                  Traditional tales, myths, and legends passed down through
+                  generations
                 </p>
                 <div className="mt-4 flex items-center text-sm font-medium text-primary">
                   Explore Stories
@@ -189,7 +220,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold">Proverbs</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Wise sayings that reflect cultural values and traditional wisdom
+                  Wise sayings that reflect cultural values and traditional
+                  wisdom
                 </p>
                 <div className="mt-4 flex items-center text-sm font-medium text-primary">
                   Explore Proverbs
@@ -244,21 +276,26 @@ export default function Home() {
         <div className="rounded-lg bg-primary text-primary-foreground">
           <div className="grid gap-6 p-8 md:grid-cols-2 md:p-12">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">Help Preserve Rwanda's Cultural Heritage</h2>
+              <h2 className="text-3xl font-bold tracking-tight">
+                Help Preserve Rwanda's Cultural Heritage
+              </h2>
               <p className="mt-4 text-primary-foreground/90">
-                Share your knowledge, stories, or family traditions. Every contribution helps preserve our rich cultural
-                heritage for future generations.
+                Share your knowledge, stories, or family traditions. Every
+                contribution helps preserve our rich cultural heritage for
+                future generations.
               </p>
             </div>
             <div className="flex flex-col items-start gap-4 md:items-end md:justify-center">
               <Button asChild size="lg" variant="secondary">
                 <Link href="/contribute">Contribute Now</Link>
               </Button>
-              <p className="text-sm text-primary-foreground/80">No account required to contribute anonymously</p>
+              <p className="text-sm text-primary-foreground/80">
+                No account required to contribute anonymously
+              </p>
             </div>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }

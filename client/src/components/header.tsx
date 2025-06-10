@@ -26,7 +26,7 @@ export default function Header() {
             <div className="rounded-full bg-primary p-1">
               <div className="h-6 w-6 rounded-full bg-primary-foreground" />
             </div>
-            <span className="hidden font-bold sm:inline-block">Inkomoko</span>
+            <span className="hidden font-bold sm:inline-block">Umurage</span>
           </Link>
         </div>
 

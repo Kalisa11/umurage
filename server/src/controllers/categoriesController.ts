@@ -1,4 +1,4 @@
-import { db } from "../db/index";
+import { db } from "../db";
 import { categories } from "../db/schema";
 import type { Request, Response } from "express";
 

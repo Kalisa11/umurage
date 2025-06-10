@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import Footer from "@/components/footer";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,8 +19,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Umurage App",
-  description: "Umurage App",
+  description:
+    "Umurage is a platform for preserving and sharing Rwanda's cultural heritage.",
 };
+
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -30,18 +35,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <Providers>
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

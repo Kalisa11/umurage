@@ -26,29 +26,61 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, ArrowLeft, Check } from "lucide-react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { SignupSchema, signupSchema } from "@/lib/validationSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { signup } from "@/services/authService";
+import toast from "react-hot-toast";
+
+type Inputs = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  region: string | null;
+};
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [step, setStep] = useState(1);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+  const defaultValues: Inputs = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    region: null,
+  };
 
-    // Simulate signup process
-    setTimeout(() => {
-      setIsLoading(false);
-      if (step === 1) {
-        setStep(2);
-      } else {
-        // Complete signup
-        window.location.href = "/dashboard";
-      }
-    }, 1500);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupSchema>({
+    defaultValues,
+    resolver: zodResolver(signupSchema),
+  });
+
+  const { mutate: createUser, isPending } = useMutation({
+    mutationFn: (data: SignupSchema) => signup(data),
+    onSuccess: () => {
+      setStep(2);
+    },
+    onError: (error: any) => {
+      toast.error(error.response.data.message || "An error occurred", {
+        duration: 3000,
+        position: "top-center",
+      });
+    },
+  });
+
+  const onSubmit: SubmitHandler<SignupSchema> = async (data) => {
+    console.log(data);
+    createUser(data);
   };
 
   if (step === 2) {
@@ -59,7 +91,7 @@ export default function SignupPage() {
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
               <Check className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-2xl">Welcome to Inkomoko!</CardTitle>
+            <CardTitle className="text-2xl">Welcome to Umurage!</CardTitle>
             <CardDescription>
               Your account has been created successfully. You can now start
               contributing to Rwanda's cultural heritage.
@@ -90,10 +122,10 @@ export default function SignupPage() {
           </CardContent>
           <CardFooter className="flex flex-col gap-3">
             <Button asChild className="w-full">
-              <Link href="/contribute">Make Your First Contribution</Link>
+              <Link href="/login">Login to your account</Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
-              <Link href="/dashboard">Go to Dashboard</Link>
+              <Link href="/">Go to Home</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -103,16 +135,14 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Signup Form */}
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="w-full max-w-md space-y-6">
-          {/* Back to home link */}
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Inkomoko
+            Back to Umurage
           </Link>
 
           <Card>
@@ -121,7 +151,7 @@ export default function SignupPage() {
                 <div className="rounded-full bg-primary p-1">
                   <div className="h-6 w-6 rounded-full bg-primary-foreground" />
                 </div>
-                <span className="font-bold text-xl">Inkomoko</span>
+                <span className="font-bold text-xl">Umurage</span>
               </div>
               <CardTitle className="text-2xl font-bold">
                 Create your account
@@ -132,13 +162,7 @@ export default function SignupPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First name</Label>
@@ -148,7 +172,13 @@ export default function SignupPage() {
                       required
                       className="text-base"
                       autoComplete="given-name"
+                      {...register("firstName")}
                     />
+                    {errors.firstName && (
+                      <p className="text-red-500 text-sm">
+                        {errors.firstName.message}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last name</Label>
@@ -158,7 +188,13 @@ export default function SignupPage() {
                       required
                       className="text-base"
                       autoComplete="family-name"
+                      {...register("lastName")}
                     />
+                    {errors.lastName && (
+                      <p className="text-red-500 text-sm">
+                        {errors.lastName.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -171,7 +207,13 @@ export default function SignupPage() {
                     required
                     className="text-base"
                     autoComplete="email"
+                    {...register("email")}
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -184,6 +226,7 @@ export default function SignupPage() {
                       required
                       className="text-base pr-10"
                       autoComplete="new-password"
+                      {...register("password")}
                     />
                     <Button
                       type="button"
@@ -201,6 +244,11 @@ export default function SignupPage() {
                         {showPassword ? "Hide password" : "Show password"}
                       </span>
                     </Button>
+                    {errors.password && (
+                      <p className="text-red-500 text-sm">
+                        {errors.password.message}
+                      </p>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Password must be at least 8 characters long
@@ -217,6 +265,7 @@ export default function SignupPage() {
                       required
                       className="text-base pr-10"
                       autoComplete="new-password"
+                      {...register("confirmPassword")}
                     />
                     <Button
                       type="button"
@@ -238,12 +287,17 @@ export default function SignupPage() {
                           : "Show password"}
                       </span>
                     </Button>
+                    {errors.confirmPassword && (
+                      <p className="text-red-500 text-sm">
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="region">Region (Optional)</Label>
-                  <Select>
+                  <Select {...register("region")}>
                     <SelectTrigger id="region" className="w-full">
                       <SelectValue placeholder="Select your region" />
                     </SelectTrigger>
@@ -260,6 +314,11 @@ export default function SignupPage() {
                       <SelectItem value="diaspora">Diaspora</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.region && (
+                    <p className="text-red-500 text-sm">
+                      {errors.region.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -298,8 +357,8 @@ export default function SignupPage() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating account..." : "Create account"}
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? "Creating account..." : "Create account"}
                 </Button>
               </form>
 

@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import categoriesRoutes from "./routes/categoriesRoute";
+import authRoutes from "./routes/authRoutes";
+import session from "express-session";
 
 dotenv.config();
 
@@ -19,10 +21,23 @@ app.use(
     credentials: true,
   })
 );
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
 app.use(express.json());
 
 // Routes
 app.use("/api/categories", categoriesRoutes);
+app.use("/api/auth", authRoutes);
 
 // Basic health check route
 app.get("/health", (req, res) => {
@@ -38,7 +53,7 @@ app.use(
     next: express.NextFunction
   ) => {
     console.error(err.stack);
-    res.status(500).json({ error: "Something went wrong!" });
+    res.status(500).json({ error: "Something went wrong! " + err.message });
   }
 );
 

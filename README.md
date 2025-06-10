@@ -26,22 +26,34 @@
 - ✅ Community content submission and admin approval workflow
 - ✅ Offline access support (for future expansion)
 
-
 ## 📦 Folder Structure
 
 ```bash
 .
-├── public/             # Static assets
-├── src/
-│   ├── app/           # Next.js app directory (routes)
-│   ├── components/    # Reusable UI components
-│   ├── lib/           # Utility functions and shared logic
-│   └── db/            # Database related code
-├── drizzle/           # Drizzle ORM migrations and schema
-├── .env               # Environment variables
-├── next.config.ts     # Next.js configuration
-├── tailwind.config.ts # Tailwind CSS configuration
-├── tsconfig.json      # TypeScript configuration
-├── package.json       # Project dependencies and scripts
-└── README.md          # Project documentation
+├── client/            # Frontend Next.js application
+│   ├── public/        # Static assets
+│   ├── src/
+│   │   ├── app/           # Next.js app directory (routes)
+│   │   ├── components/    # Reusable UI components
+│   │   ├── lib/           # Utility functions and shared logic
+│   │   ├── types/         # TypeScript types
+│   │   └── utils/         # Utility functions
+│   ├── .next/        # Next.js build output
+│   ├── next.config.ts # Next.js configuration
+│   ├── tailwind.config.ts # Tailwind CSS configuration
+│   └── tsconfig.json # TypeScript configuration
+│
+├── server/           # Backend Express application
+│   ├── src/
+│   │   ├── controllers/ # Controller functions
+│   │   ├── db/          # Database related code
+│   │   ├── routes/      # API routes
+│   │   ├── utils/       # Utility functions
+│   │   └── index.ts     # Entry point
+│   ├── drizzle/     # Database migrations and schema
+│   ├── drizzle.config.ts # Drizzle ORM configuration
+│   └── tsconfig.json # TypeScript configuration
+│
+├── .env             # Environment variables
+└── package.json     # Project dependencies and scripts
 ```

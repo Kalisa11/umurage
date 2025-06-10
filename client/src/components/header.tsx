@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import ModeToggle from "@/components/mode-toggle";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -21,13 +20,13 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-4 flex h-16 items-center justify-between">
+      <div className="container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <div className="rounded-full bg-primary p-1">
               <div className="h-6 w-6 rounded-full bg-primary-foreground" />
             </div>
-            <span className="font-bold sm:inline-block">Umurage</span>
+            <span className="hidden font-bold sm:inline-block">Inkomoko</span>
           </Link>
         </div>
 
@@ -47,12 +46,16 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          {/* <Link href="/dashboard">
-            <Button variant="outline" size="sm" className="hidden md:flex">
-              Dashboard
+          <Link href="/login">
+            <Button variant="outline" size="sm" className="hidden md:flex cursor-pointer">
+              Sign In
             </Button>
-          </Link> */}
-          {/* <ModeToggle /> */}
+          </Link>
+          <Link href="/signup">
+            <Button size="sm" className="hidden md:flex cursor-pointer">
+              Sign Up
+            </Button>
+          </Link>
           <Button
             variant="ghost"
             size="icon"
@@ -70,7 +73,7 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="container pb-4 md:hidden">
+        <div className="container mx-auto pb-4 md:hidden">
           <nav className="flex flex-col space-y-3">
             {routes.map((route) => (
               <Link
@@ -87,11 +90,18 @@ export default function Header() {
               </Link>
             ))}
             <Link
-              href="/dashboard"
+              href="/login"
               className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
               onClick={() => setIsMenuOpen(false)}
             >
-              Dashboard
+              Sign In
+            </Link>
+            <Link
+              href="/signup"
+              className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Sign Up
             </Link>
           </nav>
         </div>

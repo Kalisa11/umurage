@@ -1,6 +1,9 @@
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL as string,
@@ -12,7 +15,7 @@ pool.connect((err, client, release) => {
     return console.error("Error acquiring client", err);
   }
   release();
-  console.log("Connected to Supabase");
+  console.log("Connected to database server");
 });
 
 const db = drizzle({

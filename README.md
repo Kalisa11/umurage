@@ -7,7 +7,7 @@
 ## 🛠 Tech Stack
 
 - **Frontend**: [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/)
-- **Backend/API**: Next.js API Routes
+- **Backend/API**: Node.js, Express, PostgreSQL
 - **Database**: [PostgreSQL / Supabase](https://www.supabase.com/)
 - **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
 - **UI/UX Design**: [Figma](https://figma.com)

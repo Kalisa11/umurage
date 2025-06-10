@@ -1,9 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import apiRoutes from "./routes/api";
+
+import categoriesRoutes from "./routes/categoriesRoute";
 
 dotenv.config();
 
@@ -15,26 +14,19 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://your-production-domain.com"
+        ? "https://umurage-app.vercel.app"
         : "http://localhost:3000",
     credentials: true,
   })
 );
 app.use(express.json());
 
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export const db = drizzle(pool);
-
 // Routes
-app.use("/api", apiRoutes);
+app.use("/api/categories", categoriesRoutes);
 
 // Basic health check route
 app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+  res.send({ status: "Server is running" });
 });
 
 // Error handling middleware
@@ -54,4 +46,3 @@ app.use(
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-

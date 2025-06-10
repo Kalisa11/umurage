@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-import { ThemeProvider } from "@/components/theme-provider";
 import Footer from "@/components/footer";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Providers from "./providers";
 
 const geistSans = Geist({
@@ -22,8 +20,6 @@ export const metadata: Metadata = {
   description:
     "Umurage is a platform for preserving and sharing Rwanda's cultural heritage.",
 };
-
-const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,

@@ -15,6 +15,7 @@ export default function Header() {
     { name: "Categories", path: "/categories" },
     { name: "Explore", path: "/explore" },
     { name: "Contribute", path: "/contribute" },
+    { name: "Activities", path: "/activities" },
     { name: "About", path: "/about" },
   ];
 
@@ -31,7 +32,7 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex md:gap-6">
+        <nav className="hidden lg:flex lg:gap-6">
           {routes.map((route) => (
             <Link
               key={route.path}
@@ -47,19 +48,19 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           <Link href="/login">
-            <Button variant="outline" size="sm" className="hidden md:flex cursor-pointer">
+            <Button variant="outline" size="sm" className="hidden lg:flex cursor-pointer">
               Sign In
             </Button>
           </Link>
           <Link href="/signup">
-            <Button size="sm" className="hidden md:flex cursor-pointer">
+            <Button size="sm" className="hidden lg:flex cursor-pointer">
               Sign Up
             </Button>
           </Link>
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
@@ -73,7 +74,7 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="container mx-auto pb-4 md:hidden">
+        <div className="container mx-auto pb-4 lg:hidden">
           <nav className="flex flex-col space-y-3">
             {routes.map((route) => (
               <Link

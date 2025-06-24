@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="border-t bg-background">
-      <div className="container mx-auto py-8 md:py-12">
+      <div className="container mx-auto py-8 md:py-12 px-4 md:px-0">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
             <h3 className="text-lg font-medium">Umurage</h3>

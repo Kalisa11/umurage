@@ -280,6 +280,18 @@ export default function ContributePage() {
                     />
                   </div>
 
+                  {/* input for google map link where the content is located if it category is art */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="google-map-link">
+                      Google Map Link (Optional)
+                    </Label>
+                    <Input
+                      id="google-map-link"
+                      placeholder="https://maps.app.goo.gl/place_id"
+                      type="url"
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
                       <Label htmlFor="contributor-name">

@@ -43,14 +43,15 @@ export const categories = pgTable("categories", {
   updatedAt: timestamp().notNull().defaultNow(),
 });
 
-export const upcomingActivities = pgTable("upcoming_activities", {
+export const events = pgTable("events", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: varchar("title", { length: 100 }).notNull(),
   description: text("description"),
   eventDate: date("event_date").notNull(),
   location: varchar("location", { length: 100 }),
-  createdBy: uuid("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
+  isFeatured: boolean("is_featured").default(false),
+  tag: varchar("tag", { length: 100 }),
 });
 
 export const artists = pgTable("artists", {

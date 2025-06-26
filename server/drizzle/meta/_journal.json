@@ -22,6 +22,13 @@
       "when": 1749584525997,
       "tag": "0002_outgoing_blacklash",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1750922386835,
+      "tag": "0003_bright_spacker_dave",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 
 import categoriesRoutes from "./routes/categoriesRoute";
 import authRoutes from "./routes/authRoutes";
+import eventsRoutes from "./routes/eventsRoutes";
 import session from "express-session";
 
 dotenv.config();
@@ -17,7 +18,13 @@ app.use(
     origin:
       process.env.NODE_ENV === "production"
         ? "https://umurage-app.vercel.app"
-        : "http://localhost:3000",
+        : [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:3003",
+          ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
@@ -38,6 +45,7 @@ app.use(express.json());
 // Routes
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/events", eventsRoutes);
 
 // Basic health check route
 app.get("/health", (req, res) => {

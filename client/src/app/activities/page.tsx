@@ -22,168 +22,79 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Calendar, Clock, MapPin, Users, Search, Heart } from "lucide-react";
+import { Calendar, Clock, MapPin, Search, Heart } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getAllEvents } from "@/services/eventService";
+import { formatDate } from "date-fns";
+import { getTypeIcon } from "@/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ActivitiesPage() {
   const [activeTab, setActiveTab] = useState("all");
-  const [savedEvents, setSavedEvents] = useState<string[]>([]);
 
-  const toggleSaveEvent = (eventId: string) => {
-    setSavedEvents((prev) =>
-      prev.includes(eventId)
-        ? prev.filter((id) => id !== eventId)
-        : [...prev, eventId]
-    );
-  };
-
-  // Mock data for demonstration
-  const activities = [
-    {
-      id: "1",
-      title: "Traditional Storytelling Evening",
-      description:
-        "Join our elders as they share ancient Rwandan folktales and legends passed down through generations.",
-      type: "workshop",
-      date: "2024-01-15",
-      time: "18:00",
-      duration: "2 hours",
-      location: "Kigali Cultural Center",
-      address: "KN 3 Rd, Kigali",
-      organizer: "Rwanda Heritage Foundation",
-      capacity: 50,
-      registered: 32,
-      price: "Free",
-      image: "/placeholder.png?height=400&width=600",
-      tags: ["Stories", "Elders", "Oral Tradition"],
-      featured: true,
-    },
-    {
-      id: "2",
-      title: "Imigongo Art Workshop",
-      description:
-        "Learn the traditional art of Imigongo painting using cow dung and natural pigments from master artisans.",
-      type: "workshop",
-      date: "2024-01-20",
-      time: "09:00",
-      duration: "4 hours",
-      location: "Nyagatare Arts Center",
-      address: "Nyagatare, Eastern Province",
-      organizer: "Nyagatare Artisans Collective",
-      capacity: 20,
-      registered: 15,
-      price: "5,000 RWF",
-      image: "/placeholder.png?height=400&width=600",
-      tags: ["Art", "Hands-on", "Traditional Crafts"],
-      featured: false,
-    },
-    {
-      id: "3",
-      title: "Intore Dance Performance & Workshop",
-      description:
-        "Experience the powerful Intore warrior dance and learn basic movements from professional dancers.",
-      type: "performance",
-      date: "2024-01-25",
-      time: "15:00",
-      duration: "3 hours",
-      location: "National Museum of Rwanda",
-      address: "Huye, Southern Province",
-      organizer: "Rwanda National Ballet",
-      capacity: 100,
-      registered: 78,
-      price: "3,000 RWF",
-      image: "/placeholder.png?height=400&width=600",
-      tags: ["Dance", "Performance", "Cultural Heritage"],
-      featured: true,
-    },
-    {
-      id: "4",
-      title: "Kinyarwanda Poetry Reading",
-      description:
-        "Contemporary and traditional Kinyarwanda poetry reading featuring local poets and writers.",
-      type: "cultural",
-      date: "2024-02-01",
-      time: "17:00",
-      duration: "2 hours",
-      location: "Kigali Public Library",
-      address: "KG 11 Ave, Kigali",
-      organizer: "Rwanda Writers Association",
-      capacity: 60,
-      registered: 25,
-      price: "Free",
-      image: "/placeholder.png?height=400&width=600",
-      tags: ["Poetry", "Language", "Literature"],
-      featured: false,
-    },
-    {
-      id: "5",
-      title: "Traditional Music Recording Session",
-      description:
-        "Help preserve traditional Rwandan songs by participating in a community recording session.",
-      type: "workshop",
-      date: "2024-02-05",
-      time: "10:00",
-      duration: "6 hours",
-      location: "Inkomoko Studio",
-      address: "Kimisagara, Kigali",
-      organizer: "Inkomoko Team",
-      capacity: 30,
-      registered: 18,
-      price: "Free",
-      image: "/placeholder.png?height=400&width=600",
-      tags: ["Music", "Recording", "Community"],
-      featured: true,
-    },
-    {
-      id: "6",
-      title: "Cultural Heritage Walking Tour",
-      description:
-        "Explore Kigali's cultural landmarks and learn about the city's history and traditions.",
-      type: "tour",
-      date: "2024-02-10",
-      time: "08:00",
-      duration: "4 hours",
-      location: "Kigali City Center",
-      address: "Starting at Kigali Convention Centre",
-      organizer: "Kigali Cultural Tours",
-      capacity: 25,
-      registered: 12,
-      price: "8,000 RWF",
-      image: "/placeholder.png?height=400&width=600",
-      tags: ["History", "Walking Tour", "Heritage Sites"],
-      featured: false,
-    },
-  ];
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "workshop":
-        return "🎨";
-      case "performance":
-        return "🎭";
-      case "cultural":
-        return "📚";
-      case "tour":
-        return "🚶";
-      default:
-        return "📅";
-    }
-  };
-
-  const filteredActivities = activities.filter((activity) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "featured") return activity.featured;
-    return activity.type === activeTab;
+  const {
+    data: events,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["events"],
+    queryFn: getAllEvents,
   });
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  const filteredEvents = events?.filter((event) => {
+    if (activeTab === "all") return true;
+    if (activeTab === "featured") return event.isFeatured;
+    return event.tag === activeTab;
+  });
+
+  if (isLoading)
+    return (
+      <div className="container mx-auto py-12">
+        <div className="mb-8">
+          <Skeleton className="h-12 w-96" />
+          <Skeleton className="mt-4 h-6 w-2/3" />
+        </div>
+
+        {/* Search and Filters Skeleton */}
+        <div className="mb-8 space-y-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Skeleton className="h-10 flex-1" />
+            <div className="flex gap-2">
+              <Skeleton className="h-10 w-[180px]" />
+              <Skeleton className="h-10 w-[180px]" />
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs Skeleton */}
+        <div className="mb-8 hidden lg:block">
+          <Skeleton className="h-10 w-full" />
+        </div>
+
+        {/* Activities Grid Skeleton */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 9 }).map((_, index) => (
+            <Card key={index} className="overflow-hidden">
+              <Skeleton className="h-48 w-full" />
+              <CardContent className="p-4">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-2/3 mb-4" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-1/2" />
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between p-4">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-8 w-20" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
 
   return (
     <div className="container mx-auto py-12">
@@ -242,7 +153,6 @@ export default function ActivitiesPage() {
       >
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="featured">Featured</TabsTrigger>
           <TabsTrigger value="workshop">Workshops</TabsTrigger>
           <TabsTrigger value="performance">Performances</TabsTrigger>
           <TabsTrigger value="cultural">Cultural</TabsTrigger>
@@ -255,77 +165,79 @@ export default function ActivitiesPage() {
         <div className="mb-8">
           <h2 className="mb-4 text-2xl font-bold">Featured Activities</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {activities
-              .filter((activity) => activity.featured)
-              .slice(0, 3)
-              .map((activity) => (
-                <Card
-                  key={activity.id}
-                  className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 to-transparent"
-                >
-                  <CardHeader className="relative h-48 p-0">
-                    <Image
-                      src={activity.image || "/placeholder.png"}
-                      alt={activity.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-between p-4">
-                      <Badge className="bg-primary hover:bg-primary">
-                        {getTypeIcon(activity.type)} Featured
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-white hover:bg-white/20"
-                        onClick={() => toggleSaveEvent(activity.id)}
-                      >
-                        <Heart
-                          className={`h-4 w-4 ${
-                            savedEvents.includes(activity.id)
-                              ? "fill-current"
-                              : ""
-                          }`}
-                        />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <CardTitle className="line-clamp-1">
-                      {activity.title}
-                    </CardTitle>
-                    <CardDescription className="mt-2 line-clamp-2">
-                      {activity.description}
-                    </CardDescription>
-                    <div className="mt-4 space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        {formatDate(activity.date)}
+            {events &&
+              events
+                .filter((event) => event.isFeatured)
+                .slice(0, 3)
+                .map((event) => (
+                  <Card
+                    key={event.id}
+                    className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 to-transparent"
+                  >
+                    <CardHeader className="relative h-48 w-full p-0">
+                      <Image
+                        src={event.imageUrl || "/placeholder.png"}
+                        alt={event.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover bg"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-between p-4">
+                        <Badge className="bg-primary hover:bg-primary">
+                          Featured
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-white hover:bg-white/20"
+                        >
+                          <Heart className={`h-4 w-4`} />
+                        </Button>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        {activity.time} ({activity.duration})
+                    </CardHeader>
+                    <CardContent>
+                      <CardTitle className="line-clamp-1">
+                        {event.title}
+                      </CardTitle>
+                      <CardDescription className="mt-2 line-clamp-2">
+                        {event.description}
+                      </CardDescription>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          {formatDate(event.eventDate, "EEEE, MMMM d, yyyy")}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          {event.eventDate}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4" />
+                          {event.location}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        {activity.location}
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <div className="text-sm">
-                      <span className="font-medium">{activity.price}</span>
-                      {activity.price !== "Free" && (
-                        <span className="text-muted-foreground">
-                          {" "}
-                          per person
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      <div className="text-sm">
+                        <span className="font-medium">
+                          {event.price
+                            ? event.price.toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "RWF",
+                              })
+                            : "Free"}
                         </span>
-                      )}
-                    </div>
-                    <Button size="sm">Register</Button>
-                  </CardFooter>
-                </Card>
-              ))}
+                        {event.price !== null && event.price !== undefined && (
+                          <span className="text-muted-foreground">
+                            {" "}
+                            per person
+                          </span>
+                        )}
+                      </div>
+                      <Button size="sm">Register</Button>
+                    </CardFooter>
+                  </Card>
+                ))}
           </div>
         </div>
       )}
@@ -343,90 +255,77 @@ export default function ActivitiesPage() {
                 } Activities`}
           </h2>
           <div className="text-sm text-muted-foreground">
-            Showing {filteredActivities.length} activities
+            Showing {filteredEvents?.length} activities
           </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredActivities.map((activity) => (
+          {filteredEvents?.map((event) => (
             <Card
-              key={activity.id}
+              key={event.id}
               className="overflow-hidden transition-all hover:shadow-md"
             >
               <CardHeader className="relative h-48 p-0">
                 <Image
-                  src={activity.image || "/placeholder.png"}
-                  alt={activity.title}
+                  src={event.imageUrl || "/placeholder.png"}
+                  alt={event.title}
                   fill
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-between p-4">
-                  <Badge className={`bg-primary`}>
-                    {getTypeIcon(activity.type)}{" "}
-                    {activity.type.charAt(0).toUpperCase() +
-                      activity.type.slice(1)}
+                  <Badge className="bg-primary hover:bg-primary capitalize">
+                    {event.isFeatured
+                      ? "Featured"
+                      : getTypeIcon(event.tag || "")}{" "}
+                    {event.tag}
                   </Badge>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="text-white hover:bg-white/20"
-                    onClick={() => toggleSaveEvent(activity.id)}
                   >
-                    <Heart
-                      className={`h-4 w-4 ${
-                        savedEvents.includes(activity.id) ? "fill-current" : ""
-                      }`}
-                    />
+                    <Heart className={`h-4 w-4`} />
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="pt-6">
-                <CardTitle className="line-clamp-1">{activity.title}</CardTitle>
+              <CardContent>
+                <CardTitle className="line-clamp-1">{event.title}</CardTitle>
                 <CardDescription className="mt-2 line-clamp-2">
-                  {activity.description}
+                  {event.description}
                 </CardDescription>
 
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    {formatDate(activity.date)}
+                    {formatDate(event.eventDate, "EEEE, MMMM d, yyyy")}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    {activity.time} ({activity.duration})
+                    {event.eventDate}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    {activity.location}
+                    {event.location}
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Users className="h-4 w-4" />
-                    {activity.registered}/{activity.capacity} registered
-                  </div>
-                </div>
-
-                <div className="mt-4 flex flex-wrap gap-1">
-                  {activity.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
                 <div className="text-sm">
-                  <span className="font-medium">{activity.price}</span>
-                  {activity.price !== "Free" && (
+                  <span className="font-medium">
+                    {event.price?.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "RWF",
+                    })}
+                  </span>
+                  {event.price !== null && event.price !== undefined && (
                     <span className="text-muted-foreground"> per person</span>
                   )}
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm">
-                    <Link href={`/activities/${activity.id}?register=true`}>
-                      Register
-                    </Link>
-                  </Button>
-                </div>
+                <Button size="sm">
+                  <Link href={`/activities/${event.id}?register=true`}>
+                    Register
+                  </Link>
+                </Button>
               </CardFooter>
             </Card>
           ))}

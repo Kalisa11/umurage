@@ -52,6 +52,8 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at").defaultNow(),
   isFeatured: boolean("is_featured").default(false),
   tag: varchar("tag", { length: 100 }),
+  imageUrl: text("image_url"),
+  price: integer("price"),
 });
 
 export const artists = pgTable("artists", {

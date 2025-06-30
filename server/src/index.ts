@@ -18,7 +18,7 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://umurage-app.vercel.app"
+        ? "https://umurage-delta.vercel.app"
         : [
             "http://localhost:3000",
             "http://localhost:3001",

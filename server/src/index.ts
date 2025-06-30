@@ -6,6 +6,7 @@ import categoriesRoutes from "./routes/categoriesRoute";
 import authRoutes from "./routes/authRoutes";
 import eventsRoutes from "./routes/eventsRoutes";
 import session from "express-session";
+import submissionRoutes from "./routes/submissionRoutes";
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use(express.json());
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventsRoutes);
+app.use("/api/submissions", submissionRoutes);
 
 // Basic health check route
 app.get("/health", (req, res) => {

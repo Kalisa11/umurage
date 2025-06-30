@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Event } from "@/types/event";
+import { Event } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

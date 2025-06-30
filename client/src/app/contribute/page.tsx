@@ -130,7 +130,7 @@ export default function ContributePage() {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Upload Content</CardTitle>
+              <CardTitle className="pt-4">Upload Content</CardTitle>
               <CardDescription>
                 Fill out the form below to share your cultural knowledge
               </CardDescription>

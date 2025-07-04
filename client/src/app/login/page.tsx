@@ -28,7 +28,6 @@ import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
 
   const {
     register,
@@ -38,13 +37,17 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate: signIn, isPending } = useMutation({
+  const {
+    mutate: signIn,
+    isPending,
+    error,
+  } = useMutation({
     mutationFn: (data: LoginSchema) => login(data),
     onSuccess: () => {
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     },
     onError: (error: any) => {
-      toast.error(error.response.data.message || "An error occurred", {
+      toast.error(error.message || "An error occurred", {
         duration: 3000,
         position: "top-center",
       });
@@ -55,6 +58,7 @@ export default function LoginPage() {
     signIn(data);
   };
 
+  console.log("error", error);
   return (
     <div className="min-h-screen flex">
       {/* Left side - Login Form */}
@@ -71,7 +75,7 @@ export default function LoginPage() {
 
           <Card>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+              <CardTitle className="text-2xl font-bold pt-4">Welcome back</CardTitle>
               <CardDescription>
                 Sign in to your account to manage your contributions and explore
                 more cultural content
@@ -79,12 +83,6 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
                 <div className="space-y-2">
                   <Label htmlFor="email">Email address</Label>
                   <Input
@@ -148,7 +146,11 @@ export default function LoginPage() {
                     Forgot password?
                   </Link>
                 </div>
-
+                {error && (
+                  <p className="text-sm text-red-500">
+                    An error occurred: {error.message}
+                  </p>
+                )}
                 <Button type="submit" className="w-full" disabled={isPending}>
                   {isPending ? "Signing in..." : "Sign in"}
                 </Button>

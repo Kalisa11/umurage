@@ -23,14 +23,14 @@ export const getSubmissionById = async (id: string) => {
   }
 };
 
-export const getSubmissionsByCategory = async (category: string) => {
+export const getSubmissionsByCategory = async (categoryId: string) => {
   try {
     const response = await axios.get(
-      `${API_URL}/submissions/category/${category}`
+      `${API_URL}/submissions/category/${categoryId}`
     );
     return response.data as Submission[];
   } catch (error) {
-    console.log("Error fetching submissions by category:", category, error);
+    console.log("Error fetching submissions by category:", categoryId, error);
     throw error;
   }
 };

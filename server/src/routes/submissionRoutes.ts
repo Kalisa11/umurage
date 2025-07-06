@@ -6,7 +6,7 @@ const router = Router();
 router.get("/", SubmissionController.getAllApprovedSubmissions);
 router.get("/:id", SubmissionController.getSubmissionById);
 router.get(
-  "/category/:category",
+  "/category/:categoryId",
   SubmissionController.getSubmissionsByCategory
 );
 

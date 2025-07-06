@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { categories, submissions } from "../db/schema";
 import type { Request, Response } from "express";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { APPROVED_STATUS } from "../utils";
 
 const SubmissionController = {
@@ -67,12 +67,31 @@ const SubmissionController = {
   },
 
   async getSubmissionsByCategory(req: Request, res: Response) {
-    const { category } = req.params;
+    const { categoryId } = req.params;
     try {
       const submissionsData = await db
-        .select()
+        .select({
+          id: submissions.id,
+          title: submissions.title,
+          description: submissions.description,
+          content: submissions.content,
+          categoryId: submissions.categoryId,
+          imageUrl: submissions.imageUrl,
+          submittedAt: submissions.submittedAt,
+          status: submissions.status,
+          reviewedBy: submissions.reviewedBy,
+          locationName: submissions.locationName,
+          storageUrl: submissions.storageUrl,
+          category: categories.name,
+        })
         .from(submissions)
-        .where(eq(submissions.categoryId, parseInt(category)))
+        .where(
+          and(
+            eq(submissions.categoryId, parseInt(categoryId)),
+            eq(submissions.status, APPROVED_STATUS)
+          )
+        )
+        .leftJoin(categories, eq(submissions.categoryId, categories.id))
         .orderBy(desc(submissions.submittedAt));
       return res.status(200).json(submissionsData);
     } catch (error) {

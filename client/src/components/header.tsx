@@ -24,7 +24,7 @@ export default function Header() {
   const routes = [
     { name: "Home", path: "/" },
     { name: "Categories", path: "/categories" },
-    { name: "Explore", path: "/explore" },
+    // { name: "Explore", path: "/explore" },
     { name: "Contribute", path: "/contribute" },
     { name: "Activities", path: "/activities" },
     { name: "About", path: "/about" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -29,101 +29,97 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
-import { getAllApprovedSubmissions } from "@/services/submissionService";
 import { useQuery } from "@tanstack/react-query";
+import {
+  getAllApprovedSubmissions,
+  getSubmissionsByCategory,
+} from "@/services/submissionService";
+import { getCategoryIcon } from "@/utils";
 
-export default function ExplorePage() {
+const Page = ({ params }: { params: { id: string } }) => {
+  const { id } = params;
   const [view, setView] = useState("grid");
 
   // Mock data for demonstration
-  const contentItems = [
-    {
-      id: "1",
-      title: "The Origin of Lake Kivu",
-      description:
-        "A traditional tale about how the beautiful Lake Kivu was formed, passed down through generations in Western Rwanda.",
-      category: "story",
-      region: "Western Province",
-      contributor: "Elder Mutesi",
-      date: "2023-05-15",
-      image: "/placeholder.png?height=400&width=600",
-    },
-    {
-      id: "2",
-      title: "Intore Dance Song",
-      description:
-        "A traditional song that accompanies the famous Intore warrior dance, celebrating bravery and cultural pride.",
-      category: "song",
-      region: "Northern Province",
-      contributor: "Kigali Cultural Group",
-      date: "2023-06-22",
-      image: "/placeholder.png?height=400&width=600",
-    },
-    {
-      id: "3",
-      title: "Imigongo Patterns",
-      description:
-        "Traditional geometric art forms created using cow dung and natural pigments, featuring bold patterns and earthy colors.",
-      category: "art",
-      region: "Eastern Province",
-      contributor: "Nyagatare Artisans",
-      date: "2023-07-10",
-      image: "/placeholder.png?height=400&width=600",
-    },
-    {
-      id: "4",
-      title: "Proverb: Akebo kajya iwa Mugarura",
-      description:
-        "A traditional Kinyarwanda proverb about perseverance and determination in the face of challenges.",
-      category: "proverb",
-      region: "Southern Province",
-      contributor: "Professor Nshimiyimana",
-      date: "2023-08-05",
-      image: "/placeholder.png?height=400&width=600",
-    },
-    {
-      id: "5",
-      title: "Traditional Wedding Songs",
-      description:
-        "Collection of songs performed during traditional Rwandan wedding ceremonies, celebrating love and family bonds.",
-      category: "song",
-      region: "Kigali",
-      contributor: "Rwanda Heritage Group",
-      date: "2023-09-18",
-      image: "/placeholder.png?height=400&width=600",
-    },
-    {
-      id: "6",
-      title: "The Clever Hare and the Elephant",
-      description:
-        "A folktale teaching children about using intelligence rather than physical strength to overcome challenges.",
-      category: "story",
-      region: "Northern Province",
-      contributor: "Anonymous",
-      date: "2023-10-30",
-      image: "/placeholder.png?height=400&width=600",
-    },
-  ];
+  //   const submissions = [
+  //     {
+  //       id: "1",
+  //       title: "The Origin of Lake Kivu",
+  //       description:
+  //         "A traditional tale about how the beautiful Lake Kivu was formed, passed down through generations in Western Rwanda.",
+  //       category: "story",
+  //       region: "Western Province",
+  //       contributor: "Elder Mutesi",
+  //       date: "2023-05-15",
+  //       image: "/placeholder.png?height=400&width=600",
+  //     },
+  //     {
+  //       id: "2",
+  //       title: "Intore Dance Song",
+  //       description:
+  //         "A traditional song that accompanies the famous Intore warrior dance, celebrating bravery and cultural pride.",
+  //       category: "song",
+  //       region: "Northern Province",
+  //       contributor: "Kigali Cultural Group",
+  //       date: "2023-06-22",
+  //       image: "/placeholder.png?height=400&width=600",
+  //     },
+  //     {
+  //       id: "3",
+  //       title: "Imigongo Patterns",
+  //       description:
+  //         "Traditional geometric art forms created using cow dung and natural pigments, featuring bold patterns and earthy colors.",
+  //       category: "art",
+  //       region: "Eastern Province",
+  //       contributor: "Nyagatare Artisans",
+  //       date: "2023-07-10",
+  //       image: "/placeholder.png?height=400&width=600",
+  //     },
+  //     {
+  //       id: "4",
+  //       title: "Proverb: Akebo kajya iwa Mugarura",
+  //       description:
+  //         "A traditional Kinyarwanda proverb about perseverance and determination in the face of challenges.",
+  //       category: "proverb",
+  //       region: "Southern Province",
+  //       contributor: "Professor Nshimiyimana",
+  //       date: "2023-08-05",
+  //       image: "/placeholder.png?height=400&width=600",
+  //     },
+  //     {
+  //       id: "5",
+  //       title: "Traditional Wedding Songs",
+  //       description:
+  //         "Collection of songs performed during traditional Rwandan wedding ceremonies, celebrating love and family bonds.",
+  //       category: "song",
+  //       region: "Kigali",
+  //       contributor: "Rwanda Heritage Group",
+  //       date: "2023-09-18",
+  //       image: "/placeholder.png?height=400&width=600",
+  //     },
+  //     {
+  //       id: "6",
+  //       title: "The Clever Hare and the Elephant",
+  //       description:
+  //         "A folktale teaching children about using intelligence rather than physical strength to overcome challenges.",
+  //       category: "story",
+  //       region: "Northern Province",
+  //       contributor: "Anonymous",
+  //       date: "2023-10-30",
+  //       image: "/placeholder.png?height=400&width=600",
+  //     },
+  //   ];
 
-  const { data: submissions, isLoading, error } = useQuery({
-    queryKey: ["submissions"],
-    queryFn: getAllApprovedSubmissions,
+  const {
+    data: submissions,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["submissions", id],
+    queryFn: () => getSubmissionsByCategory(id),
   });
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "story":
-        return <BookOpenText className="h-4 w-4" />;
-      case "song":
-        return <Music className="h-4 w-4" />;
-      case "art":
-        return <Paintbrush className="h-4 w-4" />;
-      case "proverb":
-        return <BookOpen className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
+  console.log({ submissions });
 
   return (
     <div className="container py-12">
@@ -149,18 +145,6 @@ export default function ExplorePage() {
           <div className="flex gap-2">
             <Select defaultValue="all">
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="story">Stories</SelectItem>
-                <SelectItem value="proverb">Proverbs</SelectItem>
-                <SelectItem value="song">Songs</SelectItem>
-                <SelectItem value="art">Art</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Region" />
               </SelectTrigger>
               <SelectContent>
@@ -173,20 +157,6 @@ export default function ExplorePage() {
               </SelectContent>
             </Select>
           </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="cursor-pointer">
-            Stories
-          </Badge>
-          <Badge variant="outline" className="cursor-pointer">
-            Proverbs
-          </Badge>
-          <Badge variant="outline" className="cursor-pointer">
-            Songs
-          </Badge>
-          <Badge variant="outline" className="cursor-pointer">
-            Art
-          </Badge>
         </div>
       </div>
 
@@ -226,7 +196,9 @@ export default function ExplorePage() {
                       <Badge
                         className={`flex items-center gap-1 bg-primary capitalize text-white`}
                       >
-                        {getCategoryIcon(item.category)}
+                        {React.createElement(getCategoryIcon(item.category), {
+                          className: "h-5 w-5 text-white",
+                        })}
                         {item.category}
                       </Badge>
                     </div>
@@ -277,7 +249,9 @@ export default function ExplorePage() {
                         <Badge
                           className={`flex items-center gap-1 bg-primary capitalize`}
                         >
-                          {getCategoryIcon(item.category)}
+                          {React.createElement(getCategoryIcon(item.category), {
+                            className: "h-5 w-5 text-white",
+                          })}
                           {item.category}
                         </Badge>
                       </div>
@@ -329,4 +303,6 @@ export default function ExplorePage() {
       </div>
     </div>
   );
-}
+};
+
+export default Page;

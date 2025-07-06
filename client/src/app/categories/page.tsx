@@ -1,3 +1,6 @@
+"use client";
+
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -8,87 +11,102 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { ArrowRight, BookOpen, Music, Paintbrush } from "lucide-react";
+import { getAllCategories } from "@/services/categoryService";
+import { useQuery } from "@tanstack/react-query";
+import { getCategoryIcon } from "@/utils";
 
 export default function CategoriesPage() {
-  const categories = [
-    {
-      id: "stories",
-      title: "Stories",
-      description:
-        "Traditional tales, myths, and legends passed down through generations",
-      icon: BookOpen,
-      image: "/placeholder.png?height=400&width=600",
-      count: 12,
-    },
-    {
-      id: "proverbs",
-      title: "Proverbs",
-      description:
-        "Wise sayings that reflect cultural values and traditional wisdom",
-      icon: () => (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-6 w-6"
-        >
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-      ),
-      image: "/placeholder.png?height=400&width=600",
-      count: 25,
-    },
-    {
-      id: "songs",
-      title: "Songs",
-      description:
-        "Traditional music, chants, and ceremonial songs from different regions",
-      icon: Music,
-      image: "/placeholder.png?height=400&width=600",
-      count: 7,
-    },
-    {
-      id: "art",
-      title: "Art",
-      description: "Traditional visual arts, crafts, and cultural artifacts",
-      icon: Paintbrush,
-      image: "/placeholder.png?height=400&width=600",
-      count: 9,
-    },
-    {
-      id: "language",
-      title: "Language",
-      description:
-        "Indigenous language entries, dialects, and linguistic heritage",
-      icon: () => (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-6 w-6"
-        >
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          <path d="M9 9h0.01" />
-          <path d="M15 9h0.01" />
-          <path d="M9 13a4 4 0 0 0 8 0" />
-        </svg>
-      ),
-      image: "/placeholder.png?height=400&width=600",
-      count: 14,
-    },
-  ];
+  // const categories = [
+  //   {
+  //     id: "stories",
+  //     title: "Stories",
+  //     description:
+  //       "Traditional tales, myths, and legends passed down through generations",
+  //     icon: BookOpen,
+  //     image: "/placeholder.png?height=400&width=600",
+  //     count: 12,
+  //   },
+  //   {
+  //     id: "proverbs",
+  //     title: "Proverbs",
+  //     description:
+  //       "Wise sayings that reflect cultural values and traditional wisdom",
+  //     icon: () => (
+  //       <svg
+  //         xmlns="http://www.w3.org/2000/svg"
+  //         width="24"
+  //         height="24"
+  //         viewBox="0 0 24 24"
+  //         fill="none"
+  //         stroke="currentColor"
+  //         strokeWidth="2"
+  //         strokeLinecap="round"
+  //         strokeLinejoin="round"
+  //         className="h-6 w-6"
+  //       >
+  //         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  //       </svg>
+  //     ),
+  //     image: "/placeholder.png?height=400&width=600",
+  //     count: 25,
+  //   },
+  //   {
+  //     id: "songs",
+  //     title: "Songs",
+  //     description:
+  //       "Traditional music, chants, and ceremonial songs from different regions",
+  //     icon: Music,
+  //     image: "/placeholder.png?height=400&width=600",
+  //     count: 7,
+  //   },
+  //   {
+  //     id: "art",
+  //     title: "Art",
+  //     description: "Traditional visual arts, crafts, and cultural artifacts",
+  //     icon: Paintbrush,
+  //     image: "/placeholder.png?height=400&width=600",
+  //     count: 9,
+  //   },
+  //   {
+  //     id: "language",
+  //     title: "Language",
+  //     description:
+  //       "Indigenous language entries, dialects, and linguistic heritage",
+  //     icon: () => (
+  //       <svg
+  //         xmlns="http://www.w3.org/2000/svg"
+  //         width="24"
+  //         height="24"
+  //         viewBox="0 0 24 24"
+  //         fill="none"
+  //         stroke="currentColor"
+  //         strokeWidth="2"
+  //         strokeLinecap="round"
+  //         strokeLinejoin="round"
+  //         className="h-6 w-6"
+  //       >
+  //         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  //         <path d="M9 9h0.01" />
+  //         <path d="M15 9h0.01" />
+  //         <path d="M9 13a4 4 0 0 0 8 0" />
+  //       </svg>
+  //     ),
+  //     image: "/placeholder.png?height=400&width=600",
+  //     count: 14,
+  //   },
+  // ];
+
+  const {
+    data: categories,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getAllCategories,
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="container mx-auto py-12">
@@ -103,7 +121,7 @@ export default function CategoriesPage() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((category) => (
+        {categories?.map((category) => (
           <Link
             key={category.id}
             href={`/categories/${category.id}`}
@@ -112,15 +130,17 @@ export default function CategoriesPage() {
             <Card className="overflow-hidden transition-all hover:shadow-md">
               <CardHeader className="relative h-42 p-0">
                 <Image
-                  src={category.image || "/placeholder.png"}
-                  alt={category.title}
+                  src={"/placeholder.png"}
+                  alt={category.name}
                   fill
                   className="object-cover transition-transform group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
                   <div className="flex items-center gap-2 text-white">
-                    <category.icon />
-                    <h3 className="text-xl font-bold">{category.title}</h3>
+                    {React.createElement(getCategoryIcon(category.name), {
+                      className: "h-5 w-5 text-primary",
+                    })}
+                    <h3 className="text-xl font-bold">{category.name}</h3>
                   </div>
                 </div>
               </CardHeader>
@@ -129,7 +149,7 @@ export default function CategoriesPage() {
               </CardContent>
               <CardFooter className="flex justify-between">
                 <div className="text-sm text-muted-foreground">
-                  {category.count} entries
+                  {/* {category.submissions.length} entries */}2 entries
                 </div>
                 <div className="flex items-center text-sm font-medium text-primary">
                   Explore

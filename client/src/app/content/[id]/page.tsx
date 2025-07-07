@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Flag, Share2 } from "lucide-react";
+import { BookOpen, Download, Flag, Share2, Volume2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getSubmissionById } from "@/services/submissionService";
 import { format, formatDate } from "date-fns";
@@ -46,7 +46,7 @@ export default function ContentPage({
   ];
 
   return (
-    <div className="container py-12">
+    <div className="container mx-auto py-12">
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="mb-6">
@@ -71,6 +71,27 @@ export default function ContentPage({
               priority
             />
           </div>
+          <Card className="mb-8">
+            <CardContent className="pt-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                  <Button size="icon" className="h-12 w-12 flex-shrink-0">
+                    <Volume2 className="h-6 w-6" />
+                  </Button>
+                  <div className="flex-1">
+                    <h3 className="font-medium">Coming Soon</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Audio narration in Kinyarwanda with English subtitles
+                    </p>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="prose prose-lg max-w-none dark:prose-invert">
             {content?.content?.split("\n").map((paragraph, index) => (

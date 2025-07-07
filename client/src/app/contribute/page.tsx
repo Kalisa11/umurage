@@ -139,7 +139,9 @@ export default function ContributePage() {
                 {/* Basic Information */}
                 <div className="space-y-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="title">Title *</Label>
+                    <Label htmlFor="title">
+                      Title<span className="text-red-500 font-bold">*</span>
+                    </Label>
                     <Input
                       id="title"
                       placeholder="Enter a title for your contribution"
@@ -148,7 +150,9 @@ export default function ContributePage() {
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="category">Category *</Label>
+                    <Label htmlFor="category">
+                      Category<span className="text-red-500 font-bold">*</span>
+                    </Label>
                     <Select required onValueChange={setCategory}>
                       <SelectTrigger id="category">
                         <SelectValue placeholder="Select a category" />
@@ -158,7 +162,6 @@ export default function ContributePage() {
                         <SelectItem value="proverb">Proverb</SelectItem>
                         <SelectItem value="song">Song</SelectItem>
                         <SelectItem value="art">Art</SelectItem>
-                        <SelectItem value="language">Language</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -193,7 +196,10 @@ export default function ContributePage() {
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="region">Region/Province *</Label>
+                    <Label htmlFor="region">
+                      Region/Province
+                      <span className="text-red-500 font-bold">*</span>
+                    </Label>
                     <Select required>
                       <SelectTrigger id="region">
                         <SelectValue placeholder="Select a region" />
@@ -217,15 +223,18 @@ export default function ContributePage() {
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="contributor">Contributor/Artist *</Label>
-                    <Input
-                      id="contributor"
-                      placeholder="Your name or leave blank to remain anonymous"
-                    />
+                    <Label htmlFor="contributor">
+                      Contributor/Artist
+                      <span className="text-red-500 font-bold">*</span>
+                    </Label>
+                    <Input id="contributor" placeholder="Artist's name" />
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="content">Content *</Label>
+                    <Label htmlFor="content">
+                      Content
+                      <span className="text-red-500 font-bold">*</span>
+                    </Label>
                     <Textarea
                       id="content"
                       placeholder={
@@ -270,7 +279,7 @@ export default function ContributePage() {
 
                 {category === "art" && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium border-b pb-2">
+                    <h3 className="text-base font-medium border-b pb-2">
                       Artwork Details
                     </h3>
 
@@ -289,13 +298,20 @@ export default function ContributePage() {
                           placeholder="e.g., Cow Dung & Natural Pigments, Clay"
                         />
                       </div>
+                      <div className="grid gap-2 col-span-2">
+                        <Label htmlFor="google-maps">Google Maps Link</Label>
+                        <Input
+                          id="google-maps"
+                          placeholder="e.g., https://maps.app.goo.gl/1234567890"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {category === "story" && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium border-b pb-2">
+                    <h3 className="text-base font-medium border-b pb-2">
                       Story Details
                     </h3>
 
@@ -326,7 +342,8 @@ export default function ContributePage() {
 
                     <div className="grid gap-2">
                       <Label htmlFor="english-translation">
-                        English Translation *
+                        English Translation
+                        <span className="text-red-500 font-bold">*</span>
                       </Label>
                       <Input
                         id="english-translation"
@@ -375,7 +392,10 @@ export default function ContributePage() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label htmlFor="meaning">Meaning *</Label>
+                      <Label htmlFor="meaning">
+                        Meaning
+                        <span className="text-red-500 font-bold">*</span>
+                      </Label>
                       <Textarea
                         id="meaning"
                         placeholder="Explain the main meaning of the proverb"

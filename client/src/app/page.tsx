@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -10,9 +12,35 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BookOpen, Music, Paintbrush, Play } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Music,
+  Paintbrush,
+  Play,
+  Calendar,
+  Clock,
+  MapPin,
+  Heart,
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getAllEvents } from "@/services/eventService";
+import { formatDate } from "date-fns";
+import { getTypeIcon } from "@/utils";
 
 export default function Home() {
+  const {
+    data: events,
+    isLoading: eventsLoading,
+    error: eventsError,
+  } = useQuery({
+    queryKey: ["events"],
+    queryFn: getAllEvents,
+  });
+
+  // Filter upcoming events (events with dates in the future)
+  const upcomingEvents = events?.slice(0, 3); // Show only 3 upcoming events
+
   return (
     <div className="flex flex-col gap-12 pb-8">
       {/* Hero Section */}
@@ -168,6 +196,126 @@ export default function Home() {
             </CardFooter>
           </Card>
         </div>
+      </section>
+
+      {/* Upcoming Events Section */}
+      <section className="container mx-auto">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold tracking-tight">Upcoming Events</h2>
+          <p className="mt-2 text-muted-foreground">
+            Join our community events, workshops, and cultural activities
+          </p>
+        </div>
+
+        {eventsLoading ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <div className="h-48 bg-muted animate-pulse" />
+                <CardContent className="p-6">
+                  <div className="h-6 bg-muted rounded animate-pulse mb-2" />
+                  <div className="h-4 bg-muted rounded animate-pulse mb-4" />
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted rounded animate-pulse" />
+                    <div className="h-4 bg-muted rounded animate-pulse" />
+                    <div className="h-4 bg-muted rounded animate-pulse" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : eventsError ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              Unable to load upcoming events at this time.
+            </p>
+          </div>
+        ) : upcomingEvents && upcomingEvents.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {upcomingEvents.map((event) => (
+              <Card key={event.id} className="overflow-hidden border">
+                <CardHeader className="relative h-48 w-full p-0">
+                  <Image
+                    src={event.imageUrl || "/placeholder.png"}
+                    alt={event.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover bg"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-between p-4">
+                    <Badge className="bg-primary hover:bg-primary">
+                      Featured
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white hover:bg-white/20"
+                    >
+                      <Heart className={`h-4 w-4`} />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardTitle className="line-clamp-1">{event.title}</CardTitle>
+                  <CardDescription className="mt-2 line-clamp-2">
+                    {event.description}
+                  </CardDescription>
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4" />
+                      {formatDate(event.eventDate, "EEEE, MMMM d, yyyy")}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      {event.eventDate}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      {event.location}
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <div className="text-sm">
+                    <span className="font-medium">
+                      {event.price
+                        ? event.price.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "RWF",
+                          })
+                        : "Free"}
+                    </span>
+                    {event.price !== null && event.price !== undefined && (
+                      <span className="text-muted-foreground"> per person</span>
+                    )}
+                  </div>
+                  <Button size="sm">Register</Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <Calendar className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No Upcoming Events</h3>
+            <p className="text-muted-foreground mb-6">
+              Check back soon for new cultural events and activities.
+            </p>
+            <Button asChild>
+              <Link href="/events">View All Events</Link>
+            </Button>
+          </div>
+        )}
+
+        {upcomingEvents && upcomingEvents.length > 0 && (
+          <div className="mt-8 text-center">
+            <Button asChild variant="default" size="lg">
+              <Link href="/events">View All Events</Link>
+            </Button>
+          </div>
+        )}
       </section>
 
       {/* Categories Section */}

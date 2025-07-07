@@ -44,7 +44,6 @@ export default function ContentPage({
       image: "/placeholder.png?height=400&width=600",
     },
   ];
-  console.log(content?.locationName);
 
   return (
     <div className="container py-12">

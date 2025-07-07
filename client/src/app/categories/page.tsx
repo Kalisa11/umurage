@@ -10,92 +10,13 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { ArrowRight, BookOpen, Music, Paintbrush } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getAllCategories } from "@/services/categoryService";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryIcon } from "@/utils";
+import CategoryLoader from "@/components/loaders/category-loader";
 
 export default function CategoriesPage() {
-  // const categories = [
-  //   {
-  //     id: "stories",
-  //     title: "Stories",
-  //     description:
-  //       "Traditional tales, myths, and legends passed down through generations",
-  //     icon: BookOpen,
-  //     image: "/placeholder.png?height=400&width=600",
-  //     count: 12,
-  //   },
-  //   {
-  //     id: "proverbs",
-  //     title: "Proverbs",
-  //     description:
-  //       "Wise sayings that reflect cultural values and traditional wisdom",
-  //     icon: () => (
-  //       <svg
-  //         xmlns="http://www.w3.org/2000/svg"
-  //         width="24"
-  //         height="24"
-  //         viewBox="0 0 24 24"
-  //         fill="none"
-  //         stroke="currentColor"
-  //         strokeWidth="2"
-  //         strokeLinecap="round"
-  //         strokeLinejoin="round"
-  //         className="h-6 w-6"
-  //       >
-  //         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  //       </svg>
-  //     ),
-  //     image: "/placeholder.png?height=400&width=600",
-  //     count: 25,
-  //   },
-  //   {
-  //     id: "songs",
-  //     title: "Songs",
-  //     description:
-  //       "Traditional music, chants, and ceremonial songs from different regions",
-  //     icon: Music,
-  //     image: "/placeholder.png?height=400&width=600",
-  //     count: 7,
-  //   },
-  //   {
-  //     id: "art",
-  //     title: "Art",
-  //     description: "Traditional visual arts, crafts, and cultural artifacts",
-  //     icon: Paintbrush,
-  //     image: "/placeholder.png?height=400&width=600",
-  //     count: 9,
-  //   },
-  //   {
-  //     id: "language",
-  //     title: "Language",
-  //     description:
-  //       "Indigenous language entries, dialects, and linguistic heritage",
-  //     icon: () => (
-  //       <svg
-  //         xmlns="http://www.w3.org/2000/svg"
-  //         width="24"
-  //         height="24"
-  //         viewBox="0 0 24 24"
-  //         fill="none"
-  //         stroke="currentColor"
-  //         strokeWidth="2"
-  //         strokeLinecap="round"
-  //         strokeLinejoin="round"
-  //         className="h-6 w-6"
-  //       >
-  //         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  //         <path d="M9 9h0.01" />
-  //         <path d="M15 9h0.01" />
-  //         <path d="M9 13a4 4 0 0 0 8 0" />
-  //       </svg>
-  //     ),
-  //     image: "/placeholder.png?height=400&width=600",
-  //     count: 14,
-  //   },
-  // ];
-
   const {
     data: categories,
     isLoading,
@@ -105,7 +26,7 @@ export default function CategoriesPage() {
     queryFn: getAllCategories,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <CategoryLoader />;
   if (error) return <div>Error: {error.message}</div>;
 
   return (

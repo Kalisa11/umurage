@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -20,95 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  BookOpen,
-  Music,
-  Paintbrush,
-  Search,
-  BookOpenText,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
+import { Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getAllApprovedSubmissions,
-  getSubmissionsByCategory,
-} from "@/services/submissionService";
+import { getSubmissionsByCategory } from "@/services/submissionService";
 import { getCategoryIcon } from "@/utils";
 
-const Page = ({ params }: { params: { id: string } }) => {
-  const { id } = params;
+const Page = ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = use(params);
   const [view, setView] = useState("grid");
-
-  // Mock data for demonstration
-  //   const submissions = [
-  //     {
-  //       id: "1",
-  //       title: "The Origin of Lake Kivu",
-  //       description:
-  //         "A traditional tale about how the beautiful Lake Kivu was formed, passed down through generations in Western Rwanda.",
-  //       category: "story",
-  //       region: "Western Province",
-  //       contributor: "Elder Mutesi",
-  //       date: "2023-05-15",
-  //       image: "/placeholder.png?height=400&width=600",
-  //     },
-  //     {
-  //       id: "2",
-  //       title: "Intore Dance Song",
-  //       description:
-  //         "A traditional song that accompanies the famous Intore warrior dance, celebrating bravery and cultural pride.",
-  //       category: "song",
-  //       region: "Northern Province",
-  //       contributor: "Kigali Cultural Group",
-  //       date: "2023-06-22",
-  //       image: "/placeholder.png?height=400&width=600",
-  //     },
-  //     {
-  //       id: "3",
-  //       title: "Imigongo Patterns",
-  //       description:
-  //         "Traditional geometric art forms created using cow dung and natural pigments, featuring bold patterns and earthy colors.",
-  //       category: "art",
-  //       region: "Eastern Province",
-  //       contributor: "Nyagatare Artisans",
-  //       date: "2023-07-10",
-  //       image: "/placeholder.png?height=400&width=600",
-  //     },
-  //     {
-  //       id: "4",
-  //       title: "Proverb: Akebo kajya iwa Mugarura",
-  //       description:
-  //         "A traditional Kinyarwanda proverb about perseverance and determination in the face of challenges.",
-  //       category: "proverb",
-  //       region: "Southern Province",
-  //       contributor: "Professor Nshimiyimana",
-  //       date: "2023-08-05",
-  //       image: "/placeholder.png?height=400&width=600",
-  //     },
-  //     {
-  //       id: "5",
-  //       title: "Traditional Wedding Songs",
-  //       description:
-  //         "Collection of songs performed during traditional Rwandan wedding ceremonies, celebrating love and family bonds.",
-  //       category: "song",
-  //       region: "Kigali",
-  //       contributor: "Rwanda Heritage Group",
-  //       date: "2023-09-18",
-  //       image: "/placeholder.png?height=400&width=600",
-  //     },
-  //     {
-  //       id: "6",
-  //       title: "The Clever Hare and the Elephant",
-  //       description:
-  //         "A folktale teaching children about using intelligence rather than physical strength to overcome challenges.",
-  //       category: "story",
-  //       region: "Northern Province",
-  //       contributor: "Anonymous",
-  //       date: "2023-10-30",
-  //       image: "/placeholder.png?height=400&width=600",
-  //     },
-  //   ];
 
   const {
     data: submissions,
@@ -118,8 +37,6 @@ const Page = ({ params }: { params: { id: string } }) => {
     queryKey: ["submissions", id],
     queryFn: () => getSubmissionsByCategory(id),
   });
-
-  console.log({ submissions });
 
   return (
     <div className="container py-12">

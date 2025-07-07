@@ -290,7 +290,7 @@ export default function Home() {
                 <Link href="/contribute">Contribute Now</Link>
               </Button>
               <p className="text-sm text-primary-foreground/80">
-                No account required to contribute anonymously
+                Account required to contribute content
               </p>
             </div>
           </div>

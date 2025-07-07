@@ -54,7 +54,7 @@ export default function ActivitiesPage() {
     <div className="container mx-auto py-12">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-          Upcoming Activities
+          Upcoming Events
         </h1>
         <p className="mt-4 text-xl text-muted-foreground">
           Join our community events, workshops, and cultural activities to
@@ -117,7 +117,7 @@ export default function ActivitiesPage() {
       {/* Featured Activities Banner */}
       {activeTab === "all" && (
         <div className="mb-8">
-          <h2 className="mb-4 text-2xl font-bold">Featured Activities</h2>
+          <h2 className="mb-4 text-2xl font-bold">Featured Events</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {events &&
               events
@@ -201,15 +201,15 @@ export default function ActivitiesPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">
             {activeTab === "all"
-              ? "All Activities"
+              ? "All Events"
               : activeTab === "featured"
-              ? "Featured Activities"
+              ? "Featured Events"
               : `${
                   activeTab.charAt(0).toUpperCase() + activeTab.slice(1)
                 } Activities`}
           </h2>
           <div className="text-sm text-muted-foreground">
-            Showing {filteredEvents?.length} activities
+            Showing {filteredEvents?.length} events
           </div>
         </div>
 
@@ -288,7 +288,7 @@ export default function ActivitiesPage() {
 
       {/* Call to Action */}
       <div className="mt-16 rounded-lg bg-muted p-8 text-center">
-        <h2 className="text-2xl font-bold">Want to Organize an Activity?</h2>
+        <h2 className="text-2xl font-bold">Want to Organize an Event?</h2>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
           Are you a cultural expert, artist, or community leader? We'd love to
           help you organize workshops, performances, or cultural events to share
@@ -296,7 +296,7 @@ export default function ActivitiesPage() {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <Button asChild size="lg">
-            <Link href="/organize-activity">Organize an Activity</Link>
+            <Link href="/organize-event">Organize an Event</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
             <Link href="/contact">Contact Us</Link>

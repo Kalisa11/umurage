@@ -26,10 +26,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, Check, Upload } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import useSession from "@/hooks/useSession";
 
 export default function ContributePage() {
   const [submitted, setSubmitted] = useState(false);
   const [mediaType, setMediaType] = useState("text");
+  const { data: session } = useSession();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,9 +121,9 @@ export default function ContributePage() {
             </div>
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>No account required</AlertTitle>
+              <AlertTitle>Account required</AlertTitle>
               <AlertDescription>
-                You can contribute anonymously without creating an account.
+                Create an account to start contributing content.
               </AlertDescription>
             </Alert>
           </div>
@@ -326,7 +328,13 @@ export default function ContributePage() {
                     </Label>
                   </div>
                 </div>
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={!session?.session}
+                  // show tooltip if disabled
+                  title={!session?.session ? "Login to contribute" : ""}
+                >
                   Submit Contribution
                 </Button>
               </form>

@@ -1,3 +1,4 @@
+
 export interface Event {
   id: string;
   title: string;
@@ -24,4 +25,14 @@ export interface Submission {
   submittedAt: Date;
   imageUrl?: string;
   category: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface CategoryWithSubmissions extends Category {
+  submissions: Submission[];
 }

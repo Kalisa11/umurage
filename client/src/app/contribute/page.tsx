@@ -25,6 +25,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, Check, Upload } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import useSession from "@/hooks/useSession";
 
 export default function ContributePage() {
   const [submitted, setSubmitted] = useState(false);
@@ -74,6 +75,8 @@ export default function ContributePage() {
       </div>
     );
   }
+
+  const { data: session } = useSession();
 
   return (
     <div className="container py-12">
@@ -257,6 +260,27 @@ export default function ContributePage() {
                 {/* Category-Specific Fields */}
                 {category === "song" && (
                   <div className="space-y-4">
+                    {/* input for the song */}
+                    <div className="grid gap-2">
+                      <Label htmlFor="song">Song</Label>
+                      <div className="flex h-32 cursor-pointer items-center justify-center rounded-md border border-dashed border-input bg-muted/40 hover:bg-muted">
+                        <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                          <Upload className="h-8 w-8" />
+                          <span>Click to upload or drag and drop</span>
+                          <span className="text-xs">
+                            MP3, WAV, OGG (max 1MB)
+                          </span>
+                        </div>
+                      </div>
+                      <Input
+                        id="song"
+                        placeholder="e.g., Song Name"
+                        type="file"
+                        accept="audio/mpeg, audio/mp3, audio/wav, audio/ogg"
+                        // className="sr-only"
+                      />
+                    </div>
+
                     <h3 className="text-lg font-medium border-b pb-2">
                       Song Details
                     </h3>
@@ -298,11 +322,61 @@ export default function ContributePage() {
                           placeholder="e.g., Cow Dung & Natural Pigments, Clay"
                         />
                       </div>
-                      <div className="grid gap-2 col-span-2">
-                        <Label htmlFor="google-maps">Google Maps Link</Label>
+                    </div>
+                  </div>
+                )}
+
+                {category === "art" && (
+                  <div className="space-y-4">
+                    <h3 className="text-base font-medium border-b pb-2">
+                      Booking Details
+                    </h3>
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="grid gap-2">
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" placeholder="e.g., King's Palace" />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="booking-url">Booking URL</Label>
                         <Input
-                          id="google-maps"
+                          id="booking-url"
                           placeholder="e.g., https://maps.app.goo.gl/1234567890"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input id="phone" placeholder="e.g., +250738742026" />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          placeholder="e.g., info@kingspalace.rw"
+                        />
+                      </div>
+
+                      <div className="grid gap-2">
+                        <Label htmlFor="opening-hours">Opening Hours</Label>
+                        <Input
+                          id="opening-hours"
+                          type="time"
+                          placeholder="e.g., Monday - Saturday: 9:00 AM - 5:00 PM"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="closing-hours">Closing Hours</Label>
+                        <Input
+                          id="closing-hours"
+                          type="time"
+                          placeholder="e.g., Monday - Saturday: 9:00 AM - 5:00 PM"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="address">Address</Label>
+                        <Input
+                          id="address"
+                          placeholder="e.g., Nyanza, Rwanda"
                         />
                       </div>
                     </div>
@@ -440,7 +514,11 @@ export default function ContributePage() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={!category}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={!category || !session?.session}
+                >
                   Submit Contribution
                 </Button>
               </form>

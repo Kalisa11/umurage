@@ -19,6 +19,8 @@ import {
   ZoomIn,
   Palette,
   Clock,
+  Navigation,
+  ExternalLink,
 } from "lucide-react";
 
 // This would normally be fetched from a database
@@ -85,6 +87,18 @@ const getArtworkById = (id: string) => {
         image: "/placeholder.png?height=400&width=600",
       },
     ],
+    museum: {
+      name: "King's Palace Museum",
+      address: "Nyanza, Rwanda",
+      coordinates: {
+        lat: -2.360111,
+        lng: 29.740639,
+      },
+      bookingUrl: "https://visitrwanda.com/interests/kings-palace/",
+      phone: "+250738742026",
+      email: "info@kingspalace.rw",
+      openingHours: "Monday - Saturday: 9:00 AM - 5:00 PM",
+    },
     views: 1850,
     likes: 156,
     downloads: 45,
@@ -168,7 +182,64 @@ export default function ArtDetailPage({
               ))}
             </div>
           </div>
-
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 pt-4">
+                <Navigation className="h-5 w-5" />
+                Visit the Museum
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <h4 className="font-medium mb-3">{artwork.museum.name}</h4>
+                  <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                    <p className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      {artwork.museum.address}
+                    </p>
+                    <p>
+                      <strong>Hours:</strong> {artwork.museum.openingHours}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong> {artwork.museum.phone}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {artwork.museum.email}
+                    </p>
+                  </div>
+                  <Button asChild className="w-full">
+                    <a
+                      href={artwork.museum.bookingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Book Museum Visit
+                    </a>
+                  </Button>
+                </div>
+                <div>
+                  {/* Google Map Embed */}
+                  <div className="h-48 w-full rounded-lg overflow-hidden border">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d996.6084722178041!2d29.739984269525262!3d-2.360122999851197!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMsKwMjEnMzYuNCJTIDI5wrA0NCcyNi4zIkU!5e0!3m2!1sen!2srw!4v1751901859624!5m2!1sen!2srw"
+                      width="600"
+                      height="450"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Click map to open in Google Maps
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           {/* Tabs for different content */}
           <Tabs defaultValue="details" className="mb-8">
             <TabsList className="grid w-full grid-cols-4">
@@ -181,7 +252,7 @@ export default function ArtDetailPage({
             <TabsContent value="details" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Artwork Details</CardTitle>
+                  <CardTitle className="pt-4">Artwork Details</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6 md:grid-cols-2">

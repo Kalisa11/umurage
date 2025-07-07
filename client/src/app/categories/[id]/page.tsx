@@ -195,29 +195,31 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
       </Tabs>
 
       {/* Pagination */}
-      <div className="mt-8 flex justify-center">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" disabled>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-primary text-primary-foreground"
-          >
-            1
-          </Button>
-          <Button variant="outline" size="sm">
-            2
-          </Button>
-          <Button variant="outline" size="sm">
-            3
-          </Button>
-          <Button variant="outline" size="icon">
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+      {submissions && submissions.length > 0 && (
+        <div className="mt-8 flex justify-center">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" disabled>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-primary text-primary-foreground"
+            >
+              1
+            </Button>
+            <Button variant="outline" size="sm">
+              2
+            </Button>
+            <Button variant="outline" size="sm">
+              3
+            </Button>
+            <Button variant="outline" size="icon">
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

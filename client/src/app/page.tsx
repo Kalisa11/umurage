@@ -66,7 +66,7 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" className="rounded-full">
-              <Link href="/contribute">Contribute a Story</Link>
+              <Link href="/contribute">Contribute</Link>
             </Button>
             <Button
               asChild
@@ -74,7 +74,7 @@ export default function Home() {
               size="lg"
               className="rounded-full backdrop-blur-sm hover:bg-gray-200"
             >
-              <Link href="/explore">Explore the Archive</Link>
+              <Link href="/categories">Explore</Link>
             </Button>
           </div>
         </div>

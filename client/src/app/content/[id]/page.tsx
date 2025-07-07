@@ -7,7 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, BookOpen, Download, Flag, Share2, Volume2 } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Download,
+  Flag,
+  Share2,
+  Volume2,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getSubmissionById } from "@/services/submissionService";
 import { format, formatDate } from "date-fns";
@@ -49,7 +56,7 @@ export default function ContentPage({
     <div className="container mx-auto py-12">
       <div className="mb-6">
         <Link
-          href="/categories/proverbs"
+          href="/categories/4"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />

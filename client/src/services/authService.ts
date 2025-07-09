@@ -1,7 +1,9 @@
 import { LoginSchema, SignupSchema } from "@/lib/validationSchema";
 import { createClient } from "@/utils/supabase/client";
+import axios from "axios";
 
 const supabase = createClient();
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const signup = async (data: SignupSchema) => {
   try {
@@ -16,10 +18,15 @@ export const signup = async (data: SignupSchema) => {
         },
       },
     });
+    const dataToSend = {
+      ...data,
+      id: userData.user?.id,
+    };
+    const response = await axios.post(`${API_URL}/users`, dataToSend);
     if (error) {
       throw error;
     }
-    return userData;
+    return { userData, response };
   } catch (error) {
     console.log("signup error", error);
     throw error;

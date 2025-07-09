@@ -204,7 +204,7 @@ export default function ContributePage() {
                 <li>• Be respectful of cultural sensitivities</li>
                 <li>• Provide as much context as possible</li>
                 <li>• Credit sources when known</li>
-                <li>• You can remain anonymous if preferred</li>
+                <li>• Account required to contribute</li>
               </ul>
             </div>
             <Alert>

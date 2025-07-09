@@ -32,6 +32,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { signup } from "@/services/authService";
 import toast from "react-hot-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 type Inputs = {
   firstName: string;
@@ -39,7 +40,8 @@ type Inputs = {
   email: string;
   password: string;
   confirmPassword: string;
-  region: string | null;
+  region: string;
+  bio: string;
 };
 
 export default function SignupPage() {
@@ -53,13 +55,16 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    region: null,
+    region: "",
+    bio: "",
   };
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
+    watch,
   } = useForm<SignupSchema>({
     defaultValues,
     resolver: zodResolver(signupSchema),
@@ -68,6 +73,10 @@ export default function SignupPage() {
   const { mutate: createUser, isPending } = useMutation({
     mutationFn: (data: SignupSchema) => signup(data),
     onSuccess: () => {
+      toast.success("Account created successfully", {
+        duration: 3000,
+        position: "top-center",
+      });
       setStep(2);
     },
     onError: (error: any) => {
@@ -79,7 +88,6 @@ export default function SignupPage() {
   });
 
   const onSubmit: SubmitHandler<SignupSchema> = async (data) => {
-    console.log(data);
     createUser(data);
   };
 
@@ -146,7 +154,7 @@ export default function SignupPage() {
           </Link>
 
           <Card>
-            <CardHeader className="space-y-1">
+            <CardHeader className="space-y-1 pt-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="rounded-full bg-primary p-1">
                   <div className="h-6 w-6 rounded-full bg-primary-foreground" />
@@ -195,6 +203,19 @@ export default function SignupPage() {
                         {errors.lastName.message}
                       </p>
                     )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="bio">Bio</Label>
+                    <Textarea
+                      id="bio"
+                      placeholder="Tell us about yourself"
+                      required
+                      className="text-base w-full"
+                      {...register("bio")}
+                    />
                   </div>
                 </div>
 
@@ -296,22 +317,29 @@ export default function SignupPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="region">Region (Optional)</Label>
-                  <Select {...register("region")}>
+                  <Label htmlFor="region">Region</Label>
+                  <Select
+                    onValueChange={(value) => setValue("region", value)}
+                    {...register("region")}
+                  >
                     <SelectTrigger id="region" className="w-full">
                       <SelectValue placeholder="Select your region" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="kigali">Kigali</SelectItem>
-                      <SelectItem value="northern">
+                      <SelectItem value="Kigali">Kigali</SelectItem>
+                      <SelectItem value="Northern Province">
                         Northern Province
                       </SelectItem>
-                      <SelectItem value="southern">
+                      <SelectItem value="Southern Province">
                         Southern Province
                       </SelectItem>
-                      <SelectItem value="eastern">Eastern Province</SelectItem>
-                      <SelectItem value="western">Western Province</SelectItem>
-                      <SelectItem value="diaspora">Diaspora</SelectItem>
+                      <SelectItem value="Eastern Province">
+                        Eastern Province
+                      </SelectItem>
+                      <SelectItem value="Western Province">
+                        Western Province
+                      </SelectItem>
+                      <SelectItem value="Diaspora">Diaspora</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.region && (

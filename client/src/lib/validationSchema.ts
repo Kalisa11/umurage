@@ -10,7 +10,8 @@ export const signupSchema = z.object({
   confirmPassword: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
-  region: z.string().optional().nullable(),
+  region: z.string().min(1, { message: "Region is required" }),
+  bio: z.string().min(1, { message: "Bio is required" }),
 });
 
 export type SignupSchema = z.infer<typeof signupSchema>;

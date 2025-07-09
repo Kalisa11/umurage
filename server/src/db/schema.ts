@@ -31,6 +31,7 @@ export const users = pgTable("users", {
   password: varchar().notNull(),
   region: varchar(),
   role: varchar().notNull().default("user"),
+  bio: text(),
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp().notNull().defaultNow(),
 });

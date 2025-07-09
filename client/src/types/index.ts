@@ -1,4 +1,3 @@
-
 export interface Event {
   id: string;
   title: string;
@@ -35,4 +34,21 @@ export interface Category {
 
 export interface CategoryWithSubmissions extends Category {
   submissions: Submission[];
+}
+
+export interface Proverb {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  region: string;
+  contributor: string;
+  englishTranslation: string;
+  proverbCategory: string;
+  content: string;
+  isFeatured: boolean;
+  status: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
 }

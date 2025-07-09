@@ -81,3 +81,15 @@ export const submissions = pgTable("submissions", {
   submittedAt: timestamp("submitted_at").defaultNow(),
   imageUrl: varchar("image_url", { length: 255 }),
 });
+
+export const content = pgTable("content", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 100 }).notNull(),
+  description: text("description").notNull(),
+  isFeatured: boolean("is_featured").default(false),
+  region: varchar("region", { length: 100 }),
+  contributorId: uuid("contributor_id").references(() => users.id),
+  categoryId: integer("category_id").references(() => categories.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});

@@ -24,6 +24,7 @@ import { Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getSubmissionsByCategory } from "@/services/submissionService";
 import { getCategoryIcon } from "@/utils";
+import { getCategoryById } from "@/services/categoryService";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -35,14 +36,19 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
     error,
   } = useQuery({
     queryKey: ["submissions", id],
-    queryFn: () => getSubmissionsByCategory(id),
+    queryFn: () => getSubmissionsByCategory(Number(id)),
+  });
+
+  const { data: category } = useQuery({
+    queryKey: ["category", id],
+    queryFn: () => getCategoryById(Number(id)),
   });
 
   return (
     <div className="container py-12">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-          Explore Archive
+          Explore {category?.name}
         </h1>
         <p className="mt-4 text-xl text-muted-foreground">
           Discover and explore the rich cultural heritage of Rwanda

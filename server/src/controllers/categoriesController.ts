@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { categories } from "../db/schema";
 import type { Request, Response } from "express";
@@ -38,6 +39,15 @@ const CategoryController = {
       console.error("Error creating category:", error);
       res.status(500).json({ error: "Internal server error" });
     }
+  },
+
+  async getCategoryById(req: Request, res: Response) {
+    const { id } = req.params;
+    const category = await db
+      .select()
+      .from(categories)
+      .where(eq(categories.id, Number(id)));
+    return res.status(200).json(category[0]);
   },
 };
 

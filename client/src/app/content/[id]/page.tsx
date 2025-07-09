@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   BookOpen,
+  Clock,
   Download,
   Flag,
   Share2,
@@ -66,10 +67,16 @@ export default function ContentPage({
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="mb-6">
-            <Badge className="bg-primary hover:bg-primary mb-4 flex w-fit items-center gap-1">
-              <BookOpen className="h-4 w-4" />
-              {content?.category}
-            </Badge>
+            <div className="flex items-center gap-4 mb-4">
+              <Badge className="bg-primary hover:bg-primary flex items-center gap-1">
+                <BookOpen className="h-4 w-4" />
+                {content?.category}
+              </Badge>
+              <Badge variant="outline">Easy</Badge>
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />3 minutes read
+              </div>
+            </div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
               {content?.title}
             </h1>

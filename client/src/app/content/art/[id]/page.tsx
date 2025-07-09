@@ -99,9 +99,6 @@ const getArtworkById = (id: string) => {
       email: "info@kingspalace.rw",
       openingHours: "Monday - Saturday: 9:00 AM - 5:00 PM",
     },
-    views: 1850,
-    likes: 156,
-    downloads: 45,
   };
 };
 

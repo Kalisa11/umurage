@@ -12,3 +12,13 @@ export const getAllCategories = async () => {
     throw error;
   }
 };
+
+export const getCategoryById = async (id: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/categories/${id}`);
+    return response.data as Category;
+  } catch (error) {
+    console.error("Error fetching category by id:", id, error);
+    throw error;
+  }
+};

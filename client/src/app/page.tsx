@@ -17,7 +17,6 @@ import {
   BookOpen,
   Music,
   Paintbrush,
-  Play,
   Calendar,
   Clock,
   MapPin,
@@ -26,8 +25,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getAllEvents } from "@/services/eventService";
 import { formatDate } from "date-fns";
-import { getTypeIcon } from "@/utils";
 import { getFeaturedStories } from "@/services/contentService";
+import { CATEGORIES } from "@/lib/utils";
 
 export default function Home() {
   const {
@@ -290,7 +289,7 @@ export default function Home() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <Link href="/categories/stories" className="group">
+            <Link href={`/categories/${CATEGORIES.STORY}`} className="group">
               <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <BookOpen className="h-6 w-6" />
@@ -307,7 +306,7 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link href="/categories/proverbs" className="group">
+            <Link href={`/categories/${CATEGORIES.PROVERB}`} className="group">
               <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <svg
@@ -337,7 +336,7 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link href="/categories/songs" className="group">
+            <Link href={`/categories/${CATEGORIES.MUSIC}`} className="group">
               <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <Music className="h-6 w-6" />
@@ -353,7 +352,7 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link href="/categories/art" className="group">
+            <Link href={`/categories/${CATEGORIES.ART}`} className="group">
               <div className="rounded-lg border bg-card p-6 shadow-sm transition-all hover:shadow-md">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <Paintbrush className="h-6 w-6" />

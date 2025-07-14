@@ -150,6 +150,11 @@ export default function Home() {
               </Link>
             ))}
         </div>
+        <div className="mt-8 text-center">
+          <Button asChild variant="outline" size="lg">
+            <Link href="/categories">View more</Link>
+          </Button>
+        </div>
       </section>
 
       {/* Upcoming Events Section */}

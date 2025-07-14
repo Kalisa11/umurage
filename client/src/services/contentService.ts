@@ -3,6 +3,16 @@ import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+export const getFeaturedStories = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/content/story/featured`);
+    return response.data as Story[];
+  } catch (error) {
+    console.error("Error getting featured stories: ", error);
+    throw error;
+  }
+};
+
 export const addStory = async (story: Story) => {
   try {
     const response = await axios.post(`${API_URL}/content/story`, story, {

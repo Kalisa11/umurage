@@ -95,7 +95,7 @@ export default function StoryDetailPage({
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
               {dbstory?.title}
             </h1>
-            <p className="text-xl text-muted-foreground mb-6">
+            <p className="text-lg text-muted-foreground mb-6">
               {dbstory?.description}
             </p>
           </div>
@@ -110,32 +110,16 @@ export default function StoryDetailPage({
             />
           </div>
 
-          {/* Audio Player
-          {story.hasAudio && (
-            <Card className="mb-8">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <Button size="icon" className="h-12 w-12">
-                    <Volume2 className="h-6 w-6" />
-                  </Button>
-                  <div className="flex-1">
-                    <h3 className="font-medium">Listen to this story</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Audio narration in Kinyarwanda with English subtitles
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )} */}
-
           {/* Story Content */}
           <div className="prose prose-lg max-w-none dark:prose-invert mb-8">
-            <div dangerouslySetInnerHTML={{ __html: dbstory?.content || "" }} />
+            {(dbstory?.content || "")
+              .split("\n")
+              .filter(Boolean)
+              .map((paragraph, idx) => (
+                <p key={idx} className="mb-4 leading-relaxed">
+                  {paragraph}
+                </p>
+              ))}
           </div>
 
           {/* Moral Lesson */}

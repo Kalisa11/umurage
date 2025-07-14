@@ -27,6 +27,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllEvents } from "@/services/eventService";
 import { formatDate } from "date-fns";
 import { getTypeIcon } from "@/utils";
+import { getFeaturedStories } from "@/services/contentService";
 
 export default function Home() {
   const {
@@ -38,7 +39,15 @@ export default function Home() {
     queryFn: getAllEvents,
   });
 
-  // Filter upcoming events (events with dates in the future)
+  const {
+    data: featuredStories,
+    isLoading: featuredStoriesLoading,
+    error: featuredStoriesError,
+  } = useQuery({
+    queryKey: ["featuredStories"],
+    queryFn: getFeaturedStories,
+  });
+
   const upcomingEvents = events?.slice(0, 3); // Show only 3 upcoming events
 
   return (
@@ -91,110 +100,55 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* Featured Story */}
-          <Card>
-            <CardHeader className="relative h-48 p-0 overflow-hidden">
-              <Image
-                src="/placeholder.png"
-                alt="Traditional storytelling"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                <Badge className="bg-primary hover:bg-primary">Story</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <CardTitle className="line-clamp-1">
-                The Origin of Lake Kivu
-              </CardTitle>
-              <CardDescription className="mt-2 line-clamp-3">
-                A traditional tale about how the beautiful Lake Kivu was formed,
-                passed down through generations in Western Rwanda.
-              </CardDescription>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">
-                By Elder Mutesi
-              </div>
-              <Button variant="ghost" size="sm" asChild>
-                <Link
-                  href="/content/story-1"
-                  className="flex items-center gap-1"
-                >
-                  Read <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-
-          {/* Featured Song */}
-          <Card>
-            <CardHeader className="relative h-48 p-0 overflow-hidden">
-              <Image
-                src="/placeholder.png"
-                alt="Traditional music performance"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                <Badge className="bg-primary hover:bg-primary">Song</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <CardTitle className="line-clamp-1">Intore Dance Song</CardTitle>
-              <CardDescription className="mt-2 line-clamp-3">
-                A traditional song that accompanies the famous Intore warrior
-                dance, celebrating bravery and cultural pride.
-              </CardDescription>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">
-                By Kigali Cultural Group
-              </div>
-              <Button variant="ghost" size="sm" asChild>
-                <Link
-                  href="/content/song-1"
-                  className="flex items-center gap-1"
-                >
-                  Listen <Play className="h-4 w-4" />
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-
-          {/* Featured Artwork */}
-          <Card>
-            <CardHeader className="relative h-48 p-0 overflow-hidden">
-              <Image
-                src="/placeholder.png"
-                alt="Traditional Rwandan artwork"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                <Badge className="bg-primary hover:bg-primary">Artwork</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <CardTitle className="line-clamp-1">Imigongo Patterns</CardTitle>
-              <CardDescription className="mt-2 line-clamp-3">
-                Traditional geometric art forms created using cow dung and
-                natural pigments, featuring bold patterns and earthy colors.
-              </CardDescription>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <div className="text-sm text-muted-foreground">
-                By Nyagatare Artisans
-              </div>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/content/art-1" className="flex items-center gap-1">
-                  View <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
+          {featuredStories &&
+            featuredStories?.map((item) => (
+              <Link
+                key={item.id}
+                href={`/content/stories/${item.id}`}
+                className="group"
+              >
+                <Card className="overflow-hidden transition-all hover:shadow-md">
+                  <CardHeader className="relative h-48 p-0">
+                    <Image
+                      src={item.coverImage || "/placeholder.png"}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                      {item.isFeatured && (
+                        <Badge
+                          className={`flex items-center gap-1 bg-primary capitalize text-white`}
+                        >
+                          Featured
+                        </Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <h3 className="line-clamp-1 text-xl font-bold">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                      {item.description}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    {/* TODO: Add the contributor name */}
+                    <div className="text-xs text-muted-foreground">
+                      By {item.contributor?.firstName}{" "}
+                      {item.contributor?.lastName}
+                    </div>
+                    <div className="flex items-center text-sm font-medium text-primary">
+                      View
+                      <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))}
         </div>
       </section>
 

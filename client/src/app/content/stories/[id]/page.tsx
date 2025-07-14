@@ -218,18 +218,42 @@ export default function StoryDetailPage({
 
           {/* Contributor Info */}
           <Card className="mb-8">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-bold mb-4">About the Storyteller</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {story?.contributor?.bio}
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full bg-transparent"
-              >
-                View More Stories
-              </Button>
+            <CardContent className="pt-4">
+              <h3 className="text-lg font-bold mb-4">Contributor Info</h3>
+
+              <div className="flex items-start gap-4 mb-4">
+                <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border-2 border-primary/20">
+                  <Image
+                    src="/avatar.jpg"
+                    alt={`${story?.contributor?.firstName} ${story?.contributor?.lastName}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-base">
+                    {story?.contributor?.firstName}{" "}
+                    {story?.contributor?.lastName}
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Cultural Contributor
+                  </p>
+                </div>
+                <div>
+                  {story?.contributor?.region && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      {story?.contributor?.region}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {story?.contributor?.bio && (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {story?.contributor?.bio}
+                </p>
+              )}
             </CardContent>
           </Card>
 

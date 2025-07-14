@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -37,9 +36,12 @@ import {
   validateFileType,
   type ContributeSchema,
 } from "@/lib/validationSchema";
+import { addStory } from "@/services/contentService";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function ContributePage() {
-  const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [fileErrors, setFileErrors] = useState<{ [key: string]: string }>({});
@@ -67,9 +69,34 @@ export default function ContributePage() {
   });
 
   const { category } = watch();
+  const { mutate: addStoryMutation } = useMutation({
+    mutationFn: addStory,
+    onSuccess: () => {
+      toast.success("Story submitted successfully", {
+        duration: 3000,
+      });
+      router.push("/contribute/success");
+      console.log("Story added successfully");
+    },
+    onError: (error) => {
+      console.error("Error adding story: ", error);
+      toast.error("Failed to submit story, please try again", {
+        duration: 3000,
+      });
+    },
+  });
 
   const onSubmit = (data: any) => {
     console.log(data);
+
+    const dataWithUserId = {
+      ...data,
+      contributorId: session?.session?.user?.id,
+      categoryId: category,
+    };
+    if (category === CATEGORIES.STORY) {
+      addStoryMutation(dataWithUserId);
+    }
   };
 
   const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,45 +151,6 @@ export default function ContributePage() {
       setFileErrors((prev) => ({ ...prev, audioFile: "" }));
     }
   };
-
-  if (submitted) {
-    return (
-      <div className="container py-12">
-        <Card className="mx-auto max-w-2xl">
-          <CardHeader>
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Check className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-center text-2xl">
-              Contribution Received
-            </CardTitle>
-            <CardDescription className="text-center">
-              Thank you for helping preserve Rwanda's cultural heritage!
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p>
-              Your contribution has been successfully submitted and will be
-              reviewed by our team.
-            </p>
-            <p className="mt-2 text-muted-foreground">
-              We appreciate your dedication to preserving our indigenous culture
-              for future generations.
-            </p>
-          </CardContent>
-          <CardFooter className="flex justify-center gap-4">
-            <Button onClick={() => setSubmitted(false)}>Submit Another</Button>
-            <Button
-              variant="outline"
-              onClick={() => (window.location.href = "/")}
-            >
-              Return Home
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
 
   const { data: session } = useSession();
 
@@ -728,8 +716,9 @@ export default function ContributePage() {
                         </Label>
                         <Input
                           id="readTime"
+                          type="number"
                           placeholder="e.g., 8 min read"
-                          {...register("readTime")}
+                          {...register("readTime", { valueAsNumber: true })}
                         />
                         {errors.readTime && (
                           <p className="text-sm text-red-500">

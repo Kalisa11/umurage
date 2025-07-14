@@ -17,69 +17,16 @@ import {
   ArrowLeft,
   Download,
   Volume2,
+  Flag,
+  Loader2,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getStoryById } from "@/services/contentService";
+import { CATEGORIES } from "@/lib/utils";
 
 // This would normally be fetched from a database
-const getStoryById = (id: string) => {
+const getStory = (id: string) => {
   return {
-    id: "1",
-    title: "The Origin of Lake Kivu",
-    excerpt:
-      "A traditional tale about how the beautiful Lake Kivu was formed, passed down through generations in Western Rwanda.",
-    content: `Long ago, in the land that is now Western Rwanda, there was a vast and fertile valley where people lived in harmony with nature. The valley was blessed with abundant crops, clear streams, and lush forests.
-
-In this valley lived a powerful king who was known for his wisdom and fairness. The king had a beautiful daughter who was loved by all for her kindness and gentle spirit.
-
-One day, a terrible drought struck the land. The streams dried up, crops withered, and the people began to suffer. The king consulted with the elders, who advised him to seek help from the mountain spirits.
-
-The king's daughter volunteered to climb the highest mountain to make an offering to the spirits. Despite her father's concerns, she insisted on going alone.
-
-As she reached the summit, she prayed fervently for rain to save her people. The mountain spirits were moved by her selflessness and decided to help, but at a great cost.
-
-They told her that to end the drought, she would need to sacrifice herself by jumping into a sacred spring at the mountain's peak. Without hesitation, she agreed, thinking only of her suffering people.
-
-As she jumped into the spring, the skies darkened and rain began to fall. It rained for days, filling the valley with water. The king and his people had to flee to higher ground as their homes were submerged.
-
-When the rain finally stopped, a vast and beautiful lake had formed where the valley once was. The people named it Lake Kivu, after the princess who had sacrificed herself.
-
-It is said that on quiet nights, when the lake is still, you can sometimes hear the gentle laughter of the princess in the lapping of the waves against the shore, reminding us of her sacrifice and the importance of putting others before ourselves.`,
-    readTime: "8 min read",
-    wordCount: 1200,
-    difficulty: "All Ages",
-    region: "Western Province",
-    contributor: "Elder Mutesi",
-    contributorBio:
-      "Elder Mutesi is a respected storyteller from Western Rwanda who has been preserving oral traditions for over 40 years.",
-    date: "2023-05-15",
-    image: "/placeholder.png?height=800&width=1200",
-    tags: ["Creation Myth", "Nature", "Sacrifice", "Selflessness"],
-    moralLesson: "Selflessness and sacrifice for the greater good",
-    characters: [
-      {
-        name: "The Princess",
-        description: "A kind and selfless daughter of the king",
-      },
-      { name: "The King", description: "A wise and fair ruler of the valley" },
-      {
-        name: "Mountain Spirits",
-        description: "Mystical beings who control nature",
-      },
-      {
-        name: "The People",
-        description: "Valley inhabitants who benefit from the sacrifice",
-      },
-    ],
-    setting: {
-      time: "Ancient times",
-      place: "Western Rwanda valley (now Lake Kivu)",
-      description: "A fertile valley that transforms into a beautiful lake",
-    },
-    culturalContext:
-      "This story teaches the Rwandan values of selflessness, community responsibility, and the belief that individual sacrifice can benefit the greater good.",
-    language: "English",
-    originalLanguage: "Kinyarwanda",
-    hasAudio: true,
-    audioUrl: "/placeholder-audio.mp3",
     relatedContent: [
       {
         id: "2",
@@ -103,13 +50,28 @@ export default function StoryDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const story = getStoryById(id);
+  const story = getStory(id);
 
+  const { data: dbstory, isLoading } = useQuery({
+    queryKey: ["story", id],
+    queryFn: () => getStoryById(id),
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  console.log(dbstory);
   return (
     <div className="container py-12">
       <div className="mb-6">
         <Link
-          href="/categories/stories"
+          href={`/categories/${CATEGORIES.STORY}`}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -125,31 +87,33 @@ export default function StoryDetailPage({
                 <BookOpen className="h-4 w-4" />
                 Traditional Story
               </Badge>
-              <Badge variant="outline">{story.difficulty}</Badge>
+              <Badge variant="outline" className="capitalize">
+                {dbstory?.difficulty}
+              </Badge>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
-                {story.readTime}
+                {dbstory?.readTime} min read
               </div>
             </div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              {story.title}
+              {dbstory?.title}
             </h1>
             <p className="text-xl text-muted-foreground mb-6">
-              {story.excerpt}
+              {dbstory?.description}
             </p>
           </div>
 
           <div className="relative mb-8 h-[400px] w-full overflow-hidden rounded-lg">
             <Image
-              src={story.image || "/placeholder.png"}
-              alt={story.title}
+              src={dbstory?.coverImage || "/placeholder.png"}
+              alt={dbstory?.title || "Story Image"}
               fill
               className="object-cover"
               priority
             />
           </div>
 
-          {/* Audio Player */}
+          {/* Audio Player
           {story.hasAudio && (
             <Card className="mb-8">
               <CardContent className="p-6">
@@ -170,35 +134,29 @@ export default function StoryDetailPage({
                 </div>
               </CardContent>
             </Card>
-          )}
+          )} */}
 
           {/* Story Content */}
           <div className="prose prose-lg max-w-none dark:prose-invert mb-8">
-            {story.content.split("\n\n").map((paragraph, index) => (
-              <p key={index} className="mb-4 leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
+            <div dangerouslySetInnerHTML={{ __html: dbstory?.content || "" }} />
           </div>
 
           {/* Moral Lesson */}
           <Card className="mb-8 border-primary/20 bg-primary/5">
-            <CardContent className="p-6">
+            <CardContent className="pt-4">
               <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
                 <span className="text-2xl">💡</span>
                 Moral Lesson
               </h3>
-              <p className="text-primary font-medium">{story.moralLesson}</p>
+              <p className="text-primary font-medium">{dbstory?.moralLesson}</p>
             </CardContent>
           </Card>
 
           {/* Cultural Context */}
           <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-lg pt-4">Cultural Context</CardTitle>
-            </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">{story.culturalContext}</p>
+              <CardTitle className="text-lg py-4">Cultural Context</CardTitle>
+              <p className="text-muted-foreground">{dbstory?.context}</p>
             </CardContent>
           </Card>
 
@@ -209,23 +167,15 @@ export default function StoryDetailPage({
               className="gap-2 bg-transparent"
             >
               <Share2 className="h-4 w-4" />
-              Share Story
+              Share
             </Button>
             <Button
               variant="outline"
               size="sm"
               className="gap-2 bg-transparent"
             >
-              <Heart className="h-4 w-4" />
-              Save for Later
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-transparent"
-            >
-              <Download className="h-4 w-4" />
-              Download PDF
+              <Flag className="h-4 w-4" />
+              Report
             </Button>
           </div>
         </div>
@@ -241,9 +191,12 @@ export default function StoryDetailPage({
                 <div className="flex items-center gap-3">
                   <User className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{story.contributor}</div>
+                    <div className="font-medium">
+                      {dbstory?.contributor?.firstName}{" "}
+                      {dbstory?.contributor?.lastName}
+                    </div>
                     <div className="text-sm text-muted-foreground">
-                      Storyteller
+                      Contributed by
                     </div>
                   </div>
                 </div>
@@ -251,7 +204,7 @@ export default function StoryDetailPage({
                 <div className="flex items-center gap-3">
                   <MapPin className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{story.region}</div>
+                    <div className="font-medium">{dbstory?.region}</div>
                     <div className="text-sm text-muted-foreground">Origin</div>
                   </div>
                 </div>
@@ -259,7 +212,9 @@ export default function StoryDetailPage({
                 <div className="flex items-center gap-3">
                   <BookOpen className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{story.wordCount} words</div>
+                    <div className="font-medium">
+                      {dbstory?.content?.length} words
+                    </div>
                     <div className="text-sm text-muted-foreground">Length</div>
                   </div>
                 </div>
@@ -267,7 +222,9 @@ export default function StoryDetailPage({
                 <div className="flex items-center gap-3">
                   <Clock className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{story.readTime}</div>
+                    <div className="font-medium">
+                      {dbstory?.readTime} min read
+                    </div>
                     <div className="text-sm text-muted-foreground">
                       Reading time
                     </div>
@@ -282,7 +239,7 @@ export default function StoryDetailPage({
             <CardContent className="p-6">
               <h3 className="text-lg font-bold mb-4">About the Storyteller</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                {story.contributorBio}
+                {dbstory?.contributor?.bio}
               </p>
               <Button
                 variant="outline"
@@ -294,22 +251,10 @@ export default function StoryDetailPage({
             </CardContent>
           </Card>
 
-          {/* Tags */}
-          <div className="mb-8">
-            <h3 className="text-lg font-bold mb-4">Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {story.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
           {/* Related Content */}
           <div>
             <h3 className="text-lg font-bold mb-4">Related Content</h3>
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4">
               {story.relatedContent.map((item) => (
                 <Link
                   key={item.id}

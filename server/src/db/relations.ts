@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm/relations";
-import { users, submissions, artists, categories } from "./schema";
+import {
+  users,
+  submissions,
+  artists,
+  categories,
+  stories,
+  content,
+} from "./schema";
 
 export const userRelations = relations(users, ({ many }) => ({
   submissions: many(submissions),
@@ -31,4 +38,11 @@ export const artistRelations = relations(artists, ({ many }) => ({
 
 export const categoryRelations = relations(categories, ({ many }) => ({
   submissions: many(submissions),
+}));
+
+export const contentRelations = relations(content, ({ one }) => ({
+  story: one(stories, {
+    fields: [content.id],
+    references: [stories.contentId],
+  }),
 }));

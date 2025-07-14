@@ -52,3 +52,31 @@ export interface Proverb {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Contributor {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  region: string;
+  bio: string;
+}
+
+export interface Story {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  coverImage?: string | null;
+  readTime?: number;
+  moralLesson?: string;
+  context?: string;
+  difficulty?: string;
+  isFeatured: boolean;
+  region?: string;
+  status: string;
+  categoryId: number;
+  createdAt: string;
+  updatedAt: string;
+  contributor: Contributor | null;
+}

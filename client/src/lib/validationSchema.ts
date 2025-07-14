@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CATEGORIES } from "./utils";
 
 export const signupSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -57,7 +58,7 @@ export const contributeSchema = z.object({
   bookingLong: z.number().optional(),
   
   // Story specific fields
-  readTime: z.string().optional(),
+  readTime: z.number().min(1, { message: "Read time is required" }),
   moralLesson: z.string().optional(),
   context: z.string().optional(),
   
@@ -83,7 +84,7 @@ export const contributeSchema = z.object({
   }
   
   // Art validation
-  if (data.category === 3) {
+  if (data.category === CATEGORIES.ART) {
     if (!data.coverImage) {
       return false;
     }
@@ -123,9 +124,9 @@ export const contributeSchema = z.object({
   }
   
   // Story validation
-  if (data.category === 4) {
+  if (data.category === CATEGORIES.STORY) {
     if (!data.coverImage) {
-      return false;
+      return true;
     }
     if (!data.readTime) {
       return false;
@@ -142,7 +143,7 @@ export const contributeSchema = z.object({
   }
   
   // Song validation
-  if (data.category === 2) {
+  if (data.category === CATEGORIES.MUSIC) {
     if (!data.coverImage) {
       return false;
     }

@@ -25,11 +25,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getSubmissionsByCategory } from "@/services/submissionService";
 import { getCategoryIcon } from "@/utils";
 import { getCategoryById } from "@/services/categoryService";
+import { getStories } from "@/services/contentService";
+import { CATEGORIES } from "@/lib/utils";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const [view, setView] = useState("grid");
 
+  const isStory = Number(id) === CATEGORIES.STORY;
   const {
     data: submissions,
     isLoading,
@@ -39,11 +42,19 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
     queryFn: () => getSubmissionsByCategory(Number(id)),
   });
 
+  // fetch this only if the category is story
+  const { data: stories, isLoading: storiesLoading } = useQuery({
+    queryKey: ["stories"],
+    queryFn: getStories,
+    enabled: isStory,
+  });
+
   const { data: category } = useQuery({
     queryKey: ["category", id],
     queryFn: () => getCategoryById(Number(id)),
   });
 
+  console.log(stories);
   return (
     <div className="container py-12">
       <div className="mb-8">
@@ -101,52 +112,56 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
       <Tabs defaultValue="grid" value={view}>
         <TabsContent value="grid" className="mt-0">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {submissions?.map((item) => (
-              <Link
-                key={item.id}
-                href={`/content/${item.id}`}
-                className="group"
-              >
-                <Card className="overflow-hidden transition-all hover:shadow-md">
-                  <CardHeader className="relative h-48 p-0">
-                    <Image
-                      src={item.imageUrl || "/placeholder.png"}
-                      alt={item.title}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
-                      <Badge
-                        className={`flex items-center gap-1 bg-primary capitalize text-white`}
-                      >
-                        {React.createElement(getCategoryIcon(item.category), {
-                          className: "h-5 w-5 text-white",
-                        })}
-                        {item.category}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <h3 className="line-clamp-1 text-xl font-bold">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                      {item.description}
-                    </p>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    {/* TODO: Add the contributor name */}
-                    <div className="text-xs text-muted-foreground">
-                      By E-Rwanda
-                    </div>
-                    <div className="flex items-center text-sm font-medium text-primary">
-                      View
-                      <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
+            {isStory ? (
+              stories?.map((item) => (
+                <Link
+                  key={item.id}
+                  href={`/content/stories/${item.id}`}
+                  className="group"
+                >
+                  <Card className="overflow-hidden transition-all hover:shadow-md">
+                    <CardHeader className="relative h-48 p-0">
+                      <Image
+                        src={item.coverImage || "/placeholder.png"}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        {item.isFeatured && (
+                          <Badge
+                            className={`flex items-center gap-1 bg-primary capitalize text-white`}
+                          >
+                            Featured
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                      <h3 className="line-clamp-1 text-xl font-bold">
+                        {item.title}
+                      </h3>
+                      <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                        {item.description}
+                      </p>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      {/* TODO: Add the contributor name */}
+                      <div className="text-xs text-muted-foreground">
+                        By {item.contributor?.firstName}{" "}
+                        {item.contributor?.lastName}
+                      </div>
+                      <div className="flex items-center text-sm font-medium text-primary">
+                        View
+                        <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <></>
+            )}
           </div>
         </TabsContent>
         <TabsContent value="list" className="mt-0">

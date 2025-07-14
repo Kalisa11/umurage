@@ -51,7 +51,7 @@ export const events = pgTable("events", {
   eventDate: date("event_date").notNull(),
   location: varchar("location", { length: 100 }),
   createdAt: timestamp("created_at").defaultNow(),
-  isFeatured: boolean("is_featured").default(false),
+  isFeatured: boolean().default(false),
   tag: varchar("tag", { length: 100 }),
   imageUrl: text("image_url"),
   price: integer("price"),
@@ -85,12 +85,26 @@ export const submissions = pgTable("submissions", {
 
 export const content = pgTable("content", {
   id: uuid("id").primaryKey().defaultRandom(),
-  title: varchar("title", { length: 100 }).notNull(),
-  description: text("description").notNull(),
-  isFeatured: boolean("is_featured").default(false),
-  region: varchar("region", { length: 100 }),
-  contributorId: uuid("contributor_id").references(() => users.id),
-  categoryId: integer("category_id").references(() => categories.id),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  title: varchar({ length: 100 }).notNull(),
+  description: text().notNull(),
+  isFeatured: boolean().default(false),
+  region: varchar({ length: 100 }),
+  status: submissionStatusEnum().default("pending"),
+  contributorId: uuid().references(() => users.id),
+  categoryId: integer().references(() => categories.id),
+  createdAt: timestamp().defaultNow(),
+  updatedAt: timestamp().defaultNow(),
+});
+
+export const stories = pgTable("stories", {
+  contentId: uuid()
+    .references(() => content.id)
+    .primaryKey()
+    .notNull(),
+  coverImage: varchar({ length: 255 }),
+  readTime: integer(),
+  content: text(),
+  moralLesson: text(),
+  context: text(),
+  difficulty: varchar({ length: 255 }),
 });

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   BookOpen,
@@ -13,10 +13,7 @@ import {
   User,
   MapPin,
   Share2,
-  Heart,
   ArrowLeft,
-  Download,
-  Volume2,
   Flag,
   Loader2,
 } from "lucide-react";
@@ -213,7 +210,7 @@ export default function StoryDetailPage({
                   <BookOpen className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium">
-                      {dbstory?.content?.length} words
+                      {dbstory?.content?.split(" ").length} words
                     </div>
                     <div className="text-sm text-muted-foreground">Length</div>
                   </div>

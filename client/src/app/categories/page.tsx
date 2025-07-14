@@ -70,7 +70,6 @@ export default function CategoriesPage() {
               </CardContent>
               <CardFooter className="flex justify-between">
                 <div className="text-sm text-muted-foreground">
-                  {/* {category.submissions.length} entries */}2 entries
                 </div>
                 <div className="flex items-center text-sm font-medium text-primary">
                   Explore

@@ -97,7 +97,10 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
       {/* View Toggle */}
       <div className="mb-6 flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing <span className="font-medium">{submissions?.length}</span>{" "}
+          Showing{" "}
+          <span className="font-medium">
+            {isStory ? stories?.length : submissions?.length}
+          </span>{" "}
           results
         </div>
         <Tabs defaultValue="grid" onValueChange={setView}>
@@ -165,52 +168,101 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
         </TabsContent>
         <TabsContent value="list" className="mt-0">
-          <div className="space-y-4">
-            {submissions?.map((item) => (
-              <Link
-                key={item.id}
-                href={`/content/${item.id}`}
-                className="group"
-              >
-                <Card className="overflow-hidden transition-all hover:shadow-md">
-                  <div className="flex flex-col sm:flex-row">
-                    <div className="relative h-full w-full sm:h-auto sm:w-48">
-                      <Image
-                        src={item.imageUrl || "/placeholder.png"}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-1 flex-col p-6">
-                      <div className="mb-2">
-                        <Badge
-                          className={`flex items-center gap-1 bg-primary capitalize`}
-                        >
-                          {React.createElement(getCategoryIcon(item.category), {
-                            className: "h-5 w-5 text-white",
-                          })}
-                          {item.category}
-                        </Badge>
-                      </div>
-                      <h3 className="text-xl font-bold">{item.title}</h3>
-                      <p className="mt-2 flex-1 text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
-                      <div className="mt-4 flex items-center justify-between">
-                        <div className="text-xs text-muted-foreground">
-                          By {"E-Rwanda"} • {item.locationName}
+          <div className="flex flex-col gap-4">
+            {isStory
+              ? stories?.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/content/stories/${item.id}`}
+                    className="group"
+                  >
+                    <Card className="overflow-hidden transition-all hover:shadow-md">
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="relative h-full w-full sm:h-auto sm:w-48">
+                          <Image
+                            src={item.coverImage || "/placeholder.png"}
+                            alt={item.title}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
-                        <div className="flex items-center text-sm font-medium text-primary">
-                          View
-                          <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        <div className="flex flex-1 flex-col p-6">
+                          <div className="mb-2">
+                            {item.isFeatured && (
+                              <Badge
+                                className={`flex items-center gap-1 bg-primary capitalize`}
+                              >
+                                Featured
+                              </Badge>
+                            )}
+                          </div>
+                          <h3 className="text-xl font-bold">{item.title}</h3>
+                          <p className="mt-2 flex-1 text-sm text-muted-foreground">
+                            {item.description}
+                          </p>
+                          <div className="mt-4 flex items-center justify-between">
+                            <div className="text-xs text-muted-foreground">
+                              By {item.contributor?.firstName}{" "}
+                              {item.contributor?.lastName}
+                            </div>
+                            <div className="flex items-center text-sm font-medium text-primary">
+                              View
+                              <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                    </Card>
+                  </Link>
+                ))
+              : submissions?.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/content/${item.id}`}
+                    className="group"
+                  >
+                    <Card className="overflow-hidden transition-all hover:shadow-md">
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="relative h-full w-full sm:h-auto sm:w-48">
+                          <Image
+                            src={item.imageUrl || "/placeholder.png"}
+                            alt={item.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-1 flex-col p-6">
+                          <div className="mb-2">
+                            <Badge
+                              className={`flex items-center gap-1 bg-primary capitalize`}
+                            >
+                              {React.createElement(
+                                getCategoryIcon(item.category),
+                                {
+                                  className: "h-5 w-5 text-white",
+                                }
+                              )}
+                              {item.category}
+                            </Badge>
+                          </div>
+                          <h3 className="text-xl font-bold">{item.title}</h3>
+                          <p className="mt-2 flex-1 text-sm text-muted-foreground">
+                            {item.description}
+                          </p>
+                          <div className="mt-4 flex items-center justify-between">
+                            <div className="text-xs text-muted-foreground">
+                              By {"E-Rwanda"} • {item.locationName}
+                            </div>
+                            <div className="flex items-center text-sm font-medium text-primary">
+                              View
+                              <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
           </div>
         </TabsContent>
       </Tabs>

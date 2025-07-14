@@ -18,28 +18,9 @@ import {
   Loader2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getStoryById } from "@/services/contentService";
+import { getStories, getStoryById } from "@/services/contentService";
 import { CATEGORIES } from "@/lib/utils";
-
-// This would normally be fetched from a database
-const getStory = (id: string) => {
-  return {
-    relatedContent: [
-      {
-        id: "2",
-        title: "The Clever Hare and the Elephant",
-        type: "story",
-        image: "/placeholder.png?height=400&width=600",
-      },
-      {
-        id: "3",
-        title: "Traditional Values Proverb",
-        type: "proverb",
-        image: "/placeholder.png?height=400&width=600",
-      },
-    ],
-  };
-};
+import { toast } from "react-hot-toast";
 
 export default function StoryDetailPage({
   params,
@@ -47,15 +28,20 @@ export default function StoryDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const story = getStory(id);
 
-  const { data: dbstory, isLoading } = useQuery({
+  const { data: story, isLoading } = useQuery({
     queryKey: ["story", id],
     queryFn: () => getStoryById(id),
     enabled: !!id,
   });
 
-  if (isLoading) {
+  const { data: relatedStoriesData, isLoading: relatedStoriesLoading } =
+    useQuery({
+      queryKey: ["stories"],
+      queryFn: getStories,
+    });
+
+  if (isLoading || relatedStoriesLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -63,7 +49,11 @@ export default function StoryDetailPage({
     );
   }
 
-  console.log(dbstory);
+  // limit to 3
+  const relatedStories = relatedStoriesData
+    ?.filter((story) => story.id !== id)
+    .slice(0, 3);
+
   return (
     <div className="container py-12">
       <div className="mb-6">
@@ -79,31 +69,38 @@ export default function StoryDetailPage({
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Badge className="bg-primary hover:bg-primary flex items-center gap-1">
-                <BookOpen className="h-4 w-4" />
-                Traditional Story
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <Badge className="bg-primary hover:bg-primary flex items-center gap-1 text-xs sm:text-sm">
+                <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Traditional Story</span>
+                <span className="sm:hidden">Story</span>
               </Badge>
-              <Badge variant="outline" className="capitalize">
-                {dbstory?.difficulty}
+              <Badge
+                variant="outline"
+                className="capitalize text-xs sm:text-sm"
+              >
+                {story?.difficulty}
               </Badge>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                {dbstory?.readTime} min read
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">
+                  {story?.readTime} min read
+                </span>
+                <span className="sm:hidden">{story?.readTime}m</span>
               </div>
             </div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              {dbstory?.title}
+              {story?.title}
             </h1>
             <p className="text-lg text-muted-foreground mb-6">
-              {dbstory?.description}
+              {story?.description}
             </p>
           </div>
 
           <div className="relative mb-8 h-[400px] w-full overflow-hidden rounded-lg">
             <Image
-              src={dbstory?.coverImage || "/placeholder.png"}
-              alt={dbstory?.title || "Story Image"}
+              src={story?.coverImage || "/placeholder.png"}
+              alt={story?.title || "Story Image"}
               fill
               className="object-cover"
               priority
@@ -112,7 +109,7 @@ export default function StoryDetailPage({
 
           {/* Story Content */}
           <div className="prose prose-lg max-w-none dark:prose-invert mb-8">
-            {(dbstory?.content || "")
+            {(story?.content || "")
               .split("\n")
               .filter(Boolean)
               .map((paragraph, idx) => (
@@ -129,7 +126,7 @@ export default function StoryDetailPage({
                 <span className="text-2xl">💡</span>
                 Moral Lesson
               </h3>
-              <p className="text-primary font-medium">{dbstory?.moralLesson}</p>
+              <p className="text-primary font-medium">{story?.moralLesson}</p>
             </CardContent>
           </Card>
 
@@ -137,7 +134,7 @@ export default function StoryDetailPage({
           <Card className="mb-8">
             <CardContent>
               <CardTitle className="text-lg py-4">Cultural Context</CardTitle>
-              <p className="text-muted-foreground">{dbstory?.context}</p>
+              <p className="text-muted-foreground">{story?.context}</p>
             </CardContent>
           </Card>
 
@@ -146,6 +143,10 @@ export default function StoryDetailPage({
               variant="outline"
               size="sm"
               className="gap-2 bg-transparent"
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied to clipboard");
+              }}
             >
               <Share2 className="h-4 w-4" />
               Share
@@ -173,8 +174,8 @@ export default function StoryDetailPage({
                   <User className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium">
-                      {dbstory?.contributor?.firstName}{" "}
-                      {dbstory?.contributor?.lastName}
+                      {story?.contributor?.firstName}{" "}
+                      {story?.contributor?.lastName}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Contributed by
@@ -185,7 +186,7 @@ export default function StoryDetailPage({
                 <div className="flex items-center gap-3">
                   <MapPin className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{dbstory?.region}</div>
+                    <div className="font-medium">{story?.region}</div>
                     <div className="text-sm text-muted-foreground">Origin</div>
                   </div>
                 </div>
@@ -194,7 +195,7 @@ export default function StoryDetailPage({
                   <BookOpen className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium">
-                      {dbstory?.content?.split(" ").length} words
+                      {story?.content?.split(" ").length} words
                     </div>
                     <div className="text-sm text-muted-foreground">Length</div>
                   </div>
@@ -204,7 +205,7 @@ export default function StoryDetailPage({
                   <Clock className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium">
-                      {dbstory?.readTime} min read
+                      {story?.readTime} min read
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Reading time
@@ -220,7 +221,7 @@ export default function StoryDetailPage({
             <CardContent className="p-6">
               <h3 className="text-lg font-bold mb-4">About the Storyteller</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                {dbstory?.contributor?.bio}
+                {story?.contributor?.bio}
               </p>
               <Button
                 variant="outline"
@@ -233,37 +234,39 @@ export default function StoryDetailPage({
           </Card>
 
           {/* Related Content */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">Related Content</h3>
-            <div className="flex flex-col gap-4">
-              {story.relatedContent.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/content/${item.id}`}
-                  className="group"
-                >
-                  <div className="flex gap-3 rounded-lg border p-3 transition-all hover:bg-accent">
-                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
-                      <Image
-                        src={item.image || "/placeholder.png"}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                      />
+          {relatedStories && (
+            <div>
+              <h3 className="text-lg font-bold mb-4">Related Content</h3>
+              <div className="flex flex-col gap-4">
+                {relatedStories?.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/content/stories/${item.id}`}
+                    className="group"
+                  >
+                    <div className="flex gap-3 rounded-lg border p-3 transition-all hover:bg-accent">
+                      <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
+                        <Image
+                          src={item.coverImage || "/placeholder.png"}
+                          alt={item.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="font-medium group-hover:text-accent-foreground line-clamp-2">
+                          {item.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground capitalize">
+                          Story
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium group-hover:text-accent-foreground line-clamp-2">
-                        {item.title}
-                      </h4>
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {item.type}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

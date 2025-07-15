@@ -153,7 +153,7 @@ export default function StoryDetailPage({
               <Share2 className="h-4 w-4" />
               Share
             </Button>
-            <ReportContent />
+            <ReportContent contentId={id} />
           </div>
         </div>
 

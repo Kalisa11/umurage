@@ -26,7 +26,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { reportSchema, ReportSchema } from "@/lib/validationSchema";
 
-const ReportContent = () => {
+const ReportContent = ({ contentId }: { contentId: string }) => {
   const {
     control,
     handleSubmit,

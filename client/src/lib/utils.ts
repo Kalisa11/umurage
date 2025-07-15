@@ -11,3 +11,12 @@ export const CATEGORIES = {
   ART: 3,
   STORY: 4,
 };
+
+export const REGIONS = [
+  { label: "Kigali", value: "Kigali" },
+  { label: "Northern Province", value: "Northern Province" },
+  { label: "Southern Province", value: "Southern Province" },
+  { label: "Eastern Province", value: "Eastern Province" },
+  { label: "Western Province", value: "Western Province" },
+  { label: "All Regions", value: "All Regions" },
+];

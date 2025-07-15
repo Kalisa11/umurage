@@ -108,3 +108,13 @@ export const stories = pgTable("stories", {
   context: text(),
   difficulty: varchar({ length: 255 }),
 });
+
+export const report = pgTable("report", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid().references(() => users.id).notNull(),
+  contentId: uuid().references(() => content.id).notNull(),
+  reason: text().notNull(),
+  details: text(),
+  createdOn: timestamp().defaultNow(),
+  updatedOn: timestamp().defaultNow(),
+});

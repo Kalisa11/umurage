@@ -114,7 +114,7 @@ export default function Home() {
                       src={item.coverImage || "/placeholder.png"}
                       alt={item.title}
                       fill
-                      className="object-cover transition-transform group-hover:scale-105"
+                      className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
                       {item.isFeatured && (

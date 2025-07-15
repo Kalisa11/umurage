@@ -26,7 +26,7 @@ import { getSubmissionsByCategory } from "@/services/submissionService";
 import { getCategoryIcon } from "@/utils";
 import { getCategoryById } from "@/services/categoryService";
 import { getStories } from "@/services/contentService";
-import { CATEGORIES } from "@/lib/utils";
+import { CATEGORIES, REGIONS } from "@/lib/utils";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -54,7 +54,6 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
     queryFn: () => getCategoryById(Number(id)),
   });
 
-  console.log(stories);
   return (
     <div className="container py-12">
       <div className="mb-8">
@@ -77,17 +76,16 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
             />
           </div>
           <div className="flex gap-2">
-            <Select defaultValue="all">
+            <Select defaultValue="All Regions">
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Region" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                <SelectItem value="kigali">Kigali</SelectItem>
-                <SelectItem value="northern">Northern Province</SelectItem>
-                <SelectItem value="southern">Southern Province</SelectItem>
-                <SelectItem value="eastern">Eastern Province</SelectItem>
-                <SelectItem value="western">Western Province</SelectItem>
+                {REGIONS.map((region) => (
+                  <SelectItem key={region.value} value={region.value}>
+                    {region.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -197,7 +195,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
                             )}
                           </div>
                           <h3 className="text-xl font-bold">{item.title}</h3>
-                          <p className="mt-2 flex-1 text-sm text-muted-foreground">
+                          <p className="mt-2 flex-1 text-sm text-muted-foreground line-clamp-2">
                             {item.description}
                           </p>
                           <div className="mt-4 flex items-center justify-between">
@@ -246,7 +244,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
                             </Badge>
                           </div>
                           <h3 className="text-xl font-bold">{item.title}</h3>
-                          <p className="mt-2 flex-1 text-sm text-muted-foreground">
+                          <p className="mt-2 flex-1 text-sm text-muted-foreground line-clamp-2">
                             {item.description}
                           </p>
                           <div className="mt-4 flex items-center justify-between">

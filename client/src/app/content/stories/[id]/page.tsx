@@ -10,17 +10,19 @@ import { Separator } from "@/components/ui/separator";
 import {
   BookOpen,
   Clock,
-  User,
   MapPin,
   Share2,
   ArrowLeft,
   Flag,
   Loader2,
+  ExternalLink,
+  Send,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getStories, getStoryById } from "@/services/contentService";
 import { CATEGORIES } from "@/lib/utils";
 import { toast } from "react-hot-toast";
+import ReportContent from "@/components/report-content";
 
 export default function StoryDetailPage({
   params,
@@ -138,7 +140,7 @@ export default function StoryDetailPage({
             </CardContent>
           </Card>
 
-          <div className="flex gap-4">
+          <div className="flex gap-2 items-center">
             <Button
               variant="outline"
               size="sm"
@@ -151,14 +153,7 @@ export default function StoryDetailPage({
               <Share2 className="h-4 w-4" />
               Share
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-transparent"
-            >
-              <Flag className="h-4 w-4" />
-              Report
-            </Button>
+            <ReportContent />
           </div>
         </div>
 
@@ -170,19 +165,6 @@ export default function StoryDetailPage({
               <Separator className="mb-4" />
 
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium">
-                      {story?.contributor?.firstName}{" "}
-                      {story?.contributor?.lastName}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Contributed by
-                    </div>
-                  </div>
-                </div>
-
                 <div className="flex items-center gap-3">
                   <MapPin className="h-5 w-5 text-muted-foreground" />
                   <div>
@@ -254,6 +236,26 @@ export default function StoryDetailPage({
                   {story?.contributor?.bio}
                 </p>
               )}
+              <div className="flex items-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => {
+                    window.open(
+                      `mailto:${story?.contributor?.email}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  <Send className="h-4 w-4" />
+                  Contact
+                </Button>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <ExternalLink className="h-4 w-4" />
+                  Browse more
+                </Button>
+              </div>
             </CardContent>
           </Card>
 

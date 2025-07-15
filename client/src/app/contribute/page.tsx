@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertCircle, Check, Upload } from "lucide-react";
+import { AlertCircle, Check, Upload, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import useSession from "@/hooks/useSession";
 import { useForm } from "react-hook-form";
@@ -72,11 +72,10 @@ export default function ContributePage() {
   const { mutate: addStoryMutation } = useMutation({
     mutationFn: addStory,
     onSuccess: () => {
-      toast.success("Story submitted successfully", {
+      toast.success("Story submitted for review", {
         duration: 3000,
       });
       router.push("/contribute/success");
-      console.log("Story added successfully");
     },
     onError: (error) => {
       console.error("Error adding story: ", error);
@@ -296,16 +295,55 @@ export default function ContributePage() {
                         Cover Image
                         <span className="text-red-500 font-bold">*</span>
                       </Label>
-                      <label
-                        htmlFor="cover-image"
-                        className="flex h-32 cursor-pointer items-center justify-center rounded-md border border-dashed border-input bg-muted/40 hover:bg-muted"
-                      >
-                        <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-                          <Upload className="h-8 w-8" />
-                          <span>Click to upload or drag and drop</span>
-                          <span className="text-xs">JPG, PNG (max 1MB)</span>
+
+                      {coverImage ? (
+                        <div className="relative">
+                          <div className="relative h-40 w-full overflow-hidden rounded-md border">
+                            <img
+                              src={URL.createObjectURL(coverImage)}
+                              alt="Cover preview"
+                              className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  setCoverImage(null);
+                                  setValue("coverImage", null);
+                                  setFileErrors((prev) => ({
+                                    ...prev,
+                                    coverImage: "",
+                                  }));
+                                }}
+                                className="flex items-center gap-1"
+                              >
+                                <X className="h-4 w-4" />
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                            <Check className="h-4 w-4 text-green-500" />
+                            <span>{coverImage.name}</span>
+                            <span className="text-xs">
+                              ({(coverImage.size / 1024 / 1024).toFixed(2)} MB)
+                            </span>
+                          </div>
                         </div>
-                      </label>
+                      ) : (
+                        <label
+                          htmlFor="cover-image"
+                          className="flex h-32 cursor-pointer items-center justify-center rounded-md border border-dashed border-input bg-muted/40 hover:bg-muted"
+                        >
+                          <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                            <Upload className="h-8 w-8" />
+                            <span>Click to upload or drag and drop</span>
+                            <span className="text-xs">JPG, PNG (max 1MB)</span>
+                          </div>
+                        </label>
+                      )}
 
                       <input
                         id="cover-image"
@@ -322,24 +360,6 @@ export default function ContributePage() {
                       )}
                     </div>
                   )}
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="contributor">
-                      Contributor
-                      <span className="text-red-500 font-bold">*</span>
-                    </Label>
-                    <Input
-                      id="contributor"
-                      placeholder="Contributor's name"
-                      {...register("contributor")}
-                    />
-                    {errors.contributor && (
-                      <p className="text-sm text-red-500">
-                        {errors.contributor.message}
-                      </p>
-                    )}
-                  </div>
-
                   <div className="grid gap-2">
                     <Label htmlFor="region">
                       Region
@@ -347,7 +367,6 @@ export default function ContributePage() {
                     </Label>
                     <Select
                       onValueChange={(value) => {
-                        console.log({ value });
                         setValue("region", value);
                       }}
                       {...register("region")}
@@ -386,7 +405,6 @@ export default function ContributePage() {
                       id="isFeatured"
                       {...register("isFeatured")}
                       onCheckedChange={(checked) => {
-                        console.log({ checked });
                         setValue("isFeatured", checked as boolean);
                       }}
                     />
@@ -776,22 +794,72 @@ export default function ContributePage() {
                         Audio File
                         <span className="text-red-500 font-bold">*</span>
                       </Label>
-                      <div className="flex h-32 cursor-pointer items-center justify-center rounded-md border border-dashed border-input bg-muted/40 hover:bg-muted">
-                        <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-                          <Upload className="h-8 w-8" />
-                          <span>Click to upload or drag and drop</span>
-                          <span className="text-xs">
-                            MP3, WAV, OGG (max 10MB)
-                          </span>
+
+                      {audioFile ? (
+                        <div className="relative">
+                          <div className="relative h-32 w-full overflow-hidden rounded-md border bg-muted/40 flex items-center justify-center">
+                            <div className="flex flex-col items-center gap-2">
+                              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                                <Upload className="h-8 w-8 text-primary" />
+                              </div>
+                              <div className="text-center">
+                                <p className="text-sm font-medium">
+                                  {audioFile.name}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  ({(audioFile.size / 1024 / 1024).toFixed(2)}{" "}
+                                  MB)
+                                </p>
+                              </div>
+                            </div>
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  setAudioFile(null);
+                                  setValue("audioFile", null);
+                                  setFileErrors((prev) => ({
+                                    ...prev,
+                                    audioFile: "",
+                                  }));
+                                }}
+                                className="flex items-center gap-1"
+                              >
+                                <X className="h-4 w-4" />
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                            <Check className="h-4 w-4 text-green-500" />
+                            <span>Audio file uploaded successfully</span>
+                          </div>
                         </div>
-                        <input
-                          id="audioFile"
-                          type="file"
-                          className="sr-only"
-                          accept="audio/mpeg, audio/mp3, audio/wav, audio/ogg"
-                          onChange={handleAudioFileChange}
-                        />
-                      </div>
+                      ) : (
+                        <label
+                          htmlFor="audioFile"
+                          className="flex h-32 cursor-pointer items-center justify-center rounded-md border border-dashed border-input bg-muted/40 hover:bg-muted"
+                        >
+                          <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                            <Upload className="h-8 w-8" />
+                            <span>Click to upload or drag and drop</span>
+                            <span className="text-xs">
+                              MP3, WAV, OGG (max 10MB)
+                            </span>
+                          </div>
+                        </label>
+                      )}
+
+                      <input
+                        id="audioFile"
+                        type="file"
+                        className="sr-only"
+                        accept="audio/mpeg, audio/mp3, audio/wav, audio/ogg"
+                        onChange={handleAudioFileChange}
+                      />
+
                       {fileErrors.audioFile && (
                         <p className="text-sm text-red-500">
                           {fileErrors.audioFile}

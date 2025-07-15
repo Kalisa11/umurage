@@ -1,7 +1,9 @@
 import { Proverb, Story } from "@/types";
+import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const supabase = createClient();
 
 export const getFeaturedStories = async () => {
   try {
@@ -13,13 +15,50 @@ export const getFeaturedStories = async () => {
   }
 };
 
-export const addStory = async (story: Story) => {
+export const addStory = async (story: any) => {
   try {
-    const response = await axios.post(`${API_URL}/content/story`, story, {
-      headers: {
-        "Content-Type": "application/json",
+    const coverImage = story.coverImage as File;
+    let coverImageUrl = null;
+
+    if (coverImage) {
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("umurage")
+        .upload(`content/${coverImage.name}`, coverImage, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+      console.log({ uploadData });
+      if (uploadError) {
+        console.error("Error uploading image: ", uploadError);
+        throw uploadError;
+      }
+
+      const { data: urlData, error: urlError } = await supabase.storage
+        .from("umurage")
+        .createSignedUrl(`content/${coverImage.name}`, 3600 * 24 * 365); // valid for 1 year
+
+      console.log({ urlData });
+      if (urlError) {
+        console.error("Error creating signed URL: ", urlError);
+        throw urlError;
+      }
+
+      coverImageUrl = urlData.signedUrl;
+    }
+
+    const response = await axios.post(
+      `${API_URL}/content/story`,
+      {
+        ...story,
+        coverImage: coverImageUrl,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
     return response.data;
   } catch (error) {
     console.error("Error adding story: ", error);

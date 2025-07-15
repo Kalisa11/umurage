@@ -99,7 +99,7 @@ export default function StoryDetailPage({
             </p>
           </div>
 
-          <div className="relative mb-8 h-[400px] w-full overflow-hidden rounded-lg">
+          <div className="relative mb-8 h-[500px] w-full overflow-hidden rounded-lg">
             <Image
               src={story?.coverImage || "/placeholder.png"}
               alt={story?.title || "Story Image"}

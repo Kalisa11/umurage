@@ -41,12 +41,8 @@ export const contributeSchema = z
     }),
 
     // Proverbs specific fields
-    englishTranslation: z
-      .string()
-      .min(1, { message: "English translation is required" }),
-    proverbCategory: z
-      .string()
-      .min(1, { message: "Proverb category is required" }),
+    englishTranslation: z.string().optional(),
+    proverbCategory: z.string().optional(),
 
     // Art specific fields
     coverImage: z.any().optional(), // File validation handled separately

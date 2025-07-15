@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { AlertCircle, Check, Upload, X } from "lucide-react";
+import { AlertCircle, Check, Loader2, Upload, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import useSession from "@/hooks/useSession";
 import { useForm } from "react-hook-form";
@@ -69,7 +69,7 @@ export default function ContributePage() {
   });
 
   const { category } = watch();
-  const { mutate: addStoryMutation } = useMutation({
+  const { mutate: addStoryMutation, isPending: isAddingStory } = useMutation({
     mutationFn: addStory,
     onSuccess: () => {
       toast.success("Story submitted for review", {
@@ -85,21 +85,23 @@ export default function ContributePage() {
     },
   });
 
-  const { mutate: addProverbMutation } = useMutation({
-    mutationFn: addProverb,
-    onSuccess: () => {
-      toast.success("Proverb submitted for review", {
-        duration: 3000,
-      });
-      router.push("/contribute/success");
-    },
-    onError: (error) => {
-      console.error("Error adding proverb: ", error);
-      toast.error("Failed to submit proverb, please try again", {
-        duration: 3000,
-      });
-    },
-  });
+  const { mutate: addProverbMutation, isPending: isAddingProverb } =
+    useMutation({
+      mutationFn: addProverb,
+      onSuccess: () => {
+        toast.success("Proverb submitted for review", {
+          duration: 3000,
+        });
+        router.push("/contribute/success");
+      },
+      onError: (error) => {
+        console.error("Error adding proverb: ", error);
+        toast.error("Failed to submit proverb, please try again", {
+          duration: 3000,
+        });
+      },
+    });
+  const isSubmitting = isAddingStory || isAddingProverb;
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -318,7 +320,7 @@ export default function ContributePage() {
 
                       {coverImage ? (
                         <div className="relative">
-                          <div className="relative h-40 w-full overflow-hidden rounded-md border">
+                          <div className="relative h-fit w-full overflow-hidden rounded-md border">
                             <img
                               src={URL.createObjectURL(coverImage)}
                               alt="Cover preview"
@@ -951,9 +953,13 @@ export default function ContributePage() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={!category || !session?.session}
+                  disabled={!category || !session?.session || isSubmitting}
                 >
-                  Submit Contribution
+                  {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Submit Contribution"
+                  )}
                 </Button>
               </form>
             </CardContent>

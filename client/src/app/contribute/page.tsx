@@ -29,14 +29,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllCategories } from "@/services/categoryService";
-import { CATEGORIES } from "@/lib/utils";
+import { CATEGORIES, proverbCategories } from "@/lib/utils";
 import {
   contributeSchema,
   validateFileSize,
   validateFileType,
   type ContributeSchema,
 } from "@/lib/validationSchema";
-import { addStory } from "@/services/contentService";
+import { addProverb, addStory } from "@/services/contentService";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -85,6 +85,22 @@ export default function ContributePage() {
     },
   });
 
+  const { mutate: addProverbMutation } = useMutation({
+    mutationFn: addProverb,
+    onSuccess: () => {
+      toast.success("Proverb submitted for review", {
+        duration: 3000,
+      });
+      router.push("/contribute/success");
+    },
+    onError: (error) => {
+      console.error("Error adding proverb: ", error);
+      toast.error("Failed to submit proverb, please try again", {
+        duration: 3000,
+      });
+    },
+  });
+
   const onSubmit = (data: any) => {
     console.log(data);
 
@@ -95,6 +111,10 @@ export default function ContributePage() {
     };
     if (category === CATEGORIES.STORY) {
       addStoryMutation(dataWithUserId);
+    }
+
+    if (category === CATEGORIES.PROVERB) {
+      addProverbMutation(dataWithUserId);
     }
   };
 
@@ -459,7 +479,7 @@ export default function ContributePage() {
                           : category === CATEGORIES.STORY
                           ? "Tell the complete story with cultural context and significance"
                           : category === CATEGORIES.PROVERB
-                          ? "Provide the proverb in Kinyarwanda and its cultural context"
+                          ? "Provide the proverb details and its cultural context"
                           : "Provide detailed description of your cultural contribution"
                       }
                       className="min-h-[200px]"
@@ -514,17 +534,14 @@ export default function ContributePage() {
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="life-wisdom">
-                            Life Wisdom
-                          </SelectItem>
-                          <SelectItem value="work-ethics">
-                            Work Ethics
-                          </SelectItem>
-                          <SelectItem value="relationships">
-                            Relationships
-                          </SelectItem>
-                          <SelectItem value="nature">Nature</SelectItem>
-                          <SelectItem value="community">Community</SelectItem>
+                          {proverbCategories.map((category) => (
+                            <SelectItem
+                              key={category.value}
+                              value={category.value}
+                            >
+                              {category.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       {errors.proverbCategory && (

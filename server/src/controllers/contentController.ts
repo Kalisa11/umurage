@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { content, stories, users } from "../db/schema";
+import { content, proverbs, stories, users } from "../db/schema";
 import type { Request, Response } from "express";
 import { CATEGORIES } from "../utils";
 import { desc, eq } from "drizzle-orm";
@@ -289,6 +289,129 @@ const ContentController = {
       return res
         .status(500)
         .json({ message: "Error getting featured stories" });
+    }
+  },
+
+  async addProverb(req: Request, res: Response) {
+    try {
+      const {
+        proverbCategory,
+        difficulty,
+        content: proverbContent,
+        englishTranslation,
+        title,
+        description,
+        isFeatured,
+        region,
+        contributorId,
+      } = req.body;
+
+      // first store in content table
+      const [contentData] = await db
+        .insert(content)
+        .values({
+          title,
+          description,
+          isFeatured,
+          categoryId: CATEGORIES.PROVERB,
+          contributorId,
+          region,
+        })
+        .returning({
+          id: content.id,
+        });
+
+      const [proverb] = await db
+        .insert(proverbs)
+        .values({
+          contentId: contentData.id,
+          proverbCategory,
+          difficulty,
+          content: proverbContent,
+          englishTranslation,
+        })
+        .returning({
+          id: proverbs.contentId,
+        });
+
+      return res.status(200).json({
+        message: "Proverb added successfully",
+        proverb,
+        content: contentData,
+      });
+    } catch (error) {
+      console.error("Error adding proverb: ", error);
+      return res
+        .status(500)
+        .json({ message: "Error adding proverb: " + error });
+    }
+  },
+
+  async getProverbs(req: Request, res: Response) {
+    try {
+      const proverbsData = await db
+        .select({
+          proverbId: proverbs.contentId,
+          proverbCategory: proverbs.proverbCategory,
+          difficulty: proverbs.difficulty,
+          content: proverbs.content,
+          englishTranslation: proverbs.englishTranslation,
+          // Content fields
+          id: content.id,
+          title: content.title,
+          description: content.description,
+          isFeatured: content.isFeatured,
+          region: content.region,
+          status: content.status,
+          categoryId: content.categoryId,
+          createdAt: content.createdAt,
+          updatedAt: content.updatedAt,
+          // User fields
+          contributorId: users.id,
+          contributorFirstName: users.firstName,
+          contributorLastName: users.lastName,
+          contributorEmail: users.email,
+          contributorRegion: users.region,
+          contributorBio: users.bio,
+        })
+        .from(proverbs)
+        .leftJoin(content, eq(proverbs.contentId, content.id))
+        .leftJoin(users, eq(content.contributorId, users.id))
+        .orderBy(desc(content.createdAt))
+        .limit(10);
+
+      const formattedProverbs = proverbsData.map((proverb) => ({
+        id: proverb.proverbId,
+        title: proverb.title,
+        description: proverb.description,
+        content: proverb.content,
+        englishTranslation: proverb.englishTranslation,
+        difficulty: proverb.difficulty,
+        proverbCategory: proverb.proverbCategory,
+        isFeatured: proverb.isFeatured,
+        region: proverb.region,
+        status: proverb.status,
+        categoryId: proverb.categoryId,
+        createdAt: proverb.createdAt,
+        updatedAt: proverb.updatedAt,
+        contributor: proverb.contributorId
+          ? {
+              id: proverb.contributorId,
+              firstName: proverb.contributorFirstName,
+              lastName: proverb.contributorLastName,
+              email: proverb.contributorEmail,
+              region: proverb.contributorRegion,
+              bio: proverb.contributorBio,
+            }
+          : null,
+      }));
+
+      return res.status(200).json(formattedProverbs);
+    } catch (error) {
+      console.error("Error getting proverbs: ", error);
+      return res
+        .status(500)
+        .json({ message: "Error getting proverbs: " + error });
     }
   },
 };

@@ -6,6 +6,8 @@ import {
   categories,
   stories,
   content,
+  proverbs,
+  report,
 } from "./schema";
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -40,9 +42,47 @@ export const categoryRelations = relations(categories, ({ many }) => ({
   submissions: many(submissions),
 }));
 
-export const contentRelations = relations(content, ({ one }) => ({
+export const contentRelations = relations(content, ({ one, many }) => ({
+  contributor: one(users, {
+    fields: [content.contributorId],
+    references: [users.id],
+  }),
+  category: one(categories, {
+    fields: [content.categoryId],
+    references: [categories.id],
+  }),
   story: one(stories, {
     fields: [content.id],
     references: [stories.contentId],
+  }),
+  proverb: one(proverbs, {
+    fields: [content.id],
+    references: [proverbs.contentId],
+  }),
+  reports: many(report),
+}));
+
+export const storyRelations = relations(stories, ({ one }) => ({
+  content: one(content, {
+    fields: [stories.contentId],
+    references: [content.id],
+  }),
+}));
+
+export const proverbRelations = relations(proverbs, ({ one }) => ({
+  content: one(content, {
+    fields: [proverbs.contentId],
+    references: [content.id],
+  }),
+}));
+
+export const reportRelations = relations(report, ({ one }) => ({
+  user: one(users, {
+    fields: [report.userId],
+    references: [users.id],
+  }),
+  content: one(content, {
+    fields: [report.contentId],
+    references: [content.id],
   }),
 }));

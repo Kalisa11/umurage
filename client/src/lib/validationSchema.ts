@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CATEGORIES } from "./utils";
+import { CATEGORIES, proverbCategories } from "./utils";
 
 export const signupSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -33,7 +33,6 @@ export const contributeSchema = z
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),
     category: z.number().min(1, { message: "Category is required" }),
-    contributor: z.string().min(1, { message: "Contributor is required" }),
     region: z.string().min(1, { message: "Region is required" }),
     isFeatured: z.boolean().default(false),
     content: z.string().min(1, { message: "Content is required" }),
@@ -42,16 +41,12 @@ export const contributeSchema = z
     }),
 
     // Proverbs specific fields
-    englishTranslation: z.string().optional(),
+    englishTranslation: z
+      .string()
+      .min(1, { message: "English translation is required" }),
     proverbCategory: z
-      .enum([
-        "life-wisdom",
-        "work-ethics",
-        "relationships",
-        "nature",
-        "community",
-      ])
-      .optional(),
+      .string()
+      .min(1, { message: "Proverb category is required" }),
 
     // Art specific fields
     coverImage: z.any().optional(), // File validation handled separately
@@ -67,7 +62,7 @@ export const contributeSchema = z
     bookingLong: z.number().optional(),
 
     // Story specific fields
-    readTime: z.number().min(1, { message: "Read time is required" }),
+    readTime: z.number().optional(),
     moralLesson: z.string().optional(),
     context: z.string().optional(),
 

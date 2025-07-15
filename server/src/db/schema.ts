@@ -109,6 +109,17 @@ export const stories = pgTable("stories", {
   difficulty: varchar({ length: 255 }),
 });
 
+export const proverbs = pgTable("proverbs", {
+  contentId: uuid()
+    .references(() => content.id)
+    .primaryKey()
+    .notNull(),
+  proverbCategory: text(),
+  difficulty: text(),
+  content: text(),
+  englishTranslation: text(),
+});
+
 export const report = pgTable("report", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid().references(() => users.id).notNull(),

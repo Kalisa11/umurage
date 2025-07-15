@@ -1,4 +1,4 @@
-import { Story } from "@/types";
+import { Proverb, Story } from "@/types";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -43,6 +43,30 @@ export const getStoryById = async (id: string) => {
     return response.data as Story;
   } catch (error) {
     console.error("Error getting story by id: ", error);
+    throw error;
+  }
+};
+
+export const addProverb = async (proverb: any) => {
+  try {
+    const response = await axios.post(`${API_URL}/content/proverb`, proverb, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding proverb: ", error);
+    throw error;
+  }
+};
+
+export const getProverbs = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/content/proverb`);
+    return response.data as Proverb[];
+  } catch (error) {
+    console.error("Error getting proverbs: ", error);
     throw error;
   }
 };

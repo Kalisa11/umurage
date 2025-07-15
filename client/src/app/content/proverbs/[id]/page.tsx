@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { use } from "react";
+import { CATEGORIES } from "@/lib/utils";
 
 // This would normally be fetched from a database
 const getProverbById = (id: string) => {
@@ -113,7 +114,7 @@ export default function ProverbDetailPage({
     <div className="container py-12">
       <div className="mb-6">
         <Link
-          href="/categories/proverbs"
+          href={`/categories/${CATEGORIES.PROVERB}`}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -258,7 +259,7 @@ export default function ProverbDetailPage({
         {/* Sidebar */}
         <div>
           <Card className="top-24 mb-8">
-            <CardContent className="p-6">
+            <CardContent className="pt-6">
               <h3 className="text-lg font-bold mb-4">Proverb Details</h3>
               <Separator className="mb-4" />
 
@@ -299,25 +300,6 @@ export default function ProverbDetailPage({
                       Difficulty
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <Separator className="my-4" />
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Views</span>
-                  <span className="font-medium">
-                    {proverb.views.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Likes</span>
-                  <span className="font-medium">{proverb.likes}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Shares</span>
-                  <span className="font-medium">{proverb.shares}</span>
                 </div>
               </div>
             </CardContent>

@@ -36,23 +36,6 @@ export interface CategoryWithSubmissions extends Category {
   submissions: Submission[];
 }
 
-export interface Proverb {
-  id: string;
-  title: string;
-  description: string;
-  difficulty: string;
-  region: string;
-  contributor: string;
-  englishTranslation: string;
-  proverbCategory: string;
-  content: string;
-  isFeatured: boolean;
-  status: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface Contributor {
   id: string;
   firstName: string;
@@ -76,6 +59,22 @@ export interface Story {
   region?: string;
   status: string;
   categoryId: number;
+  createdAt: string;
+  updatedAt: string;
+  contributor: Contributor | null;
+}
+
+export interface Proverb {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  proverbCategory: string;
+  content: string;
+  region: string;
+  englishTranslation: string;
+  isFeatured: boolean;
+  status: string;
   createdAt: string;
   updatedAt: string;
   contributor: Contributor | null;

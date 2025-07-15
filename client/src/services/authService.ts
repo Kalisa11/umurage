@@ -11,7 +11,7 @@ export const signup = async (data: SignupSchema) => {
       email: data.email,
       password: data.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}`,
         data: {
           first_name: data.firstName,
           last_name: data.lastName,

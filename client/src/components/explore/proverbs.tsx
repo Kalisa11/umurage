@@ -99,22 +99,10 @@ const ProverbsView = ({
                     {proverb.contributor?.lastName}
                   </span>
                 </div>
-                <Link
-                  href={`/content/${proverb.id}`}
-                  className="text-sm font-medium text-primary flex items-center"
-                >
-                  Learn More <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
+                <div className="text-sm font-medium text-primary flex items-center">
+                  View <ArrowRight className="ml-1 h-4 w-4" />
+                </div>
               </CardFooter>
-
-              {/* <CardFooter className="pt-0">
-            <Link
-              href={`/content/${proverb.id}`}
-              className="text-sm font-medium text-primary flex items-center"
-            >
-              Learn More <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
-          </CardFooter> */}
             </Card>
           </Link>
         ))}

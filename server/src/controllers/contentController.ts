@@ -414,5 +414,80 @@ const ContentController = {
         .json({ message: "Error getting proverbs: " + error });
     }
   },
+
+  async getProverbById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({ message: "Proverb ID is required" });
+      }
+
+      const proverb = await db
+        .select({
+          proverbId: proverbs.contentId,
+          proverbCategory: proverbs.proverbCategory,
+          difficulty: proverbs.difficulty,
+          content: proverbs.content,
+          englishTranslation: proverbs.englishTranslation,
+          // Content fields
+          id: content.id,
+          title: content.title,
+          description: content.description,
+          isFeatured: content.isFeatured,
+          region: content.region,
+          status: content.status,
+          categoryId: content.categoryId,
+          createdAt: content.createdAt,
+          updatedAt: content.updatedAt,
+          // User fields
+          contributorId: users.id,
+          contributorFirstName: users.firstName,
+          contributorLastName: users.lastName,
+          contributorEmail: users.email,
+          contributorRegion: users.region,
+          contributorBio: users.bio,
+        })
+        .from(proverbs)
+        .where(eq(proverbs.contentId, id))
+        .leftJoin(content, eq(proverbs.contentId, content.id))
+        .leftJoin(users, eq(content.contributorId, users.id))
+        .limit(1);
+
+      if (!proverb || proverb.length === 0) {
+        return res.status(404).json({ message: "Proverb not found" });
+      }
+
+      const formattedProverb = proverb.map((proverb) => ({
+        id: proverb.proverbId,
+        title: proverb.title,
+        description: proverb.description,
+        content: proverb.content,
+        englishTranslation: proverb.englishTranslation,
+        difficulty: proverb.difficulty,
+        proverbCategory: proverb.proverbCategory,
+        isFeatured: proverb.isFeatured,
+        region: proverb.region,
+        status: proverb.status,
+        categoryId: proverb.categoryId,
+        createdAt: proverb.createdAt,
+        updatedAt: proverb.updatedAt,
+        contributor: proverb.contributorId
+          ? {
+              id: proverb.contributorId,
+              firstName: proverb.contributorFirstName,
+              lastName: proverb.contributorLastName,
+              email: proverb.contributorEmail,
+              region: proverb.contributorRegion,
+              bio: proverb.contributorBio,
+            }
+          : null,
+      }));
+
+      return res.status(200).json(formattedProverb[0]);
+    } catch (error) {
+      console.error("Error getting proverb by id: ", error);
+    }
+  },
 };
 export default ContentController;

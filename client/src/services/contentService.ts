@@ -109,3 +109,13 @@ export const getProverbs = async () => {
     throw error;
   }
 };
+
+export const getProverbById = async (id: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/content/proverb/${id}`);
+    return response.data as Proverb;
+  } catch (error) {
+    console.error("Error getting proverb by id: ", error);
+    throw error;
+  }
+};

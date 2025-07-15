@@ -95,47 +95,24 @@ export default function SignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
+          <CardHeader className="text-center pt-4">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
               <Check className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-2xl">Welcome to Umurage!</CardTitle>
             <CardDescription>
-              Your account has been created successfully. You can now start
-              contributing to Rwanda's cultural heritage.
+              Your account has been created successfully. Please check your
+              email for verification.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-lg bg-muted p-4">
-              <h3 className="font-medium mb-2">What you can do now:</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  Upload stories, songs, and cultural content
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  Save and organize your favorite content
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  Connect with other cultural preservationists
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  Track your contributions and impact
-                </li>
-              </ul>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-3">
             <Button asChild className="w-full">
               <Link href="/login">Login to your account</Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
               <Link href="/">Go to Home</Link>
             </Button>
-          </CardFooter>
+          </CardContent>
         </Card>
       </div>
     );

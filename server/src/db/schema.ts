@@ -9,6 +9,7 @@ import {
   date,
   pgEnum,
   boolean,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 
 export const submissionStatusEnum = pgEnum("submission_status", [
@@ -128,4 +129,25 @@ export const report = pgTable("report", {
   details: text(),
   createdOn: timestamp().defaultNow(),
   updatedOn: timestamp().defaultNow(),
+});
+
+export const art = pgTable("art", {
+  contentId: uuid()
+    .references(() => content.id)
+    .primaryKey()
+    .notNull(),
+  coverImage: text(),
+  timeToCreate: text(),
+  technique: text(),
+  medium: text(),
+  difficulty: text(),
+  content: text(),
+  bookingName: text(),
+  bookingAddress: text(),
+  bookingHours: text(),
+  bookingPhone: text(),
+  bookingEmail: text(),
+  bookingUrl: text(),
+  bookingLat: doublePrecision(),
+  bookingLong: doublePrecision(),
 });

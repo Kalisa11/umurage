@@ -27,7 +27,6 @@ export const addStory = async (story: any) => {
           cacheControl: "3600",
           upsert: true,
         });
-      console.log({ uploadData });
       if (uploadError) {
         console.error("Error uploading image: ", uploadError);
         throw uploadError;
@@ -37,7 +36,6 @@ export const addStory = async (story: any) => {
         .from("umurage")
         .createSignedUrl(`content/${coverImage.name}`, 3600 * 24 * 365); // valid for 1 year
 
-      console.log({ urlData });
       if (urlError) {
         console.error("Error creating signed URL: ", urlError);
         throw urlError;
@@ -116,6 +114,55 @@ export const getProverbById = async (id: string) => {
     return response.data as Proverb;
   } catch (error) {
     console.error("Error getting proverb by id: ", error);
+    throw error;
+  }
+};
+
+export const addArt = async (art: any) => {
+  try {
+    const coverImage = art.coverImage as File;
+    let coverImageUrl = null;
+
+    if (coverImage) {
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("umurage")
+        .upload(`content/${coverImage.name}`, coverImage, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error("Error uploading image: ", uploadError);
+        throw uploadError;
+      }
+
+      const { data: urlData, error: urlError } = await supabase.storage
+        .from("umurage")
+        .createSignedUrl(`content/${coverImage.name}`, 3600 * 24 * 365); // valid for 1 year
+
+      if (urlError) {
+        console.error("Error creating signed URL: ", urlError);
+        throw urlError;
+      }
+
+      coverImageUrl = urlData.signedUrl;
+    }
+
+    const response = await axios.post(
+      `${API_URL}/content/art`,
+      {
+        ...art,
+        coverImage: coverImageUrl,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding art: ", error);
     throw error;
   }
 };

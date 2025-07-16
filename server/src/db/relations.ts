@@ -8,6 +8,7 @@ import {
   content,
   proverbs,
   report,
+  art,
 } from "./schema";
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -60,6 +61,10 @@ export const contentRelations = relations(content, ({ one, many }) => ({
     references: [proverbs.contentId],
   }),
   reports: many(report),
+  art: one(art, {
+    fields: [content.id],
+    references: [art.contentId],
+  }),
 }));
 
 export const storyRelations = relations(stories, ({ one }) => ({
@@ -83,6 +88,13 @@ export const reportRelations = relations(report, ({ one }) => ({
   }),
   content: one(content, {
     fields: [report.contentId],
+    references: [content.id],
+  }),
+}));
+
+export const artRelations = relations(art, ({ one }) => ({
+  content: one(content, {
+    fields: [art.contentId],
     references: [content.id],
   }),
 }));

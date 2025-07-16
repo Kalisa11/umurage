@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { content, proverbs, stories, users } from "../db/schema";
+import { content, proverbs, stories, users, art } from "../db/schema";
 import type { Request, Response } from "express";
 import { CATEGORIES } from "../utils";
 import { desc, eq } from "drizzle-orm";
@@ -487,6 +487,80 @@ const ContentController = {
       return res.status(200).json(formattedProverb[0]);
     } catch (error) {
       console.error("Error getting proverb by id: ", error);
+    }
+  },
+
+  async addArt(req: Request, res: Response) {
+    try {
+      const {
+        coverImage,
+        timeToCreate,
+        technique,
+        medium,
+        difficulty,
+        content: artContent,
+        bookingName,
+        bookingAddress,
+        bookingHours,
+        bookingPhone,
+        bookingEmail,
+        bookingUrl,
+        bookingLat,
+        bookingLong,
+        title,
+        description,
+        isFeatured,
+        region,
+        contributorId,
+      } = req.body;
+
+      // first store in content table
+      const [contentData] = await db
+        .insert(content)
+        .values({
+          title,
+          description,
+          isFeatured,
+          categoryId: CATEGORIES.ART,
+          contributorId,
+          region,
+        })
+        .returning({
+          id: content.id,
+        });
+
+      // then store in art table
+      const [artEntry] = await db
+        .insert(art)
+        .values({
+          contentId: contentData.id,
+          coverImage,
+          timeToCreate,
+          technique,
+          medium,
+          difficulty,
+          content: artContent,
+          bookingName,
+          bookingAddress,
+          bookingHours,
+          bookingPhone,
+          bookingEmail,
+          bookingUrl,
+          bookingLat,
+          bookingLong,
+        })
+        .returning({
+          id: art.contentId,
+        });
+
+      return res.status(200).json({
+        message: "Art added successfully",
+        art: artEntry,
+        content: contentData,
+      });
+    } catch (error) {
+      console.error("Error adding art: ", error);
+      return res.status(500).json({ message: "Error adding art: " + error });
     }
   },
 };

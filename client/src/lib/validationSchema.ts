@@ -47,6 +47,7 @@ export const contributeSchema = z
     // Art specific fields
     coverImage: z.any().optional(), // File validation handled separately
     technique: z.string().optional(),
+    timeToCreate: z.string().optional(),
     medium: z.string().optional(),
     bookingName: z.string().optional(),
     bookingAddress: z.string().optional(),
@@ -93,34 +94,13 @@ export const contributeSchema = z
         if (!data.technique) {
           return false;
         }
+        if (!data.timeToCreate) {
+          return false;
+        }
         if (!data.medium) {
           return false;
         }
         if (!data.difficulty) {
-          return false;
-        }
-        if (!data.bookingName) {
-          return false;
-        }
-        if (!data.bookingAddress) {
-          return false;
-        }
-        if (!data.bookingPhone) {
-          return false;
-        }
-        if (!data.bookingEmail) {
-          return false;
-        }
-        if (!data.bookingHours) {
-          return false;
-        }
-        if (!data.bookingUrl) {
-          return false;
-        }
-        if (data.bookingLat === undefined || data.bookingLat === null) {
-          return false;
-        }
-        if (data.bookingLong === undefined || data.bookingLong === null) {
           return false;
         }
       }

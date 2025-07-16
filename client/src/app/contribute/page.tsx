@@ -36,7 +36,7 @@ import {
   validateFileType,
   type ContributeSchema,
 } from "@/lib/validationSchema";
-import { addProverb, addStory } from "@/services/contentService";
+import { addArt, addProverb, addStory } from "@/services/contentService";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -61,6 +61,8 @@ export default function ContributePage() {
   } = useForm({
     resolver: zodResolver(contributeSchema),
     defaultValues: {
+      title: "",
+      description: "",
       isFeatured: false,
       terms: false,
       region: "",
@@ -101,7 +103,24 @@ export default function ContributePage() {
         });
       },
     });
-  const isSubmitting = isAddingStory || isAddingProverb;
+
+  const { mutate: addArtMutation, isPending: isAddingArt } = useMutation({
+    mutationFn: addArt,
+    onSuccess: () => {
+      toast.success("Art submitted for review", {
+        duration: 3000,
+      });
+      router.push("/contribute/success");
+    },
+    onError: (error) => {
+      console.error("Error adding art: ", error);
+      toast.error("Failed to submit art, please try again", {
+        duration: 3000,
+      });
+    },
+  });
+
+  const isSubmitting = isAddingStory || isAddingProverb || isAddingArt;
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -117,6 +136,10 @@ export default function ContributePage() {
 
     if (category === CATEGORIES.PROVERB) {
       addProverbMutation(dataWithUserId);
+    }
+
+    if (category === CATEGORIES.ART) {
+      addArtMutation(dataWithUserId);
     }
   };
 
@@ -175,6 +198,7 @@ export default function ContributePage() {
 
   const { data: session } = useSession();
 
+  console.log(errors);
   return (
     <div className="container py-12">
       <div className="mb-8">
@@ -580,6 +604,22 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
+                        <Label htmlFor="timeToCreate">
+                          Time to Create
+                          <span className="text-red-500 font-bold">*</span>
+                        </Label>
+                        <Input
+                          id="timeToCreate"
+                          placeholder="e.g., 1 week"
+                          {...register("timeToCreate")}
+                        />
+                        {errors.timeToCreate && (
+                          <p className="text-sm text-red-500">
+                            {errors.timeToCreate.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="grid gap-2">
                         <Label htmlFor="medium">
                           Medium
                           <span className="text-red-500 font-bold">*</span>
@@ -603,10 +643,7 @@ export default function ContributePage() {
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingName">
-                          Booking Name
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingName">Booking Name</Label>
                         <Input
                           id="bookingName"
                           placeholder="e.g., King's Palace"
@@ -619,10 +656,7 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingAddress">
-                          Booking Address
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingAddress">Booking Address</Label>
                         <Input
                           id="bookingAddress"
                           placeholder="e.g., Nyanza, Rwanda"
@@ -635,10 +669,7 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingPhone">
-                          Booking Phone
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingPhone">Booking Phone</Label>
                         <Input
                           id="bookingPhone"
                           placeholder="e.g., +250738742026"
@@ -651,10 +682,7 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingEmail">
-                          Booking Email
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingEmail">Booking Email</Label>
                         <Input
                           id="bookingEmail"
                           placeholder="e.g., info@kingspalace.rw"
@@ -667,10 +695,7 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingHours">
-                          Booking Hours
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingHours">Booking Hours</Label>
                         <Input
                           id="bookingHours"
                           placeholder="e.g., Monday - Saturday: 9:00 AM - 5:00 PM"
@@ -683,10 +708,7 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingUrl">
-                          Booking URL
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingUrl">Booking URL</Label>
                         <Input
                           id="bookingUrl"
                           placeholder="e.g., https://maps.app.goo.gl/1234567890"
@@ -699,16 +721,16 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingLat">
-                          Booking Latitude
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingLat">Booking Latitude</Label>
                         <Input
                           id="bookingLat"
                           placeholder="e.g., -2.3528"
                           type="number"
                           step="any"
-                          {...register("bookingLat", { valueAsNumber: true })}
+                          {...register("bookingLat", {
+                            setValueAs: (v) =>
+                              v === "" ? undefined : parseFloat(v),
+                          })}
                         />
                         {errors.bookingLat && (
                           <p className="text-sm text-red-500">
@@ -717,16 +739,16 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="bookingLong">
-                          Booking Longitude
-                          <span className="text-red-500 font-bold">*</span>
-                        </Label>
+                        <Label htmlFor="bookingLong">Booking Longitude</Label>
                         <Input
                           id="bookingLong"
                           placeholder="e.g., 29.7406"
                           type="number"
                           step="any"
-                          {...register("bookingLong", { valueAsNumber: true })}
+                          {...register("bookingLong", {
+                            setValueAs: (v) =>
+                              v === "" ? undefined : parseFloat(v),
+                          })}
                         />
                         {errors.bookingLong && (
                           <p className="text-sm text-red-500">

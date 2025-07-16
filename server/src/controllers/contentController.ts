@@ -563,5 +563,83 @@ const ContentController = {
       return res.status(500).json({ message: "Error adding art: " + error });
     }
   },
+
+  async getArt(req: Request, res: Response) {
+    try {
+      const artData = await db
+        .select({
+          artId: art.contentId,
+          coverImage: art.coverImage,
+          timeToCreate: art.timeToCreate,
+          technique: art.technique,
+          medium: art.medium,
+          difficulty: art.difficulty,
+          content: art.content,
+          bookingName: art.bookingName,
+          bookingAddress: art.bookingAddress,
+          bookingHours: art.bookingHours,
+          bookingPhone: art.bookingPhone,
+          bookingEmail: art.bookingEmail,
+          bookingUrl: art.bookingUrl,
+          bookingLat: art.bookingLat,
+          bookingLong: art.bookingLong,
+          // Content fields
+          id: content.id,
+          title: content.title,
+          description: content.description,
+          isFeatured: content.isFeatured,
+          region: content.region,
+          status: content.status,
+          categoryId: content.categoryId,
+          createdAt: content.createdAt,
+          updatedAt: content.updatedAt,
+          // User fields
+          contributorId: users.id,
+          contributorFirstName: users.firstName,
+          contributorLastName: users.lastName,
+          contributorEmail: users.email,
+          contributorRegion: users.region,
+          contributorBio: users.bio,
+        })
+        .from(art)
+        .leftJoin(content, eq(art.contentId, content.id))
+        .leftJoin(users, eq(content.contributorId, users.id))
+        .orderBy(desc(content.createdAt))
+        .limit(10);
+
+      const formattedArt = artData.map((art) => ({
+        id: art.artId,
+        title: art.title,
+        description: art.description,
+        content: art.content,
+        coverImage: art.coverImage,
+        timeToCreate: art.timeToCreate,
+        technique: art.technique,
+        medium: art.medium,
+        difficulty: art.difficulty,
+        isFeatured: art.isFeatured,
+        region: art.region,
+        status: art.status,
+        categoryId: art.categoryId,
+        createdAt: art.createdAt,
+        updatedAt: art.updatedAt,
+        contributor: art.contributorId
+          ? {
+              id: art.contributorId,
+              firstName: art.contributorFirstName,
+              lastName: art.contributorLastName,
+              email: art.contributorEmail,
+              region: art.contributorRegion,
+              bio: art.contributorBio,
+            }
+          : null,
+      }));
+
+      return res.status(200).json(formattedArt);
+    } catch (error) {
+      console.error("Error getting art: ", error);
+      return res.status(500).json({ message: "Error getting art: " + error });
+    }
+  },
 };
 export default ContentController;

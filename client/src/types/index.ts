@@ -79,3 +79,29 @@ export interface Proverb {
   updatedAt: string;
   contributor: Contributor | null;
 }
+
+export interface Art {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  coverImage?: string | null;
+  timeToCreate?: string;
+  technique?: string;
+  medium?: string;
+  difficulty?: string;
+  isFeatured: boolean;
+  region?: string;
+  status: string;
+  bookingName?: string;
+  bookingAddress?: string;
+  bookingHours?: string;
+  bookingPhone?: string;
+  bookingEmail?: string;
+  bookingUrl?: string;
+  bookingLat?: number;
+  bookingLong?: number;
+  createdAt: string;
+  updatedAt: string;
+  contributor: Contributor | null;
+}

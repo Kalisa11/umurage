@@ -1,4 +1,4 @@
-import { Proverb, Story } from "@/types";
+import { Art, Proverb, Story } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
 
@@ -163,6 +163,16 @@ export const addArt = async (art: any) => {
     return response.data;
   } catch (error) {
     console.error("Error adding art: ", error);
+    throw error;
+  }
+};
+
+export const getArt = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/content/art`);
+    return response.data as Art[];
+  } catch (error) {
+    console.error("Error getting art: ", error);
     throw error;
   }
 };

@@ -20,11 +20,12 @@
 ## 🌍 Features
 
 - ✅ Browse and search traditional Rwandan **music**, **art**, **oral stories**, and **historical records**
-- ✅ Artist profiles with bios and cross-linked content
+- ✅ Contributor profiles with bios and cross-linked content
 - ✅ Interactive **map view** of museums and heritage sites
-- ✅ Calendar view of **upcoming cultural activities**
+- ✅ View of **upcoming cultural activities**
 - ✅ Community content submission and admin approval workflow
-- ✅ Offline access support (for future expansion)
+- ✅ Audio player with progress bar and volume control for music
+- ✅ Related content sections
 
 ## 📦 Folder Structure
 

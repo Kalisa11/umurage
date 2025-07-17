@@ -1,110 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Music,
   Play,
   Pause,
   Volume2,
-  User,
   MapPin,
   Share2,
-  Heart,
   ArrowLeft,
-  Download,
-  SkipBack,
-  SkipForward,
+  Loader2,
 } from "lucide-react";
-import { CATEGORIES } from "@/lib/utils";
+import { CATEGORIES, formatTime } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { getMusic, getMusicById } from "@/services/contentService";
+import Contributor from "@/components/contributor";
+import ReportContent from "@/components/report-content";
+import { toast } from "react-hot-toast";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 
-// This would normally be fetched from a database
-const getSongById = (id: string) => {
-  return {
-    id: "1",
-    title: "Intore Dance Song",
-    description:
-      "A traditional song that accompanies the famous Intore warrior dance, celebrating bravery and cultural pride.",
-    duration: "4:32",
-    genre: "Traditional Dance",
-    occasion: "Ceremonies",
-    region: "Northern Province",
-    contributor: "Kigali Cultural Group",
-    contributorBio:
-      "The Kigali Cultural Group has been preserving and performing traditional Rwandan music and dance for over 20 years.",
-    date: "2023-06-22",
-    image: "/placeholder.png?height=800&width=1200",
-    audioUrl: "/placeholder-audio.mp3",
-    tags: ["Dance", "Warriors", "Celebration", "Ceremonial"],
-    instruments: ["Traditional Drums", "Flute", "Voice", "Clapping"],
-    tempo: "Energetic",
-    language: "Kinyarwanda",
-    hasLyrics: true,
-    difficulty: "Intermediate",
-    culturalContext:
-      "Performed during important ceremonies and celebrations to honor warriors and celebrate Rwandan heritage. The Intore dance represents the strength, agility, and pride of Rwandan warriors.",
-    lyrics: {
-      kinyarwanda: [
-        "Intore z'u Rwanda, mwiza cyane",
-        "Mukore ubwoba, mukore ubwenge",
-        "Igihugu cyacu, ni cyiza cyane",
-        "Turagukunda, turagushima",
-      ],
-      english: [
-        "Warriors of Rwanda, you are very beautiful",
-        "Show courage, show wisdom",
-        "Our country is very beautiful",
-        "We love you, we praise you",
-      ],
-      pronunciation: [
-        "In-to-re zu Rwan-da, mwi-za cha-ne",
-        "Mu-ko-re u-bwo-ba, mu-ko-re u-bwen-ge",
-        "I-gi-hu-gu cha-cu, ni chi-za cha-ne",
-        "Tu-ra-gu-kun-da, tu-ra-gu-shi-ma",
-      ],
-    },
-    musicalNotation: "Available in traditional notation",
-    danceSteps: [
-      "Begin with feet together, arms at sides",
-      "Step forward with right foot, raise spear (or arm) high",
-      "Leap with both feet, landing in warrior stance",
-      "Turn in circle while maintaining proud posture",
-      "Repeat sequence with increasing intensity",
-    ],
-    relatedContent: [
-      {
-        id: "2",
-        title: "Traditional Wedding Songs",
-        type: "song",
-        image: "/placeholder.png?height=400&width=600",
-      },
-      {
-        id: "3",
-        title: "Intore Dance History",
-        type: "story",
-        image: "/placeholder.png?height=400&width=600",
-      },
-    ],
-    views: 3200,
-    likes: 245,
-    downloads: 89,
-  };
-};
+export default function SongDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
 
-export default function SongDetailPage({ params }: { params: { id: string } }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState("0:00");
-  const song = getSongById(params.id);
+  const { data: songData, isLoading } = useQuery({
+    queryKey: ["song", id],
+    queryFn: () => getMusicById(id),
+  });
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
+  const { data: allMusic, isLoading: isAllMusicLoading } = useQuery({
+    queryKey: ["relatedContent", id],
+    queryFn: () => getMusic(),
+  });
+
+  const relatedContent = allMusic?.filter((music) => music.id !== id);
+
+  const {
+    audioRef,
+    isPlaying,
+    togglePlay,
+    currentTime,
+    duration,
+    handleSeek,
+    volume,
+    handleVolumeChange,
+    isMuted,
+    toggleMute,
+    progressPercentage,
+  } = useAudioPlayer(songData?.audioUrl);
+
+  if (isLoading || isAllMusicLoading) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="container py-12">
@@ -122,28 +82,28 @@ export default function SongDetailPage({ params }: { params: { id: string } }) {
         <div className="lg:col-span-2">
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <Badge className="bg-accent hover:bg-accent flex items-center gap-1">
+              <Badge className="hover:bg-accent flex items-center gap-1 bg-primary">
                 <Music className="h-4 w-4" />
-                {song.genre}
+                Songs
               </Badge>
-              <Badge variant="outline">{song.difficulty}</Badge>
+              <Badge variant="outline">{songData?.genre}</Badge>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Volume2 className="h-4 w-4" />
-                {song.duration}
+                {formatTime(duration)}
               </div>
             </div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              {song.title}
+              {songData?.title}
             </h1>
             <p className="text-xl text-muted-foreground mb-6">
-              {song.description}
+              {songData?.description}
             </p>
           </div>
 
           <div className="relative mb-8 h-[400px] w-full overflow-hidden rounded-lg">
             <Image
-              src={song.image || "/placeholder.png"}
-              alt={song.title}
+              src={songData?.coverImage || "/placeholder.png"}
+              alt={songData?.title || "Song Image"}
               fill
               className="object-cover"
               priority
@@ -151,250 +111,122 @@ export default function SongDetailPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Audio Player */}
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <Button size="icon" className="h-12 w-12" onClick={togglePlay}>
-                  {isPlaying ? (
-                    <Pause className="h-6 w-6" />
-                  ) : (
-                    <Play className="h-6 w-6" />
-                  )}
-                </Button>
-                <div className="flex-1">
-                  <h3 className="font-medium">{song.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Traditional Rwandan Song
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {currentTime} / {song.duration}
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-secondary rounded-full h-2 mb-4">
-                <div
-                  className="bg-primary h-2 rounded-full"
-                  style={{ width: "25%" }}
-                ></div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon">
-                    <SkipBack className="h-4 w-4" />
+          <div>
+            <Card className="mb-8">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <Button
+                    size="icon"
+                    className="h-12 w-12"
+                    onClick={togglePlay}
+                  >
+                    {isPlaying ? (
+                      <Pause className="h-6 w-6" />
+                    ) : (
+                      <Play className="h-6 w-6" />
+                    )}
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <SkipForward className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <Volume2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Tabs for different content */}
-          <Tabs defaultValue="lyrics" className="mb-8">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="lyrics">Lyrics</TabsTrigger>
-              <TabsTrigger value="dance">Dance Steps</TabsTrigger>
-              <TabsTrigger value="context">Cultural Context</TabsTrigger>
-              <TabsTrigger value="instruments">Instruments</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="lyrics" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Song Lyrics</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <div>
-                      <h4 className="font-medium mb-3">
-                        Kinyarwanda (Original)
-                      </h4>
-                      <div className="space-y-2">
-                        {song.lyrics.kinyarwanda.map((line, index) => (
-                          <p key={index} className="text-lg">
-                            {line}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-3">English Translation</h4>
-                      <div className="space-y-2">
-                        {song.lyrics.english.map((line, index) => (
-                          <p
-                            key={index}
-                            className="text-lg text-muted-foreground"
-                          >
-                            {line}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <Separator className="my-6" />
-                  <div>
-                    <h4 className="font-medium mb-3">Pronunciation Guide</h4>
-                    <div className="space-y-2">
-                      {song.lyrics.pronunciation.map((line, index) => (
-                        <p
-                          key={index}
-                          className="text-sm font-mono bg-muted p-2 rounded"
-                        >
-                          {line}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="dance" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Traditional Dance Steps</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {song.danceSteps.map((step, index) => (
-                      <div key={index} className="flex gap-4">
-                        <div className="flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                          {index + 1}
-                        </div>
-                        <p className="text-muted-foreground">{step}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-6 p-4 bg-muted rounded-lg">
+                  <div className="flex-1">
+                    <h3 className="font-medium">{songData?.title}</h3>
                     <p className="text-sm text-muted-foreground">
-                      <strong>Note:</strong> These dance steps should be
-                      performed with pride and dignity, representing the
-                      strength and heritage of Rwandan warriors.
+                      {songData?.genre}
                     </p>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="context" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Cultural Context & Significance</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    {song.culturalContext}
-                  </p>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <h4 className="font-medium mb-2">
-                        Performance Occasions
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        {song.occasion}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Musical Tempo</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {song.tempo}
-                      </p>
-                    </div>
+                  <div className="text-sm text-muted-foreground">
+                    {formatTime(currentTime)} / {formatTime(duration)}
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
 
-            <TabsContent value="instruments" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Traditional Instruments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {song.instruments.map((instrument, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-3 p-3 border rounded-lg"
-                      >
-                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                          <Music className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">{instrument}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Traditional instrument
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                {/* Progress Bar */}
+                <div className="w-full bg-secondary rounded-full h-2 mb-4 relative">
+                  <input
+                    type="range"
+                    min="0"
+                    max={duration || 0}
+                    value={currentTime}
+                    onChange={(e) => handleSeek(Number(e.target.value))}
+                    className="absolute inset-0 w-full h-2 opacity-0 cursor-pointer"
+                  />
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all duration-300 pointer-events-none"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+                </div>
+
+                {/* Volume Control */}
+                <div className="flex items-center space-x-4">
+                  <Volume2
+                    className="w-5 h-5 text-gray-600 cursor-pointer"
+                    onClick={toggleMute}
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={isMuted ? 0 : volume}
+                    onChange={(e) => handleVolumeChange(Number(e.target.value))}
+                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <span className="text-sm text-gray-600 w-8">
+                    {Math.round(volume * 100)}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+            {songData?.audioUrl && (
+              <audio
+                key={songData.audioUrl}
+                ref={audioRef}
+                src={songData.audioUrl}
+                preload="metadata"
+              />
+            )}
+          </div>
+
+          {/* content */}
+          <div className="prose prose-lg max-w-none dark:prose-invert border border-gray-200 rounded-lg p-4 mb-8">
+            {songData?.content?.split("\n").map((paragraph, index) => (
+              <p key={index} className="mb-2">
+                {paragraph}
+                {index !== songData?.content?.split("\n").length - 1 && <br />}
+              </p>
+            ))}
+          </div>
 
           <div className="flex gap-4">
             <Button
               variant="outline"
               size="sm"
               className="gap-2 bg-transparent"
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.href}`);
+                toast.success("Link copied to clipboard", {
+                  duration: 2000,
+                });
+              }}
             >
               <Share2 className="h-4 w-4" />
               Share Song
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-transparent"
-            >
-              <Heart className="h-4 w-4" />
-              Save for Later
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 bg-transparent"
-            >
-              <Download className="h-4 w-4" />
-              Download Audio
-            </Button>
+            <ReportContent contentId={songData?.id || ""} />
           </div>
         </div>
 
         {/* Sidebar */}
         <div>
-          <Card className=" top-24 mb-8">
-            <CardContent className="p-6">
+          <Card className="top-24 mb-8">
+            <CardContent className="pt-6">
               <h3 className="text-lg font-bold mb-4">Song Details</h3>
               <Separator className="mb-4" />
 
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium">{song.contributor}</div>
-                    <div className="text-sm text-muted-foreground">
-                      Performer
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
                   <MapPin className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{song.region}</div>
+                    <div className="font-medium">
+                      {songData?.region || "Unknown"}
+                    </div>
                     <div className="text-sm text-muted-foreground">Origin</div>
                   </div>
                 </div>
@@ -402,7 +234,7 @@ export default function SongDetailPage({ params }: { params: { id: string } }) {
                 <div className="flex items-center gap-3">
                   <Music className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{song.genre}</div>
+                    <div className="font-medium">{songData?.genre}</div>
                     <div className="text-sm text-muted-foreground">Genre</div>
                   </div>
                 </div>
@@ -410,78 +242,49 @@ export default function SongDetailPage({ params }: { params: { id: string } }) {
                 <div className="flex items-center gap-3">
                   <Volume2 className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">{song.duration}</div>
+                    <div className="font-medium">{formatTime(duration)}</div>
                     <div className="text-sm text-muted-foreground">
                       Duration
                     </div>
                   </div>
                 </div>
               </div>
-
-              <Separator className="my-4" />
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Views</span>
-                  <span className="font-medium">
-                    {song.views.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Likes</span>
-                  <span className="font-medium">{song.likes}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Downloads</span>
-                  <span className="font-medium">{song.downloads}</span>
-                </div>
-              </div>
             </CardContent>
           </Card>
 
           {/* Contributor Info */}
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-bold mb-4">About the Performer</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {song.contributorBio}
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full bg-transparent"
-              >
-                View More Songs
-              </Button>
-            </CardContent>
-          </Card>
+          {songData?.contributor && (
+            <Contributor contributor={songData?.contributor} />
+          )}
 
           {/* Tags */}
-          <div className="mb-8">
-            <h3 className="text-lg font-bold mb-4">Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {song.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
+          {songData?.tags && (
+            <div className="mb-8">
+              <h3 className="text-lg font-bold mb-4">Tags</h3>
+              <div className="flex flex-wrap gap-2">
+                {songData?.tags?.map((tag) => (
+                  <Badge key={tag} variant="outline">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Related Content */}
           <div>
             <h3 className="text-lg font-bold mb-4">Related Content</h3>
-            <div className="space-y-4">
-              {song.relatedContent.map((item) => (
+            <div className="flex flex-col gap-4">
+              {relatedContent?.map((item) => (
                 <Link
                   key={item.id}
-                  href={`/content/${item.id}`}
+                  href={`/content/music/${item.id}`}
                   className="group"
                 >
                   <div className="flex gap-3 rounded-lg border p-3 transition-all hover:bg-accent">
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
                       <Image
-                        src={item.image || "/placeholder.png"}
+                        src={item.coverImage || "/placeholder.png"}
                         alt={item.title}
                         fill
                         className="object-cover"
@@ -492,7 +295,7 @@ export default function SongDetailPage({ params }: { params: { id: string } }) {
                         {item.title}
                       </h4>
                       <p className="text-sm text-muted-foreground capitalize">
-                        {item.type}
+                        {item.genre}
                       </p>
                     </div>
                   </div>

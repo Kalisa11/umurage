@@ -9,6 +9,7 @@ import {
   proverbs,
   report,
   art,
+  music,
 } from "./schema";
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -65,6 +66,10 @@ export const contentRelations = relations(content, ({ one, many }) => ({
     fields: [content.id],
     references: [art.contentId],
   }),
+  music: one(music, {
+    fields: [content.id],
+    references: [music.contentId],
+  }),
 }));
 
 export const storyRelations = relations(stories, ({ one }) => ({
@@ -95,6 +100,13 @@ export const reportRelations = relations(report, ({ one }) => ({
 export const artRelations = relations(art, ({ one }) => ({
   content: one(content, {
     fields: [art.contentId],
+    references: [content.id],
+  }),
+}));
+
+export const musicRelations = relations(music, ({ one }) => ({
+  content: one(content, {
+    fields: [music.contentId],
     references: [content.id],
   }),
 }));

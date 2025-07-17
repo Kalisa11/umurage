@@ -66,6 +66,7 @@ export const contributeSchema = z
     // Song specific fields
     audioFile: z.any().optional(), // File validation handled separately
     genre: z.string().optional(),
+    tags: z.array(z.string()).optional(),
     duration: z.string().optional(),
 
     // Difficulty field (used by multiple categories)

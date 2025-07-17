@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { content, proverbs, stories, users, art } from "../db/schema";
+import { content, proverbs, stories, users, art, music } from "../db/schema";
 import type { Request, Response } from "express";
 import { CATEGORIES } from "../utils";
 import { desc, eq } from "drizzle-orm";
@@ -728,6 +728,230 @@ const ContentController = {
       return res
         .status(500)
         .json({ message: "Error getting art by id: " + error });
+    }
+  },
+
+  async addMusic(req: Request, res: Response) {
+    try {
+      const {
+        coverImage,
+        genre,
+        audioUrl,
+        tags,
+        tempo,
+        content: musicContent,
+        title,
+        description,
+        isFeatured,
+        region,
+        contributorId,
+      } = req.body;
+
+      if (
+        !title ||
+        !description ||
+        !coverImage ||
+        !tags ||
+        !isFeatured ||
+        !region ||
+        !contributorId ||
+        !genre ||
+        !audioUrl ||
+        !musicContent
+      ) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // first store in content table
+      const [contentData] = await db
+        .insert(content)
+        .values({
+          title,
+          description,
+          isFeatured,
+          categoryId: CATEGORIES.SONGS,
+          contributorId,
+          region,
+        })
+        .returning({
+          id: content.id,
+        });
+
+      // then store in music table
+      const [musicEntry] = await db
+        .insert(music)
+        .values({
+          contentId: contentData.id,
+          genre,
+          audioUrl,
+          tags,
+          tempo,
+          content: musicContent,
+          coverImage,
+        })
+        .returning({
+          id: music.contentId,
+        });
+
+      return res.status(200).json({
+        message: "Music added successfully",
+        music: musicEntry,
+        content: contentData,
+      });
+    } catch (error) {
+      console.error("Error adding music: ", error);
+      return res.status(500).json({ message: "Error adding music: " + error });
+    }
+  },
+
+  async getMusic(_req: Request, res: Response) {
+    try {
+      const musicData = await db
+        .select({
+          musicId: music.contentId,
+          coverImage: music.coverImage,
+          genre: music.genre,
+          audioUrl: music.audioUrl,
+          tags: music.tags,
+          tempo: music.tempo,
+          content: music.content,
+          // Content fields
+          id: content.id,
+          title: content.title,
+          description: content.description,
+          isFeatured: content.isFeatured,
+          region: content.region,
+          status: content.status,
+          categoryId: content.categoryId,
+          createdAt: content.createdAt,
+          updatedAt: content.updatedAt,
+          // User fields
+          contributorId: users.id,
+          contributorFirstName: users.firstName,
+          contributorLastName: users.lastName,
+          contributorEmail: users.email,
+          contributorRegion: users.region,
+          contributorBio: users.bio,
+        })
+        .from(music)
+        .leftJoin(content, eq(music.contentId, content.id))
+        .leftJoin(users, eq(content.contributorId, users.id))
+        .orderBy(desc(content.createdAt))
+        .limit(10);
+
+      const formattedMusic = musicData.map((music) => ({
+        id: music.musicId,
+        title: music.title,
+        description: music.description,
+        content: music.content,
+        coverImage: music.coverImage,
+        genre: music.genre,
+        audioUrl: music.audioUrl,
+        tags: music.tags,
+        tempo: music.tempo,
+        isFeatured: music.isFeatured,
+        region: music.region,
+        status: music.status,
+        categoryId: music.categoryId,
+        createdAt: music.createdAt,
+        updatedAt: music.updatedAt,
+        contributor: music.contributorId
+          ? {
+              id: music.contributorId,
+              firstName: music.contributorFirstName,
+              lastName: music.contributorLastName,
+              email: music.contributorEmail,
+              region: music.contributorRegion,
+              bio: music.contributorBio,
+            }
+          : null,
+      }));
+
+      return res.status(200).json(formattedMusic);
+    } catch (error) {
+      console.error("Error getting music: ", error);
+      return res.status(500).json({ message: "Error getting music: " + error });
+    }
+  },
+
+  async getMusicById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({ message: "Music ID is required" });
+      }
+
+      const musicData = await db
+        .select({
+          musicId: music.contentId,
+          coverImage: music.coverImage,
+          genre: music.genre,
+          audioUrl: music.audioUrl,
+          tags: music.tags,
+          tempo: music.tempo,
+          content: music.content,
+          // Content fields
+          id: content.id,
+          title: content.title,
+          description: content.description,
+          isFeatured: content.isFeatured,
+          region: content.region,
+          status: content.status,
+          categoryId: content.categoryId,
+          createdAt: content.createdAt,
+          updatedAt: content.updatedAt,
+          // User fields
+          contributorId: users.id,
+          contributorFirstName: users.firstName,
+          contributorLastName: users.lastName,
+          contributorEmail: users.email,
+          contributorRegion: users.region,
+          contributorBio: users.bio,
+        })
+        .from(music)
+        .leftJoin(content, eq(music.contentId, content.id))
+        .leftJoin(users, eq(content.contributorId, users.id))
+        .where(eq(music.contentId, id));
+
+      if (!musicData || musicData.length === 0) {
+        return res.status(404).json({ message: "Music not found" });
+      }
+
+      const formattedMusic = musicData.map((music) => ({
+        id: music.musicId,
+        title: music.title,
+        description: music.description,
+        content: music.content,
+        coverImage: music.coverImage,
+        genre: music.genre,
+        audioUrl: music.audioUrl,
+        tags: music.tags,
+        tempo: music.tempo,
+        isFeatured: music.isFeatured,
+        region: music.region,
+        status: music.status,
+        categoryId: music.categoryId,
+        createdAt: music.createdAt,
+        updatedAt: music.updatedAt,
+        contributor: music.contributorId
+          ? {
+              id: music.contributorId,
+              firstName: music.contributorFirstName,
+              lastName: music.contributorLastName,
+              email: music.contributorEmail,
+              region: music.contributorRegion,
+              bio: music.contributorBio,
+            }
+          : null,
+      }));
+
+      return res.status(200).json(formattedMusic[0]);
+    } catch (error) {
+      console.error("Error getting music by id: ", error);
+      return res
+        .status(500)
+        .json({ message: "Error getting music by id: " + error });
     }
   },
 };

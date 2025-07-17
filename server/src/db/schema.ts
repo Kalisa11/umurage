@@ -151,3 +151,16 @@ export const art = pgTable("art", {
   bookingLat: doublePrecision(),
   bookingLong: doublePrecision(),
 });
+
+export const music = pgTable("music", {
+  contentId: uuid()
+    .references(() => content.id)
+    .primaryKey()
+    .notNull(),
+  genre: text(),
+  audioUrl: text(),
+  tags: text().array(),
+  content: text(),
+  coverImage: text(),
+  tempo: text(),
+})

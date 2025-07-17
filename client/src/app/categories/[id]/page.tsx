@@ -25,11 +25,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getSubmissionsByCategory } from "@/services/submissionService";
 import { getCategoryIcon } from "@/utils";
 import { getCategoryById } from "@/services/categoryService";
-import { getArt, getProverbs, getStories } from "@/services/contentService";
+import { getArt, getMusic, getProverbs, getStories } from "@/services/contentService";
 import { CATEGORIES, REGIONS } from "@/lib/utils";
 import StoriesView from "@/components/explore/stories";
 import ProverbsView from "@/components/explore/proverbs";
 import ArtView from "@/components/explore/art";
+import MusicView from "@/components/explore/music";
 
 const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -37,6 +38,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
   const isStory = Number(id) === CATEGORIES.STORY;
   const isProverb = Number(id) === CATEGORIES.PROVERB;
   const isArt = Number(id) === CATEGORIES.ART;
+  const isMusic = Number(id) === CATEGORIES.MUSIC;
 
   const { data: stories, isLoading: storiesLoading } = useQuery({
     queryKey: ["stories"],
@@ -54,6 +56,12 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
     queryKey: ["art"],
     queryFn: getArt,
     enabled: isArt,
+  });
+
+  const { data: music, isLoading: musicLoading } = useQuery({
+    queryKey: ["music"],
+    queryFn: getMusic,
+    enabled: isMusic, 
   });
 
   const { data: category } = useQuery({
@@ -79,6 +87,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
         <ProverbsView proverbs={proverbs || []} loading={proverbsLoading} />
       )}
       {isArt && <ArtView art={art || []} loading={artLoading} />}
+      {isMusic && <MusicView music={music || []} loading={musicLoading} />}
     </div>
   );
 };

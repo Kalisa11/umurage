@@ -105,3 +105,21 @@ export interface Art {
   updatedAt: string;
   contributor: Contributor | null;
 }
+
+export interface Music {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  coverImage?: string | null;
+  genre?: string;
+  audioUrl?: string;
+  tags?: string[];
+  tempo?: string;
+  isFeatured: boolean;
+  region?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  contributor: Contributor | null;
+}

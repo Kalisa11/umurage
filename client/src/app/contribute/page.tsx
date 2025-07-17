@@ -36,13 +36,19 @@ import {
   validateFileType,
   type ContributeSchema,
 } from "@/lib/validationSchema";
-import { addArt, addProverb, addStory } from "@/services/contentService";
+import {
+  addArt,
+  addMusic,
+  addProverb,
+  addStory,
+} from "@/services/contentService";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 export default function ContributePage() {
   const router = useRouter();
   const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [newTag, setNewTag] = useState("");
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [fileErrors, setFileErrors] = useState<{ [key: string]: string }>({});
 
@@ -67,6 +73,7 @@ export default function ContributePage() {
       terms: false,
       region: "",
       difficulty: undefined,
+      tags: [],
     },
   });
 
@@ -107,6 +114,7 @@ export default function ContributePage() {
   const { mutate: addArtMutation, isPending: isAddingArt } = useMutation({
     mutationFn: addArt,
     onSuccess: () => {
+      reset();
       toast.success("Art submitted for review", {
         duration: 3000,
       });
@@ -120,7 +128,25 @@ export default function ContributePage() {
     },
   });
 
-  const isSubmitting = isAddingStory || isAddingProverb || isAddingArt;
+  const { mutate: addMusicMutation, isPending: isAddingMusic } = useMutation({
+    mutationFn: addMusic,
+    onSuccess: () => {
+      reset();
+      toast.success("Music submitted for review", {
+        duration: 3000,
+      });
+      router.push("/contribute/success");
+    },
+    onError: (error) => {
+      console.error("Error adding music: ", error);
+      toast.error("Failed to submit music, please try again", {
+        duration: 3000,
+      });
+    },
+  });
+
+  const isSubmitting =
+    isAddingStory || isAddingProverb || isAddingArt || isAddingMusic;
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -140,6 +166,10 @@ export default function ContributePage() {
 
     if (category === CATEGORIES.ART) {
       addArtMutation(dataWithUserId);
+    }
+
+    if (category === CATEGORIES.MUSIC) {
+      addMusicMutation(dataWithUserId);
     }
   };
 
@@ -171,8 +201,8 @@ export default function ContributePage() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
 
-      // Validate file size (10MB for audio)
-      const sizeError = validateFileSize(file, 10);
+      // Validate file size (1MB for audio)
+      const sizeError = validateFileSize(file, 1);
       if (sizeError) {
         setFileErrors((prev) => ({ ...prev, audioFile: sizeError }));
         return;
@@ -194,6 +224,21 @@ export default function ContributePage() {
       setValue("audioFile", file);
       setFileErrors((prev) => ({ ...prev, audioFile: "" }));
     }
+  };
+
+  const tags = watch("tags") || [];
+  const addTag = () => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      setValue("tags", [...tags, newTag.trim()]);
+      setNewTag("");
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setValue(
+      "tags",
+      tags.filter((tag) => tag !== tagToRemove)
+    );
   };
 
   const { data: session } = useSession();
@@ -886,7 +931,7 @@ export default function ContributePage() {
                             <Upload className="h-8 w-8" />
                             <span>Click to upload or drag and drop</span>
                             <span className="text-xs">
-                              MP3, WAV, OGG (max 10MB)
+                              MP3, WAV, OGG (max 1MB)
                             </span>
                           </div>
                         </label>
@@ -939,6 +984,52 @@ export default function ContributePage() {
                             {errors.duration.message}
                           </p>
                         )}
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium border-b pb-2">
+                          Tags & Keywords
+                        </h3>
+
+                        <div className="grid gap-2">
+                          <Label>Tags</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Add a tag"
+                              value={newTag}
+                              onChange={(e) => setNewTag(e.target.value)}
+                              onKeyPress={(e) =>
+                                e.key === "Enter" &&
+                                (e.preventDefault(), addTag())
+                              }
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={addTag}
+                            >
+                              Add
+                            </Button>
+                          </div>
+                          {tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {tags.map((tag) => (
+                                <div
+                                  key={tag}
+                                  className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-1 text-xs font-medium"
+                                >
+                                  {tag}
+                                  <button
+                                    type="button"
+                                    onClick={() => removeTag(tag)}
+                                    className="ml-1 hover:text-destructive"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

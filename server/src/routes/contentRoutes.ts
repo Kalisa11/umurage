@@ -13,5 +13,8 @@ router.get("/proverb/:id", ContentController.getProverbById);
 router.post("/art", ContentController.addArt);
 router.get("/art", ContentController.getArt);
 router.get("/art/:id", ContentController.getArtById);
+router.post("/music", ContentController.addMusic);
+router.get("/music", ContentController.getMusic);
+router.get("/music/:id", ContentController.getMusicById);
 
 export default router;

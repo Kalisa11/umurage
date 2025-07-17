@@ -12,5 +12,6 @@ router.get("/proverb", ContentController.getProverbs);
 router.get("/proverb/:id", ContentController.getProverbById);
 router.post("/art", ContentController.addArt);
 router.get("/art", ContentController.getArt);
+router.get("/art/:id", ContentController.getArtById);
 
 export default router;

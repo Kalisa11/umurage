@@ -5,7 +5,11 @@ import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Send, ExternalLink } from "lucide-react";
 
-const Contributor = ({ contributor }: { contributor: Contributor }) => {
+const Contributor = ({ contributor }: { contributor: Contributor | null }) => {
+  if (!contributor) {
+    return null;
+  }
+
   return (
     <Card className="mb-8">
       <CardContent className="pt-4">
@@ -61,7 +65,11 @@ const Contributor = ({ contributor }: { contributor: Contributor }) => {
             <Send className="h-4 w-4" />
             Contact
           </Button>
-          <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 w-full sm:w-auto"
+          >
             <ExternalLink className="h-4 w-4" />
             Browse more
           </Button>

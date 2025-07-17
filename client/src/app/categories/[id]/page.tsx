@@ -75,7 +75,9 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
       {isStory && (
         <StoriesView stories={stories || []} loading={storiesLoading} />
       )}
-      {isProverb && <ProverbsView proverbs={proverbs || []} loading={proverbsLoading} />}
+      {isProverb && (
+        <ProverbsView proverbs={proverbs || []} loading={proverbsLoading} />
+      )}
       {isArt && <ArtView art={art || []} loading={artLoading} />}
     </div>
   );

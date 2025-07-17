@@ -176,3 +176,13 @@ export const getArt = async () => {
     throw error;
   }
 };
+
+export const getArtById = async (id: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/content/art/${id}`);
+    return response.data as Art;
+  } catch (error) {
+    console.error("Error getting art by id: ", error);
+    throw error;
+  }
+};

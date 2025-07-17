@@ -256,7 +256,7 @@ export default function ArtDetailPage({
                 {relatedContent?.map((item) => (
                   <Link
                     key={item.id}
-                    href={`/content/${item.id}`}
+                    href={`/content/art/${item.id}`}
                     className="group"
                   >
                     <div className="flex gap-3 rounded-lg border p-3 transition-all hover:bg-accent">

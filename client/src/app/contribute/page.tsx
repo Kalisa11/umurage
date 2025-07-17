@@ -874,7 +874,7 @@ export default function ContributePage() {
                           </div>
                           <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                             <Check className="h-4 w-4 text-green-500" />
-                            <span>Audio file uploaded successfully</span>
+                            <span>Audio file added successfully</span>
                           </div>
                         </div>
                       ) : (

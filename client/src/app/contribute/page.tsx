@@ -198,7 +198,6 @@ export default function ContributePage() {
 
   const { data: session } = useSession();
 
-  console.log(errors);
   return (
     <div className="container py-12">
       <div className="mb-8">

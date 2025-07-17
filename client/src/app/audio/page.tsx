@@ -4,11 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Play, Pause, Volume2 } from "lucide-react";
 
-type Props = {
-  audioUrl: string;
-};
-
-const AudioPlayer = ({ audioUrl }: Props) => {
+const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);

@@ -69,6 +69,7 @@ const AudioPlayer = () => {
   };
 
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const audioUrl = process.env.NEXT_PUBLIC_AUDIO_URL;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
@@ -143,7 +144,7 @@ const AudioPlayer = () => {
         {/* Hidden Audio Element */}
         <audio
           ref={audioRef}
-          src="https://znzdqzvbonnrrqueuesu.supabase.co/storage/v1/object/sign/umurage/content/Stereo%20Test%20-%20LeftRight%20Audio%20Test%20for%20HeadphonesSpeakers.mp3?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xYmM3YmEwOS03ZTE3LTRmYjctYmIzNy1kZmY4NWZkMGZlY2UiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ1bXVyYWdlL2NvbnRlbnQvU3RlcmVvIFRlc3QgLSBMZWZ0UmlnaHQgQXVkaW8gVGVzdCBmb3IgSGVhZHBob25lc1NwZWFrZXJzLm1wMyIsImlhdCI6MTc1MjY4MDkxOCwiZXhwIjoxNzg0MjE2OTE4fQ.MkN-JUI4IjQeWwnSrwpXC-eMc3rD-U-tuJpvoh6pQPo"
+          src={audioUrl}
           preload="metadata"
         />
       </div>

@@ -18,10 +18,10 @@ export const submissionStatusEnum = pgEnum("submission_status", [
   "rejected",
 ]);
 export const contentTypeEnum = pgEnum("content_type", [
-  "artwork",
-  "song",
   "story",
   "proverb",
+  "art",
+  "music",
 ]);
 
 export const users = pgTable("users", {

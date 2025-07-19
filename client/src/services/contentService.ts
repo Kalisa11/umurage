@@ -1,4 +1,4 @@
-import { Art, Music, Proverb, Story } from "@/types";
+import { Art, ContributorContentResponse, Music, Proverb, Story } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
 
@@ -278,6 +278,16 @@ export const getMusicById = async (id: string) => {
     return response.data as Music;
   } catch (error) {
     console.error("Error getting music by id: ", error);
+    throw error;
+  }
+};
+
+export const getContributorContent = async (id: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/content/contributor/${id}`);
+    return response.data as ContributorContentResponse;
+  } catch (error) {
+    console.error("Error getting contributor content: ", error);
     throw error;
   }
 };

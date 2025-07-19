@@ -16,5 +16,6 @@ router.get("/art/:id", ContentController.getArtById);
 router.post("/music", ContentController.addMusic);
 router.get("/music", ContentController.getMusic);
 router.get("/music/:id", ContentController.getMusicById);
+router.get("/contributor/:id", ContentController.getContributorContent);
 
 export default router;

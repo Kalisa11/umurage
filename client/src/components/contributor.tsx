@@ -4,6 +4,7 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Send, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 const Contributor = ({ contributor }: { contributor: Contributor | null }) => {
   if (!contributor) {
@@ -54,7 +55,7 @@ const Contributor = ({ contributor }: { contributor: Contributor | null }) => {
           </p>
         )}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-4">
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             className="gap-2 w-full sm:w-auto"
@@ -64,15 +65,17 @@ const Contributor = ({ contributor }: { contributor: Contributor | null }) => {
           >
             <Send className="h-4 w-4" />
             Contact
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 w-full sm:w-auto"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Browse more
-          </Button>
+          </Button> */}
+          <Link href={`/contributor/${contributor.id}`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 w-full sm:w-auto"
+            >
+              <ExternalLink className="h-4 w-4" />
+              View Profile
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

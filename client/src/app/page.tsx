@@ -25,8 +25,9 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getAllEvents } from "@/services/eventService";
 import { formatDate } from "date-fns";
-import { getFeaturedStories } from "@/services/contentService";
+import { getFeaturedContent } from "@/services/contentService";
 import { CATEGORIES } from "@/lib/utils";
+import { getTypeColor, getTypeIcon } from "@/utils/utils";
 
 export default function Home() {
   const {
@@ -39,12 +40,12 @@ export default function Home() {
   });
 
   const {
-    data: featuredStories,
-    isLoading: featuredStoriesLoading,
-    error: featuredStoriesError,
+    data: featuredContent,
+    isLoading: featuredContentLoading,
+    error: featuredContentError,
   } = useQuery({
-    queryKey: ["featuredStories"],
-    queryFn: getFeaturedStories,
+    queryKey: ["featuredContent"],
+    queryFn: getFeaturedContent,
   });
 
   const upcomingEvents = events?.slice(0, 3); // Show only 3 upcoming events
@@ -99,24 +100,26 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Featured Story */}
-          {featuredStories &&
-            featuredStories?.map((item) => (
+        {featuredContent && featuredContent.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Featured Story */}
+            {featuredContent?.slice(0, 3).map((item: any) => (
               <Link
                 key={item.id}
-                href={`/content/stories/${item.id}`}
+                href={`/content/${item.contentType}/${item.id}`}
                 className="group"
               >
                 <Card className="overflow-hidden transition-all hover:shadow-md">
                   <CardHeader className="relative h-48 p-0">
                     <Image
-                      src={item.coverImage || "/placeholder.png"}
+                      src={
+                        item.typeSpecificData.coverImage || "/placeholder.png"
+                      }
                       alt={item.title}
                       fill
                       className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6 gap-2 justify-between">
                       {item.isFeatured && (
                         <Badge
                           className={`flex items-center gap-1 bg-primary capitalize text-white`}
@@ -124,6 +127,14 @@ export default function Home() {
                           Featured
                         </Badge>
                       )}
+                      <Badge
+                        className={`flex items-center gap-1 ${getTypeColor(
+                          item.contentType as string
+                        )} capitalize`}
+                      >
+                        {getTypeIcon(item.contentType as string)}
+                        {item.contentType}
+                      </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-6">
@@ -148,10 +159,17 @@ export default function Home() {
                 </Card>
               </Link>
             ))}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              Unable to load featured content at this time.
+            </p>
+          </div>
+        )}
         <div className="mt-8 text-center">
           <Button asChild variant="outline" size="lg">
-            <Link href="/categories">View more</Link>
+            <Link href="/categories">Explore All</Link>
           </Button>
         </div>
       </section>

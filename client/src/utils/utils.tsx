@@ -1,5 +1,6 @@
 import { CATEGORIES } from "@/lib/utils";
 import { Category } from "@/types";
+import { BookOpen, MessageSquare, Music, Palette } from "lucide-react";
 import Image from "next/image";
 
 export const renderCategoryImage = (category: Category) => {
@@ -51,4 +52,34 @@ export const renderCategoryImage = (category: Category) => {
       className="object-cover transition-transform"
     />
   );
+};
+
+export const getTypeIcon = (type: string) => {
+  switch (type) {
+    case "stories":
+      return <BookOpen className="h-4 w-4" />;
+    case "music":
+      return <Music className="h-4 w-4" />;
+    case "art":
+      return <Palette className="h-4 w-4" />;
+    case "proverbs":
+      return <MessageSquare className="h-4 w-4" />;
+    default:
+      return null;
+  }
+};
+
+export const getTypeColor = (type: string) => {
+  switch (type) {
+    case "stories":
+      return "bg-blue-100 text-blue-800";
+    case "music":
+      return "bg-green-100 text-green-800";
+    case "art":
+      return "bg-purple-100 text-purple-800";
+    case "proverbs":
+      return "bg-orange-100 text-orange-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
 };

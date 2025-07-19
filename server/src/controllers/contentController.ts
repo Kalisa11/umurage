@@ -2,7 +2,7 @@ import { db } from "../db";
 import { content, proverbs, stories, users, art, music } from "../db/schema";
 import type { Request, Response } from "express";
 import { CATEGORIES } from "../utils";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm";
 
 // Helper function to format contributor data
 const formatContributor = (item: any) => {
@@ -289,9 +289,11 @@ const ContentController = {
           contributorRegion: users.region,
           contributorBio: users.bio,
         })
-        .from(stories)
-        .where(eq(content.isFeatured, true))
-        .leftJoin(content, eq(stories.contentId, content.id))
+        .from(content)
+        .innerJoin(stories, eq(content.id, stories.contentId))
+        .where(
+          and(eq(content.isFeatured, true), eq(content.status, "approved"))
+        )
         .leftJoin(users, eq(content.contributorId, users.id))
         .orderBy(desc(content.createdAt))
         .limit(3);
@@ -1204,6 +1206,196 @@ const ContentController = {
       console.error("Error fetching contributor content:", error);
       return res.status(500).json({
         message: "Failed to fetch contributor content",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
+  async getFeaturedContent(req: Request, res: Response) {
+    try {
+      // Common fields across all content types
+      const baseFields = {
+        id: content.id,
+        title: content.title,
+        description: content.description,
+        isFeatured: content.isFeatured,
+        region: content.region,
+        status: content.status,
+        categoryId: content.categoryId,
+        createdAt: content.createdAt,
+        updatedAt: content.updatedAt,
+        contributorId: users.id,
+        contributorFirstName: users.firstName,
+        contributorLastName: users.lastName,
+        contributorEmail: users.email,
+        contributorRegion: users.region,
+        contributorBio: users.bio,
+        contributorAvatar: users.avatar,
+      };
+
+      // Helper to fetch featured content by type
+      const fetchFeaturedContentByType = <T extends Record<string, any>>(
+        specificFields: T,
+        joinTable: any,
+        joinCondition: any
+      ) => {
+        return db
+          .select({ ...baseFields, ...specificFields })
+          .from(content)
+          .innerJoin(joinTable, joinCondition)
+          .leftJoin(users, eq(content.contributorId, users.id))
+          .where(eq(content.isFeatured, true))
+          .orderBy(desc(content.createdAt));
+      };
+
+      // Define content-specific fields for each type
+      const storiesPromise = fetchFeaturedContentByType(
+        {
+          coverImage: stories.coverImage,
+          readTime: stories.readTime,
+          storyContent: stories.content,
+          moralLesson: stories.moralLesson,
+          context: stories.context,
+          difficulty: stories.difficulty,
+        },
+        stories,
+        eq(content.id, stories.contentId)
+      );
+
+      const proverbsPromise = fetchFeaturedContentByType(
+        {
+          proverbCategory: proverbs.proverbCategory,
+          difficulty: proverbs.difficulty,
+          proverbContent: proverbs.content,
+          englishTranslation: proverbs.englishTranslation,
+        },
+        proverbs,
+        eq(content.id, proverbs.contentId)
+      );
+
+      const artPromise = fetchFeaturedContentByType(
+        {
+          coverImage: art.coverImage,
+          timeToCreate: art.timeToCreate,
+          technique: art.technique,
+          medium: art.medium,
+          difficulty: art.difficulty,
+          artContent: art.content,
+          bookingName: art.bookingName,
+          bookingAddress: art.bookingAddress,
+          bookingHours: art.bookingHours,
+          bookingPhone: art.bookingPhone,
+          bookingEmail: art.bookingEmail,
+          bookingUrl: art.bookingUrl,
+          bookingLat: art.bookingLat,
+          bookingLong: art.bookingLong,
+        },
+        art,
+        eq(content.id, art.contentId)
+      );
+
+      const musicPromise = fetchFeaturedContentByType(
+        {
+          genre: music.genre,
+          audioUrl: music.audioUrl,
+          tags: music.tags,
+          tempo: music.tempo,
+          musicContent: music.content,
+          coverImage: music.coverImage,
+        },
+        music,
+        eq(content.id, music.contentId)
+      );
+
+      // Execute all queries in parallel
+      const [storiesData, proverbsData, artData, musicData] = await Promise.all(
+        [storiesPromise, proverbsPromise, artPromise, musicPromise]
+      );
+
+      // Transform all content into a unified format
+      const formatContent = (
+        data: any[],
+        type: string,
+        transform: (item: any) => any
+      ) =>
+        data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          isFeatured: item.isFeatured,
+          region: item.region,
+          status: item.status,
+          categoryId: item.categoryId,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          contentType: type,
+          typeSpecificData: transform(item),
+          contributor: item.contributorId
+            ? {
+                id: item.contributorId,
+                firstName: item.contributorFirstName,
+                lastName: item.contributorLastName,
+                email: item.contributorEmail,
+                region: item.contributorRegion,
+                bio: item.contributorBio,
+                avatar: item.contributorAvatar,
+              }
+            : null,
+        }));
+
+      const unifiedContent = [
+        ...formatContent(storiesData, "stories", (item) => ({
+          coverImage: item.coverImage,
+          readTime: item.readTime,
+          content: item.storyContent,
+          moralLesson: item.moralLesson,
+          context: item.context,
+          difficulty: item.difficulty,
+        })),
+        ...formatContent(proverbsData, "proverbs", (item) => ({
+          proverbCategory: item.proverbCategory,
+          difficulty: item.difficulty,
+          content: item.proverbContent,
+          englishTranslation: item.englishTranslation,
+        })),
+        ...formatContent(artData, "art", (item) => ({
+          coverImage: item.coverImage,
+          timeToCreate: item.timeToCreate,
+          technique: item.technique,
+          medium: item.medium,
+          difficulty: item.difficulty,
+          content: item.artContent,
+          bookingName: item.bookingName,
+          bookingAddress: item.bookingAddress,
+          bookingHours: item.bookingHours,
+          bookingPhone: item.bookingPhone,
+          bookingEmail: item.bookingEmail,
+          bookingUrl: item.bookingUrl,
+          bookingLat: item.bookingLat,
+          bookingLong: item.bookingLong,
+        })),
+        ...formatContent(musicData, "music", (item) => ({
+          genre: item.genre,
+          audioUrl: item.audioUrl,
+          tags: item.tags,
+          tempo: item.tempo,
+          content: item.musicContent,
+          coverImage: item.coverImage,
+        })),
+      ];
+
+      // Sort by createdAt (descending) to get the most recent featured content first
+      unifiedContent.sort((a, b) => {
+        const dateA = new Date(a.createdAt ?? 0).getTime();
+        const dateB = new Date(b.createdAt ?? 0).getTime();
+        return dateB - dateA;
+      });
+
+      return res.status(200).json(unifiedContent);
+    } catch (error) {
+      console.error("Error getting featured content: ", error);
+      return res.status(500).json({
+        message: "Error getting featured content",
         error: error instanceof Error ? error.message : String(error),
       });
     }

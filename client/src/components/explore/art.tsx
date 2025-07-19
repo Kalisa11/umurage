@@ -1,14 +1,14 @@
 import { Art } from "@/types";
 import { ArrowRight, Loader2, Search } from "lucide-react";
-import { Badge } from "../ui/badge";
-import { Input } from "../ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
 import { REGIONS } from "@/lib/utils";
 import {
   Card,

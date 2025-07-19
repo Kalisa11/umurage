@@ -132,6 +132,7 @@ export interface Contributor {
   role: string;
   phone?: string | null;
   website?: string | null;
+  avatar?: string | null;
 }
 
 export type ContentType = "stories" | "proverbs" | "art" | "music";
@@ -194,4 +195,18 @@ export interface MusicData {
   tempo: string | null;
   content: string;
   coverImage: string | null;
+}
+
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  region: string;
+  bio: string;
+  phone?: string;
+  avatar?: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
 }

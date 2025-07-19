@@ -13,6 +13,7 @@ export const signupSchema = z.object({
     .min(8, { message: "Password must be at least 8 characters" }),
   region: z.string().min(1, { message: "Region is required" }),
   bio: z.string().min(1, { message: "Bio is required" }),
+  phone: z.string().optional(),
 });
 
 export type SignupSchema = z.infer<typeof signupSchema>;
@@ -168,9 +169,48 @@ export const validateFileType = (file: File, allowedTypes: string[]) => {
   return null;
 };
 
+// Helper function to validate avatar file
+export const validateAvatarFile = (file: File) => {
+  const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+  const maxSize = 5 * 1024 * 1024; // 5MB
+
+  const typeError = validateFileType(file, allowedTypes);
+  if (typeError) return typeError;
+
+  const sizeError = validateFileSize(file, 5);
+  if (sizeError) return sizeError;
+
+  return null;
+};
+
 export const reportSchema = z.object({
   reason: z.string().min(1, "Please select a reason"),
   description: z.string().optional(),
 });
 
 export type ReportSchema = z.infer<typeof reportSchema>;
+
+export const profileSchema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  phone: z.string().optional(),
+  region: z.string().min(1, { message: "Region is required" }),
+  bio: z.string().min(1, { message: "Bio is required" }),
+  avatar: z.instanceof(File).optional().nullable(),
+});
+
+// Schema for API submission (without avatar field when not provided)
+export const profileSubmissionSchema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  phone: z.string().optional(),
+  region: z.string().min(1, { message: "Region is required" }),
+  bio: z.string().min(1, { message: "Bio is required" }),
+  avatar: z.string().optional(),
+});
+
+export type ProfileSubmissionSchema = z.infer<typeof profileSubmissionSchema>;
+
+export type ProfileSchema = z.infer<typeof profileSchema>;

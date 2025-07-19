@@ -241,7 +241,6 @@ export default function ContributorProfile({
     );
   }
 
-  console.log({ contributorContent });
   return (
     <div className="min-h-screen bg-gradient-to-br ">
       <div className="container mx-auto px-4 py-8">
@@ -251,7 +250,12 @@ export default function ContributorProfile({
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex-shrink-0">
                 <Avatar className="h-32 w-32">
-                  <AvatarImage src={"/avatar.jpg"} alt={"Avatar"} />
+                  <AvatarImage
+                    src={
+                      contributorContent?.contributor.avatar || "/avatar.jpg"
+                    }
+                    alt={"Avatar"}
+                  />
                   <AvatarFallback className="text-2xl bg-amber-100 text-amber-800">
                     {contributorContent?.contributor.firstName
                       .split(" ")

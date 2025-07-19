@@ -19,7 +19,7 @@ const Contributor = ({ contributor }: { contributor: Contributor | null }) => {
         <div className="flex flex-col sm:flex-row items-start gap-4 mb-4">
           <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border-2 border-primary/20">
             <Image
-              src="/avatar.jpg"
+              src={contributor?.avatar || "/avatar.jpg"}
               alt={`${contributor?.firstName} ${contributor?.lastName}`}
               fill
               className="object-cover"

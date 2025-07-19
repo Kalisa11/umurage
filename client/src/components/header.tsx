@@ -3,11 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/services/authService";
 import { useMutation } from "@tanstack/react-query";
-import { User } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -16,6 +15,8 @@ import {
 import useSession from "@/hooks/useSession";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import useProfile from "@/hooks/useProfile";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function Header() {
     { name: "About", path: "/about" },
   ];
 
-  const { data } = useSession();
+  const { data: profile } = useProfile();
 
   const { mutate: logout } = useMutation({
     mutationFn: signOut,
@@ -76,34 +77,77 @@ export default function Header() {
               <Menu className="h-5 w-5" />
             )}
           </Button>
-          {data?.session?.user ? (
+          {profile ? (
             <Popover>
-              <PopoverTrigger>
-                <div className="rounded-full bg-gray-200 p-1">
-                  <Avatar className="cursor-pointer">
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-10 w-10 rounded-full p-0 hover:bg-accent"
+                >
+                  <Avatar className="h-10 w-10">
                     <AvatarImage
-                      src={
-                        data?.session?.user?.user_metadata?.avatar_url ||
-                        "/avatar.jpg"
-                      }
+                      src={profile?.avatar || "/avatar.jpg"}
+                      alt="Profile"
                     />
-                    <AvatarFallback className="uppercase">
-                      {data?.session?.user?.email?.split("@")[0]?.slice(0, 2)}
+                    <AvatarFallback className="uppercase text-sm font-medium">
+                      {profile?.firstName} {profile?.lastName}
                     </AvatarFallback>
                   </Avatar>
-                </div>
+                  <ChevronDown className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-background border" />
+                </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-56" align="end">
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm">{data?.session?.user?.email}</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => logout()}
-                    className="cursor-pointer"
-                  >
-                    Logout
-                  </Button>
+              <PopoverContent className="w-80 p-0" align="end">
+                <div className="flex flex-col">
+                  {/* User Info Section */}
+                  <div className="flex items-center gap-3 p-4 pb-3">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage
+                        src={profile?.avatar || "/avatar.jpg"}
+                        alt="Profile"
+                      />
+                      <AvatarFallback className="uppercase text-sm font-medium">
+                        {profile?.firstName} {profile?.lastName}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {profile?.firstName} {profile?.lastName}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {profile?.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Menu Items */}
+                  <div className="p-2">
+                    <Link href="/profile">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-3 h-10 px-3"
+                      >
+                        <User className="h-4 w-4" />
+                        <span className="text-sm">Profile</span>
+                      </Button>
+                    </Link>
+                  </div>
+
+                  <Separator />
+
+                  {/* Logout Section */}
+                  <div className="p-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => logout()}
+                      className="w-full justify-start gap-3 h-10 px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span className="text-sm">Logout</span>
+                    </Button>
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>

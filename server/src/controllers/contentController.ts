@@ -642,6 +642,7 @@ const ContentController = {
           contributorEmail: users.email,
           contributorRegion: users.region,
           contributorBio: users.bio,
+          contributorAvatar: users.avatar,
         })
         .from(art)
         .leftJoin(content, eq(art.contentId, content.id))
@@ -726,6 +727,7 @@ const ContentController = {
           contributorEmail: users.email,
           contributorRegion: users.region,
           contributorBio: users.bio,
+          contributorAvatar: users.avatar,
         })
         .from(art)
         .leftJoin(content, eq(art.contentId, content.id))
@@ -760,6 +762,7 @@ const ContentController = {
               email: art.contributorEmail,
               region: art.contributorRegion,
               bio: art.contributorBio,
+              avatar: art.contributorAvatar,
             }
           : null,
       }));
@@ -874,6 +877,7 @@ const ContentController = {
           contributorEmail: users.email,
           contributorRegion: users.region,
           contributorBio: users.bio,
+          contributorAvatar: users.avatar,
         })
         .from(music)
         .leftJoin(content, eq(music.contentId, content.id))
@@ -950,6 +954,7 @@ const ContentController = {
           contributorEmail: users.email,
           contributorRegion: users.region,
           contributorBio: users.bio,
+          contributorAvatar: users.avatar,
         })
         .from(music)
         .leftJoin(content, eq(music.contentId, content.id))
@@ -984,6 +989,7 @@ const ContentController = {
               email: music.contributorEmail,
               region: music.contributorRegion,
               bio: music.contributorBio,
+              avatar: music.contributorAvatar,
             }
           : null,
       }));
@@ -1021,6 +1027,7 @@ const ContentController = {
         contributorEmail: users.email,
         contributorRegion: users.region,
         contributorBio: users.bio,
+        contributorAvatar: users.avatar,
       };
 
       // Helper to fetch content by type
@@ -1185,6 +1192,8 @@ const ContentController = {
           email: contributor.email,
           region: contributor.region,
           bio: contributor.bio,
+          avatar: contributor.avatar,
+          phone: contributor.phone,
           createdAt: contributor.createdAt,
           updatedAt: contributor.updatedAt,
           role: contributor.role,

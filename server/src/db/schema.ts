@@ -33,6 +33,8 @@ export const users = pgTable("users", {
   region: varchar(),
   role: varchar().notNull().default("user"),
   bio: text(),
+  avatar: text(),
+  phone: text(),
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp().notNull().defaultNow(),
 });
@@ -123,8 +125,12 @@ export const proverbs = pgTable("proverbs", {
 
 export const report = pgTable("report", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid().references(() => users.id).notNull(),
-  contentId: uuid().references(() => content.id).notNull(),
+  userId: uuid()
+    .references(() => users.id)
+    .notNull(),
+  contentId: uuid()
+    .references(() => content.id)
+    .notNull(),
   reason: text().notNull(),
   details: text(),
   createdOn: timestamp().defaultNow(),
@@ -163,4 +169,4 @@ export const music = pgTable("music", {
   content: text(),
   coverImage: text(),
   tempo: text(),
-})
+});

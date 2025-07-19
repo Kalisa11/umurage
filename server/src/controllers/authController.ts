@@ -7,8 +7,15 @@ import { eq } from "drizzle-orm";
 const AuthController = {
   async signup(req: Request, res: Response) {
     try {
-      const { firstName, lastName, email, password, confirmPassword, region } =
-        req.body;
+      const {
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+        region,
+        phone,
+      } = req.body;
 
       if (!firstName || !lastName || !email || !password || !confirmPassword) {
         return res.status(400).json({ message: "All fields are required" });
@@ -41,6 +48,7 @@ const AuthController = {
           email,
           password: hashedPassword,
           region,
+          phone,
         })
         .returning();
 
@@ -125,16 +133,14 @@ const AuthController = {
     }
   },
 
-  async me(req: Request, res: Response) {
+  async getCurrentUser(req: Request, res: Response) {
     try {
-      if (!req.session.id) {
+      const { id } = req.params;
+      if (!id) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const user = await db
-        .select()
-        .from(users)
-        .where(eq(users.id, req.session.id));
+      const user = await db.select().from(users).where(eq(users.id, id));
 
       if (user.length === 0) {
         return res.status(401).json({ message: "User not found" });
@@ -147,6 +153,9 @@ const AuthController = {
         email: user[0].email,
         region: user[0].region,
         role: user[0].role,
+        phone: user[0].phone,
+        avatar: user[0].avatar,
+        bio: user[0].bio,
       };
 
       return res.status(200).json({ user: userWithoutPassword });
@@ -155,6 +164,35 @@ const AuthController = {
       return res
         .status(500)
         .json({ message: "Internal server error", error: error });
+    }
+  },
+
+  async updateUser(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { firstName, lastName, phone, region, bio, avatar } = req.body;
+
+      const user = await db.select().from(users).where(eq(users.id, id));
+
+      if (user.length === 0) {
+        return res.status(400).json({ message: "User not found" });
+      }
+
+      const [updatedUser] = await db
+        .update(users)
+        .set({ firstName, lastName, phone, region, bio, avatar })
+        .where(eq(users.id, id))
+        .returning();
+
+      return res.status(200).json({
+        message: "User updated successfully",
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({ message: "Failed to update user", error: error });
     }
   },
 };

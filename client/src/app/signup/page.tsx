@@ -42,6 +42,7 @@ type Inputs = {
   confirmPassword: string;
   region: string;
   bio: string;
+  phone: string | undefined;
 };
 
 export default function SignupPage() {
@@ -57,6 +58,7 @@ export default function SignupPage() {
     confirmPassword: "",
     region: "",
     bio: "",
+    phone: "",
   };
 
   const {
@@ -322,6 +324,22 @@ export default function SignupPage() {
                   {errors.region && (
                     <p className="text-red-500 text-sm">
                       {errors.region.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone number</Label>
+                  <Input
+                    id="phone"
+                    placeholder="Enter your phone number"
+                    required
+                    className="text-base"
+                    {...register("phone")}
+                  />
+                  {errors.phone && (
+                    <p className="text-red-500 text-sm">
+                      {errors.phone.message}
                     </p>
                   )}
                 </div>

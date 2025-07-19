@@ -22,6 +22,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, User, MapPin, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { REGIONS } from "@/lib/utils";
+import { useFilteredMusic } from "@/hooks/useFilteredContent";
+import { Button } from "@/components/ui/button";
 
 const MusicView = ({
   music,
@@ -31,6 +34,10 @@ const MusicView = ({
   loading: boolean;
 }) => {
   const [view, setView] = useState("grid");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("All Regions");
+
+  const filteredMusic = useFilteredMusic(music, searchTerm, selectedRegion);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
@@ -46,33 +53,28 @@ const MusicView = ({
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search songs by title..." className="pl-10" />
+            <Input
+              placeholder="Search songs by title, description, or content..."
+              className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           <div className="flex gap-2">
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Genre" />
+            <Select
+              defaultValue="All Regions"
+              value={selectedRegion}
+              onValueChange={setSelectedRegion}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Region" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Genres</SelectItem>
-                <SelectItem value="dance">Traditional Dance</SelectItem>
-                <SelectItem value="wedding">Wedding</SelectItem>
-                <SelectItem value="work">Work Song</SelectItem>
-                <SelectItem value="lullaby">Lullaby</SelectItem>
-                <SelectItem value="ceremonial">Ceremonial</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select defaultValue="all">
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Occasion" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Occasions</SelectItem>
-                <SelectItem value="ceremonies">Ceremonies</SelectItem>
-                <SelectItem value="weddings">Weddings</SelectItem>
-                <SelectItem value="harvest">Harvest</SelectItem>
-                <SelectItem value="bedtime">Bedtime</SelectItem>
-                <SelectItem value="work">Work</SelectItem>
+                {REGIONS.map((region) => (
+                  <SelectItem key={region.value} value={region.value}>
+                    {region.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -82,7 +84,9 @@ const MusicView = ({
       {/* View Toggle */}
       <div className="mb-6 flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing <span className="font-medium">{music.length || 0}</span> songs
+          Showing{" "}
+          <span className="font-medium">{filteredMusic?.length || 0}</span>{" "}
+          songs
         </div>
         <Tabs defaultValue="grid" onValueChange={setView}>
           <TabsList>
@@ -92,11 +96,28 @@ const MusicView = ({
         </Tabs>
       </div>
 
+      {filteredMusic?.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">
+            No music found matching your criteria.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-2"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedRegion("All Regions");
+            }}
+          >
+            Clear filters
+          </Button>
+        </div>
+      )}
       {/* Songs Grid/List */}
       <Tabs defaultValue="grid" value={view}>
         <TabsContent value="grid" className="mt-0">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {music?.map((song) => (
+            {filteredMusic?.map((song) => (
               <Link
                 key={song.id}
                 href={`/content/music/${song.id}`}
@@ -159,7 +180,7 @@ const MusicView = ({
 
         <TabsContent value="list" className="mt-0">
           <div className="space-y-4">
-            {music?.map((song) => (
+            {filteredMusic?.map((song) => (
               <Card
                 key={song.id}
                 className="overflow-hidden transition-all hover:shadow-md"

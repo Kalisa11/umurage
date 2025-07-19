@@ -15,12 +15,18 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
-} from "../ui/card";
+} from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { useFilteredArt } from "@/hooks/useFilteredContent";
+import { Button } from "@/components/ui/button";
 
 const ArtView = ({ art, loading }: { art: Art[]; loading: boolean }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("All Regions");
+
+  const filteredArt = useFilteredArt(art, searchTerm, selectedRegion);
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[50vh]">
@@ -34,10 +40,19 @@ const ArtView = ({ art, loading }: { art: Art[]; loading: boolean }) => {
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search content by title..." className="pl-10" />
+            <Input
+              placeholder="Search content by title, description, or content..."
+              className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           <div className="flex gap-2">
-            <Select defaultValue="All Regions">
+            <Select
+              defaultValue="All Regions"
+              value={selectedRegion}
+              onValueChange={setSelectedRegion}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Region" />
               </SelectTrigger>
@@ -54,11 +69,30 @@ const ArtView = ({ art, loading }: { art: Art[]; loading: boolean }) => {
       </div>
 
       <div className="text-sm text-muted-foreground mb-6">
-        Showing <span className="font-medium">{art?.length}</span> results
+        Showing <span className="font-medium">{filteredArt?.length}</span>{" "}
+        results
       </div>
 
+      {filteredArt?.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">
+            No art found matching your criteria.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-2"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedRegion("All Regions");
+            }}
+          >
+            Clear filters
+          </Button>
+        </div>
+      )}
+
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {art?.map((item) => (
+        {filteredArt?.map((item) => (
           <Link
             key={item.id}
             href={`/content/art/${item.id}`}

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Search, Loader2, ArrowLeft, ArrowRight } from "lucide-react";
-import { useFilteredStories } from "@/hooks/useFilteredStories";
+import { useFilteredStories } from "@/hooks/useFilteredContent";
 import { StoryCard } from "@/components/explore/story-card";
 import { Story } from "@/types";
 

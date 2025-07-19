@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import { getAllCategories } from "@/services/categoryService";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryIcon } from "@/utils";
 import CategoryLoader from "@/components/loaders/category-loader";
+import { renderCategoryImage } from "@/utils/utils";
 
 export default function CategoriesPage() {
   const {
@@ -24,6 +24,10 @@ export default function CategoriesPage() {
   } = useQuery({
     queryKey: ["categories"],
     queryFn: getAllCategories,
+    staleTime: 1000 * 60 * 60 * 24,
+    gcTime: 1000 * 60 * 60 * 24 * 7,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   if (isLoading) return <CategoryLoader />;
@@ -50,12 +54,7 @@ export default function CategoriesPage() {
           >
             <Card className="overflow-hidden transition-all hover:shadow-md">
               <CardHeader className="relative h-42 p-0">
-                <Image
-                  src={"/placeholder.png"}
-                  alt={category.name}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-105"
-                />
+                {renderCategoryImage(category)}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
                   <div className="flex items-center gap-2 text-white">
                     {React.createElement(getCategoryIcon(category.name), {
@@ -69,8 +68,7 @@ export default function CategoriesPage() {
                 <CardDescription>{category.description}</CardDescription>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <div className="text-sm text-muted-foreground">
-                </div>
+                <div className="text-sm text-muted-foreground"></div>
                 <div className="flex items-center text-sm font-medium text-primary">
                   Explore
                   <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />

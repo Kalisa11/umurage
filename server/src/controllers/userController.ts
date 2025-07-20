@@ -15,6 +15,7 @@ const UserController = {
         bio,
         region,
         id,
+        phone,
       } = req.body;
 
       if (
@@ -44,6 +45,7 @@ const UserController = {
           password: hashedPassword,
           bio,
           region,
+          phone,
         })
         .returning({
           id: users.id,

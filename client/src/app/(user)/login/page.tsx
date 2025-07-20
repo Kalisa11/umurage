@@ -43,8 +43,13 @@ export default function LoginPage() {
     error,
   } = useMutation({
     mutationFn: (data: LoginSchema) => login(data),
-    onSuccess: () => {
-      window.location.href = "/";
+    onSuccess: (data) => {
+      // redirect based on the role
+      if (data.user.user_metadata.role === "admin") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/";
+      }
     },
     onError: (error: any) => {
       toast.error(error.message || "An error occurred", {
@@ -58,7 +63,6 @@ export default function LoginPage() {
     signIn(data);
   };
 
-  console.log("error", error);
   return (
     <div className="min-h-screen flex">
       {/* Left side - Login Form */}
@@ -75,7 +79,9 @@ export default function LoginPage() {
 
           <Card>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold pt-4">Welcome back</CardTitle>
+              <CardTitle className="text-2xl font-bold pt-4">
+                Welcome back
+              </CardTitle>
               <CardDescription>
                 Sign in to your account to manage your contributions and explore
                 more cultural content

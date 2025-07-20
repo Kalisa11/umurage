@@ -18,5 +18,9 @@ router.get("/music", ContentController.getMusic);
 router.get("/music/:id", ContentController.getMusicById);
 router.get("/contributor/:id", ContentController.getContributorContent);
 router.get("/featured", ContentController.getFeaturedContent);
+router.get("/pending", ContentController.getPendingContent);
+router.put("/approve/:id", ContentController.approveContent);
+router.put("/reject/:id", ContentController.rejectContent);
+router.get("/approved", ContentController.getApprovedContent);
 
 export default router;

@@ -29,11 +29,11 @@ pool.on("error", (err) => {
 });
 
 pool.on("connect", () => {
-  console.log("New client connected to database");
+  console.log("➕ New client connected to database");
 });
 
 pool.on("remove", () => {
-  console.log("Client removed from pool");
+  console.log("🔄 Client removed from pool");
 });
 
 // Async function to test connection
@@ -44,7 +44,6 @@ const testConnection = async () => {
     client.release();
   } catch (err) {
     console.error("❌ Error connecting to database:", err);
-    // Don't throw here, let the application continue
   }
 };
 

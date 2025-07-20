@@ -1,25 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import React, { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,509 +27,369 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   CheckCircle,
   XCircle,
-  Clock,
-  Eye,
   Search,
-  Filter,
   AlertTriangle,
-  FileText,
-  Music,
-  Palette,
-  MessageSquare,
   Globe,
+  LogOut,
   User,
   Calendar,
-  LogOut,
+  Eye,
 } from "lucide-react";
+import {
+  approveContent,
+  getApprovedContent,
+  getPendingContent,
+  rejectContent,
+} from "@/services/contentService";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getCategoryColor, getCategoryIcon } from "@/utils";
+import toast from "react-hot-toast";
+import { format } from "date-fns";
+import Protected from "@/components/protected";
+import { signOut } from "@/services/authService";
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("pending");
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
   const [rejectionReason, setRejectionReason] = useState("");
 
-  // Mock data for demonstration
-  const pendingSubmissions = [
-    {
-      id: "1",
-      title: "The Legend of Nyiragongo",
-      category: "story",
-      contributor: "Marie Uwimana",
-      submittedDate: "2024-01-15",
-      region: "Northern Province",
-      image: "/placeholder.png?height=200&width=300",
-      description:
-        "A traditional story about the formation of Nyiragongo volcano...",
-      readingTime: "8 min",
-      wordCount: 1200,
-    },
-    {
-      id: "2",
-      title: "Intore Victory Dance",
-      category: "song",
-      contributor: "Jean Baptiste Nzeyimana",
-      submittedDate: "2024-01-14",
-      region: "Kigali",
-      image: "/placeholder.png?height=200&width=300",
-      description:
-        "Traditional warrior dance song performed during celebrations...",
-      duration: "4:30",
-      genre: "Traditional",
-    },
-    {
-      id: "3",
-      title: "Imigongo Art Pattern",
-      category: "art",
-      contributor: "Agnes Mukamana",
-      submittedDate: "2024-01-13",
-      region: "Eastern Province",
-      image: "/placeholder.png?height=200&width=300",
-      description: "Traditional geometric patterns used in Imigongo art...",
-      technique: "Cow dung painting",
-      medium: "Natural pigments",
-    },
-    {
-      id: "4",
-      title: "Wisdom of the Elders",
-      category: "proverb",
-      contributor: "Samuel Habimana",
-      submittedDate: "2024-01-12",
-      region: "Southern Province",
-      image: "/placeholder.png?height=200&width=300",
-      description:
-        "Collection of traditional proverbs about respect and wisdom...",
-      difficulty: "Intermediate",
-      englishTranslation: "The one who respects elders walks in wisdom",
-    },
-  ];
+  const {
+    data: pendingContent,
+    isLoading,
+    error,
+    refetch: refetchPendingContent,
+  } = useQuery({
+    queryKey: ["pendingContent"],
+    queryFn: getPendingContent,
+  });
 
-  const reportedContent = [
-    {
-      id: "5",
-      title: "Controversial Story",
-      category: "story",
-      contributor: "Anonymous User",
-      reportedBy: "Community Member",
-      reportDate: "2024-01-10",
-      reason: "Inappropriate content",
-      description: "Content reported for containing inappropriate material...",
-      reportCount: 3,
-    },
-    {
-      id: "6",
-      title: "Disputed Proverb",
-      category: "proverb",
-      contributor: "John Doe",
-      reportedBy: "Cultural Expert",
-      reportDate: "2024-01-09",
-      reason: "Inaccurate translation",
-      description: "Translation accuracy questioned by cultural expert...",
-      reportCount: 1,
-    },
-  ];
+  const {
+    data: approvedContent,
+    isLoading: isApprovedContentLoading,
+    error: approvedContentError,
+    refetch: refetchApprovedContent,
+  } = useQuery({
+    queryKey: ["approvedContent"],
+    queryFn: getApprovedContent,
+  });
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "story":
-        return <FileText className="h-4 w-4" />;
-      case "song":
-        return <Music className="h-4 w-4" />;
-      case "art":
-        return <Palette className="h-4 w-4" />;
-      case "proverb":
-        return <MessageSquare className="h-4 w-4" />;
-      default:
-        return <FileText className="h-4 w-4" />;
-    }
-  };
+  const { mutate: approve, isPending: isApproving } = useMutation({
+    mutationFn: approveContent,
+    onSuccess: () => {
+      toast.success("Content approved successfully");
+      refetchPendingContent();
+    },
+    onError: () => {
+      toast.error("Failed to approve content, please try again");
+    },
+  });
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "story":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case "song":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "art":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
-      case "proverb":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
-  };
+  const { mutate: reject, isPending: isRejecting } = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      rejectContent(id, reason),
+    onSuccess: () => {
+      toast.success("Content rejected successfully");
+      refetchPendingContent();
+    },
+    onError: () => {
+      toast.error("Failed to reject content, please try again");
+    },
+  });
 
   const handleApprove = (id: string) => {
-    console.log("Approving submission:", id);
-    // Implementation for approval
+    approve(id);
   };
 
   const handleReject = (id: string, reason: string) => {
-    console.log("Rejecting submission:", id, "Reason:", reason);
-    // Implementation for rejection
+    if (!reason) {
+      toast.error("Please provide a reason for rejection");
+      return;
+    }
+    reject({ id, reason });
   };
 
-  const filteredSubmissions = pendingSubmissions.filter((submission) => {
-    const matchesSearch =
-      submission.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      submission.contributor.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      categoryFilter === "all" || submission.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+  const { mutate: logout, isPending: isLoggingOut } = useMutation({
+    mutationFn: signOut,
   });
 
+  const filteredSubmissions = pendingContent?.filter(
+    (submission) =>
+      submission.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      submission.contributor?.firstName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      submission.contributor?.lastName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      submission.region?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Admin Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
+    <Protected>
+      <div className="min-h-screen">
+        {/* Simple Admin Header */}
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="px-4 sm:px-6 py-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center space-x-4">
                 <Globe className="h-8 w-8 text-primary" />
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Inkomoko Admin
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                    Admin Dashboard
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Content Management Dashboard
+                    Manage content submissions
                   </p>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-                <User className="h-4 w-4" />
-                <span>Admin User</span>
+              <div className="flex items-center gap-2 sm:space-x-4">
+                <Link href="/admin/reports">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs sm:text-sm"
+                  >
+                    <AlertTriangle className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Reported Content</span>
+                    <span className="sm:hidden">Reports</span>
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs sm:text-sm"
+                  onClick={() => logout()}
+                >
+                  <LogOut className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Logout</span>
+                  <span className="sm:hidden">Logout</span>
+                </Button>
               </div>
-              <Button variant="outline" size="sm">
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <div className="p-6">
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium pt-4">
-                Pending Reviews
-              </CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">24</div>
-              <p className="text-xs text-muted-foreground">+3 from yesterday</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium pt-4">
-                Approved Today
-              </CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">+8 from yesterday</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium pt-4">
-                Reported Content
-              </CardTitle>
-              <AlertTriangle className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground">Needs attention</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium pt-4">
-                Total Content
-              </CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">1,247</div>
-              <p className="text-xs text-muted-foreground">+15 this week</p>
-            </CardContent>
-          </Card>
-        </div>
+        <div className="p-4 sm:p-6">
+          {/* Simple Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <Card>
+              <CardHeader className="pt-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 ">
+                  Pending Review
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">
+                  {pendingContent?.length}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pt-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Approved Content
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-green-600">
+                  {approvedContent?.length}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pt-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Reports
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-red-600">2</div>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Content Management Tabs */}
-        <Tabs
-          defaultValue="pending"
-          value={activeTab}
-          onValueChange={setActiveTab}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
-              <TabsTrigger value="pending">
-                Pending ({pendingSubmissions.length})
-              </TabsTrigger>
-              <TabsTrigger value="approved">Approved</TabsTrigger>
-              <TabsTrigger value="reported">
-                Reported ({reportedContent.length})
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Search and Filter */}
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search submissions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-64"
-                />
-              </div>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-40">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="story">Stories</SelectItem>
-                  <SelectItem value="song">Songs</SelectItem>
-                  <SelectItem value="art">Art</SelectItem>
-                  <SelectItem value="proverb">Proverbs</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Search */}
+          <div className="mb-4 sm:mb-6">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search submissions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
             </div>
           </div>
 
-          {/* Pending Submissions */}
-          <TabsContent value="pending">
-            <div className="grid gap-6">
-              {filteredSubmissions.map((submission) => (
-                <Card key={submission.id} className="overflow-hidden">
-                  <div className="flex">
-                    <div className="relative w-48 h-32 flex-shrink-0">
+          {/* Content List */}
+          <div className="space-y-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">
+              Unreviewed Submissions
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              {filteredSubmissions?.map((submission) => (
+                <Card key={submission.id} className="w-full">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {/* Image */}
+                      {/* <div className="relative w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden">
                       <Image
-                        src={submission.image || "/placeholder.png"}
+                        src={"/placeholder.png"}
                         alt={submission.title}
                         fill
                         className="object-cover"
                       />
-                    </div>
-                    <div className="flex-1 p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <Badge
-                              className={getCategoryColor(submission.category)}
-                            >
-                              {getCategoryIcon(submission.category)}
-                              <span className="ml-1 capitalize">
-                                {submission.category}
-                              </span>
-                            </Badge>
-                            <Badge variant="outline">{submission.region}</Badge>
-                          </div>
-                          <h3 className="text-xl font-semibold mb-2">
-                            {submission.title}
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-                            {submission.description}
-                          </p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                            <div className="flex items-center space-x-1">
-                              <User className="h-4 w-4" />
-                              <span>{submission.contributor}</span>
+                    </div> */}
+
+                      {/* Content */}
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <Badge
+                                className={getCategoryColor(
+                                  submission.category?.name || ""
+                                )}
+                              >
+                                {React.createElement(
+                                  getCategoryIcon(
+                                    submission.category?.name ?? ""
+                                  ),
+                                  {
+                                    className: "h-4 w-4",
+                                  }
+                                )}
+
+                                <span className="ml-1 capitalize">
+                                  {submission.category?.name}
+                                </span>
+                              </Badge>
+                              <Badge variant="outline">
+                                {submission.region}
+                              </Badge>
                             </div>
-                            <div className="flex items-center space-x-1">
-                              <Calendar className="h-4 w-4" />
-                              <span>
-                                {new Date(
-                                  submission.submittedDate
-                                ).toLocaleDateString()}
-                              </span>
+                            <h3 className="text-base sm:text-lg font-semibold mb-2">
+                              {submission.title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 text-sm">
+                              {submission.description}
+                            </p>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-4 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <User className="h-4 w-4" />
+                                <span>
+                                  {submission.contributor?.firstName}{" "}
+                                  {submission.contributor?.lastName}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4" />
+                                <span>
+                                  {format(
+                                    new Date(submission.createdAt || ""),
+                                    "MMMM d, yyyy"
+                                  )}
+                                </span>
+                              </div>
                             </div>
-                            {submission.readingTime && (
-                              <span>
-                                Reading time: {submission.readingTime}
-                              </span>
-                            )}
-                            {submission.duration && (
-                              <span>Duration: {submission.duration}</span>
-                            )}
                           </div>
+
+                          {/* Actions */}
                         </div>
-                        <div className="flex items-center space-x-2 ml-4">
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4 mr-2" />
-                            Preview
-                          </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <div className="flex flex-row items-stretch sm:items-center gap-2">
+                      <Link
+                        target="_blank"
+                        href={`/content/${submission.category?.name.toLowerCase()}/${
+                          submission.id
+                        }`}
+                      >
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Preview
+                        </Button>
+                      </Link>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
                           <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleApprove(submission.id)}
                             className="bg-green-600 hover:bg-green-700"
+                            size="sm"
                           >
                             <CheckCircle className="h-4 w-4 mr-2" />
                             Approve
                           </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                <XCircle className="h-4 w-4 mr-2" />
-                                Reject
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Reject Submission
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Please provide a reason for rejecting this
-                                  submission. This will be sent to the
-                                  contributor.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <Textarea
-                                placeholder="Reason for rejection..."
-                                value={rejectionReason}
-                                onChange={(e) =>
-                                  setRejectionReason(e.target.value)
-                                }
-                                className="min-h-20"
-                              />
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => {
-                                    handleReject(
-                                      submission.id,
-                                      rejectionReason
-                                    );
-                                    setRejectionReason("");
-                                  }}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  Reject Submission
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-md mx-4">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Approve Submission
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to approve this submission?
+                              This will make it visible on the platform.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleApprove(submission.id)}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Approve
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <XCircle className="h-4 w-4 mr-2" />
+                            Reject
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="max-w-md mx-4">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Reject Submission
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Please provide a reason for rejecting this
+                              submission.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <Textarea
+                            placeholder="Reason for rejection..."
+                            value={rejectionReason}
+                            onChange={(e) => setRejectionReason(e.target.value)}
+                            className="min-h-20"
+                          />
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                handleReject(submission.id, rejectionReason);
+                                setRejectionReason("");
+                              }}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Reject
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
-                  </div>
+                  </CardFooter>
                 </Card>
               ))}
             </div>
-          </TabsContent>
-
-          {/* Approved Content */}
-          <TabsContent value="approved">
-            <Card>
-              <CardHeader>
-                <CardTitle className="pt-4">Approved Content</CardTitle>
-                <CardDescription>
-                  Content that has been reviewed and approved for publication
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">
-                    No approved content to display
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Approved content will appear here for review and management.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Reported Content */}
-          <TabsContent value="reported">
-            <div className="grid gap-6">
-              {reportedContent.map((report) => (
-                <Card
-                  key={report.id}
-                  className="border-red-200 dark:border-red-800"
-                >
-                  <CardHeader>
-                    <div className="flex items-center justify-between pt-4">
-                      <div className="flex items-center space-x-2">
-                        <AlertTriangle className="h-5 w-5 text-red-600" />
-                        <CardTitle className="text-red-800 dark:text-red-300">
-                          {report.title}
-                        </CardTitle>
-                        <Badge className={getCategoryColor(report.category)}>
-                          {getCategoryIcon(report.category)}
-                          <span className="ml-1 capitalize">
-                            {report.category}
-                          </span>
-                        </Badge>
-                      </div>
-                      <Badge variant="destructive">
-                        {report.reportCount} reports
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="font-medium">Contributor:</span>{" "}
-                          {report.contributor}
-                        </div>
-                        <div>
-                          <span className="font-medium">Reported by:</span>{" "}
-                          {report.reportedBy}
-                        </div>
-                        <div>
-                          <span className="font-medium">Report date:</span>{" "}
-                          {new Date(report.reportDate).toLocaleDateString()}
-                        </div>
-                        <div>
-                          <span className="font-medium">Reason:</span>{" "}
-                          {report.reason}
-                        </div>
-                      </div>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        {report.description}
-                      </p>
-                      <div className="flex items-center space-x-2 pt-4">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
-                          Review Content
-                        </Button>
-                        <Button
-                          variant="default"
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Dismiss Report
-                        </Button>
-                        <Button variant="destructive" size="sm">
-                          <XCircle className="h-4 w-4 mr-2" />
-                          Remove Content
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </div>
-    </div>
+    </Protected>
   );
 }

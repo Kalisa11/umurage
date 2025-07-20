@@ -3,8 +3,10 @@ import {
   ContentItem,
   ContributorContentResponse,
   Music,
+  PendingContent,
   Proverb,
   Story,
+  Content,
 } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
@@ -305,6 +307,50 @@ export const getFeaturedContent = async () => {
     return response.data as ContentItem[];
   } catch (error) {
     console.error("Error getting featured content: ", error);
+    throw error;
+  }
+};
+
+export const getPendingContent = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/content/pending`);
+    return response.data as PendingContent[];
+  } catch (error) {
+    console.error("Error getting pending content: ", error);
+    throw error;
+  }
+};
+
+export const approveContent = async (id: string) => {
+  try {
+    const response = await axios.put(`${API_URL}/content/approve/${id}`, {
+      status: "approved",
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error approving content: ", error);
+    throw error;
+  }
+};
+
+export const rejectContent = async (id: string, reason: string) => {
+  try {
+    const response = await axios.put(`${API_URL}/content/reject/${id}`, {
+      reason,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error rejecting content: ", error);
+    throw error;
+  }
+};
+
+export const getApprovedContent = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/content/approved`);
+    return response.data as Content[];
+  } catch (error) {
+    console.error("Error getting approved content: ", error);
     throw error;
   }
 };

@@ -210,3 +210,29 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface PendingContent {
+  id: string;
+  title: string;
+  description: string;
+  isFeatured: boolean;
+  region: string | null;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string | null;
+  updatedAt: string | null;
+  contributor: Contributor | null;
+  category: Category | null;
+}
+
+export interface Content {
+  id: string;
+  title: string;
+  description: string;
+  isFeatured: boolean;
+  region: string | null;
+  status: "pending" | "approved" | "rejected";
+  contributorId: string | null;
+  categoryId: number | null;
+  createdAt: string;
+  updatedAt: string;
+}

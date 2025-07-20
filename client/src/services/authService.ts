@@ -44,7 +44,8 @@ export const login = async (data: LoginSchema) => {
     const { data: userData, error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
-    });
+    },
+  );
     if (error) {
       throw error;
     }
@@ -68,7 +69,7 @@ export const signOut = async () => {
     scope: "global",
   });
   // refresh the page
-  window.location.reload();
+  window.location.href = "/login";
   if (error) {
     throw error;
   }

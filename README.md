@@ -159,3 +159,7 @@
 - `npm run migrate` - Run database migrations
 - `npm run generate` - Generate new migrations
 - `npm run studio` - Open Drizzle Studio for database management
+
+## Demo Video
+
+[Demo Video](https://youtu.be/siL4zkHHJ14)

@@ -185,7 +185,7 @@ export const validateAvatarFile = (file: File) => {
 
 export const reportSchema = z.object({
   reason: z.string().min(1, "Please select a reason"),
-  description: z.string().optional(),
+  details: z.string().min(1, "Please provide additional details"),
 });
 
 export type ReportSchema = z.infer<typeof reportSchema>;

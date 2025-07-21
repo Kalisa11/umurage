@@ -22,5 +22,7 @@ router.get("/pending", ContentController.getPendingContent);
 router.put("/approve/:id", ContentController.approveContent);
 router.put("/reject/:id", ContentController.rejectContent);
 router.get("/approved", ContentController.getApprovedContent);
+router.post("/report/:id", ContentController.reportContent);
+router.get("/reports", ContentController.getReports);
 
 export default router;

@@ -138,13 +138,7 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="remember" />
-                    <Label htmlFor="remember" className="text-sm font-normal">
-                      Remember me
-                    </Label>
-                  </div>
+                <div className="flex items-center justify-end">
                   <Link
                     href="/forgot-password"
                     className="text-sm text-primary hover:underline"

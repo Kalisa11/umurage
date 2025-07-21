@@ -25,6 +25,9 @@ import { useMutation } from "@tanstack/react-query";
 // import { reportContent } from "@/services/contentService";
 import toast from "react-hot-toast";
 import { reportSchema, ReportSchema } from "@/lib/validationSchema";
+import { reportContent } from "@/services/contentService";
+import { options } from "@/lib/utils";
+import useProfile from "@/hooks/useProfile";
 
 const ReportContent = ({ contentId }: { contentId: string }) => {
   const {
@@ -36,29 +39,37 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
     resolver: zodResolver(reportSchema),
     defaultValues: {
       reason: "",
-      description: "",
+      details: "",
     },
     mode: "onChange",
   });
 
-  const options = [
-    { label: "Inappropriate content", value: "Inappropriate content" },
-    { label: "Spam or misleading", value: "Spam or misleading" },
-    { label: "Copyright violation", value: "Copyright violation" },
-    { label: "Harassment or bullying", value: "Harassment or bullying" },
-    { label: "Violence or threats", value: "Violence or threats" },
-    { label: "Other", value: "Other" },
-  ];
+  const { data: user } = useProfile();
+  const userId = user?.id;
+
+  const { mutate: report, isPending: isReporting } = useMutation({
+    mutationFn: (data: ReportSchema & { userId: string }) =>
+      reportContent(contentId, data.reason, data.details, data.userId),
+    onSuccess: () => {
+      toast.success("Report submitted successfully");
+      reset();
+    },
+    onError: () => {
+      toast.error("Failed to submit report. Please try again.");
+    },
+  });
 
   const onSubmit = async (data: ReportSchema) => {
     try {
-      // TODO: Implement actual report submission to backend
-      console.log("Submitting report:", data);
-
-      reset();
-
-      // Close dialog (you might need to add a ref to the dialog)
-      toast.success("Report submitted successfully");
+      if (!userId) {
+        toast.error("Please login to report content");
+        return;
+      }
+      const reportData = {
+        ...data,
+        userId: userId,
+      };
+      report(reportData);
     } catch (error) {
       console.error("Error submitting report:", error);
       toast.error("Failed to submit report. Please try again.");
@@ -72,7 +83,12 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 bg-transparent"
+          disabled={isReporting || !userId}
+        >
           <Flag className="h-4 w-4" />
           Report
         </Button>
@@ -114,9 +130,9 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Additional details (optional)</Label>
+            <Label htmlFor="description">Additional details</Label>
             <Controller
-              name="description"
+              name="details"
               control={control}
               render={({ field }) => (
                 <Textarea
@@ -127,6 +143,9 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
                 />
               )}
             />
+            {errors.details && (
+              <p className="text-sm text-red-500">{errors.details.message}</p>
+            )}
           </div>
 
           <DialogFooter className="gap-2">
@@ -140,7 +159,7 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={!isValid}>
+            <Button type="submit" disabled={!isValid || isReporting}>
               Submit Report
             </Button>
           </DialogFooter>

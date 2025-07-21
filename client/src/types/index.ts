@@ -236,3 +236,39 @@ export interface Content {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Report {
+  reportId: string;
+  reason: string;
+  details: string;
+  status: "pending" | "resolved" | "dismissed" | null;
+  createdOn: Date;
+  updatedOn: Date;
+  createdById: string;
+  contentId: string;
+  reporter: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+  reportedContent: {
+    id: string;
+    title: string;
+    category: string;
+    description: string;
+    region: string;
+    status: string;
+    createdOn: Date;
+  };
+  contributor: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  category: {
+    id: string;
+    name: string;
+  } | null;
+}

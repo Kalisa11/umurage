@@ -7,10 +7,11 @@ import {
   art,
   music,
   categories,
+  report,
 } from "../db/schema";
 import type { Request, Response } from "express";
 import { CATEGORIES } from "../utils";
-import { desc, eq, and } from "drizzle-orm";
+import { desc, eq, and, aliasedTable } from "drizzle-orm";
 
 const ContentController = {
   async addStory(req: Request, res: Response) {
@@ -1513,10 +1514,9 @@ const ContentController = {
 
   async rejectContent(req: Request, res: Response) {
     const { id } = req.params;
-    const { reason } = req.body;
 
-    if (!id || !reason) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!id) {
+      return res.status(400).json({ message: "Content ID is required" });
     }
 
     try {
@@ -1534,6 +1534,102 @@ const ContentController = {
       console.error("Error rejecting content: ", error);
       return res.status(500).json({
         message: "Error rejecting content",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
+  async reportContent(req: Request, res: Response) {
+    const { id } = req.params;
+    const { reason, details, userId } = req.body;
+
+    if (!id || !reason || !userId) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+      const [newReport] = await db
+        .insert(report)
+        .values({
+          contentId: id,
+          createdBy: userId,
+          reason,
+          details,
+        })
+        .returning({ id: report.id });
+
+      return res.status(200).json({
+        message: "Report submitted successfully",
+        report: newReport,
+      });
+    } catch (error) {
+      console.error("Error reporting content: ", error);
+      return res.status(500).json({
+        message: "Error reporting content",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
+  async getReports(req: Request, res: Response) {
+    try {
+      const contributorAlias = aliasedTable(users, "contributor");
+
+      const reports = await db
+        .select({
+          reportId: report.id,
+          reason: report.reason,
+          details: report.details,
+          status: report.status,
+          createdOn: report.createdOn,
+          updatedOn: report.updatedOn,
+          createdById: report.createdBy,
+          contentId: report.contentId,
+
+          reporter: {
+            id: users.id,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            email: users.email,
+          },
+
+          reportedContent: {
+            id: content.id,
+            title: content.title,
+            category: content.categoryId,
+            description: content.description,
+            region: content.region,
+            status: content.status,
+            createdOn: content.createdAt,
+            userId: content.contributorId,
+          },
+
+          category: {
+            id: categories.id,
+            name: categories.name,
+          },
+
+          contributor: {
+            id: contributorAlias.id,
+            firstName: contributorAlias.firstName,
+            lastName: contributorAlias.lastName,
+            email: contributorAlias.email,
+          },
+        })
+        .from(report)
+        .leftJoin(users, eq(report.createdBy, users.id)) // reporter
+        .leftJoin(content, eq(report.contentId, content.id))
+        .leftJoin(categories, eq(content.categoryId, categories.id))
+        .leftJoin(
+          contributorAlias,
+          eq(content.contributorId, contributorAlias.id)
+        ); // contributor
+
+      return res.status(200).json(reports);
+    } catch (error) {
+      console.error("Error getting reports:", error);
+      return res.status(500).json({
+        message: "Error getting reports",
         error: error instanceof Error ? error.message : String(error),
       });
     }

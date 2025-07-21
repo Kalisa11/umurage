@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +42,10 @@ import {
   Eye,
   Trash,
 } from "lucide-react";
-
+import { getReports } from "@/services/contentService";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { getCategoryColor, getCategoryIcon, getStatusColor } from "@/utils";
 // Mock data based on the actual schema
 const mockReports = [
   {
@@ -135,48 +138,16 @@ export default function ReportsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "story":
-        return <FileText className="h-4 w-4" />;
-      case "song":
-        return <Music className="h-4 w-4" />;
-      case "art":
-        return <Palette className="h-4 w-4" />;
-      case "proverb":
-        return <MessageSquare className="h-4 w-4" />;
-      default:
-        return <FileText className="h-4 w-4" />;
-    }
-  };
+  const {
+    data: reports,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["reports"],
+    queryFn: getReports,
+  });
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "story":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-      case "song":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "art":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
-      case "proverb":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "resolved":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "dismissed":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
-    }
-  };
+  console.log({ reports });
 
   const handleResolveReport = (id: string) => {
     console.log("Resolving report:", id);
@@ -198,20 +169,14 @@ export default function ReportsPage() {
     // Implementation for viewing content
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const filteredReports = mockReports.filter((report) => {
+  const filteredReports = reports?.filter((report) => {
     const matchesSearch =
-      report.content.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.reporter.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      report.reportedContent?.title
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      report.reporter?.firstName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       report.reason.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesStatus =
@@ -273,7 +238,7 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{mockReports.length}</div>
+              <div className="text-3xl font-bold">{reports?.length || 0}</div>
             </CardContent>
           </Card>
           <Card>
@@ -283,8 +248,8 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-yellow-600">
-                {pendingCount}
+              <div className="text-3xl font-bold text-primary">
+                {reports?.filter((r) => r.status === "pending").length || 0}
               </div>
             </CardContent>
           </Card>
@@ -296,7 +261,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-green-600">
-                {resolvedCount}
+                {reports?.filter((r) => r.status === "resolved").length || 0}
               </div>
             </CardContent>
           </Card>
@@ -307,8 +272,8 @@ export default function ReportsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-gray-600">
-                {dismissedCount}
+              <div className="text-3xl font-bold text-red-600">
+                {reports?.filter((r) => r.status === "dismissed").length || 0}
               </div>
             </CardContent>
           </Card>
@@ -340,7 +305,7 @@ export default function ReportsPage() {
 
         {/* Reports List */}
         <div className="space-y-4">
-          {filteredReports.length === 0 ? (
+          {filteredReports?.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
                 <Flag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -355,41 +320,57 @@ export default function ReportsPage() {
               </CardContent>
             </Card>
           ) : (
-            filteredReports.map((report) => (
-                          <Card
-              key={report.id}
-              className={`${
-                report.status === "pending" ? "border-primary/20" : ""
-              }`}
-            >
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                  <div className="flex-1">
-                    {/* Header with badges */}
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <Badge
-                        className={getCategoryColor(report.content.category)}
-                      >
-                        {getCategoryIcon(report.content.category)}
-                        <span className="ml-1 capitalize">
-                          {report.content.category}
-                        </span>
-                      </Badge>
-                      <Badge className={getStatusColor(report.status)}>
-                        <span className="capitalize">{report.status}</span>
-                      </Badge>
-                      {report.status === "pending" && (
-                        <Badge variant="destructive">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span className="hidden sm:inline">Needs Review</span>
-                          <span className="sm:hidden">Review</span>
+            filteredReports?.map((report) => (
+              <Card
+                key={report.reportId}
+                className={`${
+                  report.status === "pending" ? "border-primary/20" : ""
+                }`}
+              >
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                    <div className="flex-1">
+                      {/* Header with badges */}
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <Badge
+                          className={getCategoryColor(
+                            report.category?.name || ""
+                          )}
+                        >
+                          {React.createElement(
+                            getCategoryIcon(report.category?.name),
+                            {
+                              className: "h-4 w-4",
+                            }
+                          )}
+                          <span
+                            className={`ml-1 capitalize ${getCategoryColor(
+                              report.category?.name || ""
+                            )}`}
+                          >
+                            {report.category?.name}
+                          </span>
                         </Badge>
-                      )}
-                    </div>
+                        <Badge
+                          className={getStatusColor(report.status || "")}
+                          variant="outline"
+                        >
+                          <span className="capitalize">{report.status}</span>
+                        </Badge>
+                        {report.status === "pending" && (
+                          <Badge variant="destructive">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            <span className="hidden sm:inline">
+                              Needs Review
+                            </span>
+                            <span className="sm:hidden">Review</span>
+                          </Badge>
+                        )}
+                      </div>
 
                       {/* Content Title */}
                       <h3 className="text-base sm:text-lg font-semibold mb-2 text-gray-900 dark:text-white">
-                        {report.content.title}
+                        {report.reportedContent?.title}
                       </h3>
 
                       {/* Report Details */}
@@ -397,23 +378,44 @@ export default function ReportsPage() {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span className="font-medium text-xs sm:text-sm">Reported by:</span>
-                            <span className="text-xs sm:text-sm">{report.reporter.name}</span>
+                            <span className="font-medium text-xs sm:text-sm">
+                              Reported by:
+                            </span>
+                            <span className="text-xs sm:text-sm">
+                              {report.reporter?.firstName}{" "}
+                              {report.reporter?.lastName}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span className="font-medium text-xs sm:text-sm">Reported on:</span>
-                            <span className="text-xs sm:text-sm">{formatDate(report.createdOn)}</span>
+                            <span className="font-medium text-xs sm:text-sm">
+                              Reported on:
+                            </span>
+                            <span className="text-xs sm:text-sm">
+                              {format(
+                                report.createdOn,
+                                "MMMM d, yyyy, hh:mm a"
+                              )}
+                            </span>
                           </div>
                         </div>
                         <div className="space-y-2">
                           <div>
-                            <span className="font-medium text-xs sm:text-sm">Content by:</span>{" "}
-                            <span className="text-xs sm:text-sm">{report.content.contributor}</span>
+                            <span className="font-medium text-xs sm:text-sm">
+                              Content by:
+                            </span>{" "}
+                            <span className="text-xs sm:text-sm">
+                              {report.contributor?.firstName}{" "}
+                              {report.contributor?.lastName}
+                            </span>
                           </div>
                           <div>
-                            <span className="font-medium text-xs sm:text-sm">Region:</span>{" "}
-                            <span className="text-xs sm:text-sm">{report.content.region}</span>
+                            <span className="font-medium text-xs sm:text-sm">
+                              Region:
+                            </span>{" "}
+                            <span className="text-xs sm:text-sm">
+                              {report.reportedContent?.region}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -440,10 +442,17 @@ export default function ReportsPage() {
 
                       {/* Timestamps */}
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        <span className="block sm:inline">Created: {formatDate(report.createdOn)}</span>
+                        <span className="block sm:inline">
+                          Content created on:{" "}
+                          {format(
+                            report.reportedContent?.createdOn,
+                            "MMMM d, yyyy, hh:mm a"
+                          )}
+                        </span>
                         {report.updatedOn !== report.createdOn && (
                           <span className="block sm:inline sm:ml-4 mt-1 sm:mt-0">
-                            Updated: {formatDate(report.updatedOn)}
+                            Updated:{" "}
+                            {format(report.updatedOn, "MMMM d, yyyy, hh:mm a")}
                           </span>
                         )}
                       </div>
@@ -464,7 +473,7 @@ export default function ReportsPage() {
                       {report.status === "pending" && (
                         <>
                           <Button
-                            onClick={() => handleResolveReport(report.id)}
+                            onClick={() => handleResolveReport(report.reportId)}
                             className="bg-green-600 hover:bg-green-700"
                             size="sm"
                           >
@@ -492,7 +501,9 @@ export default function ReportsPage() {
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => handleDismissReport(report.id)}
+                                  onClick={() =>
+                                    handleDismissReport(report.reportId)
+                                  }
                                   className="bg-red-600 hover:bg-red-700"
                                 >
                                   Dismiss Report

@@ -7,6 +7,7 @@ import {
   Proverb,
   Story,
   Content,
+  Report,
 } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
@@ -351,6 +352,34 @@ export const getApprovedContent = async () => {
     return response.data as Content[];
   } catch (error) {
     console.error("Error getting approved content: ", error);
+    throw error;
+  }
+};
+
+export const reportContent = async (
+  id: string,
+  reason: string,
+  details: string,
+  userId: string
+) => {
+  try {
+    const response = await axios.post(`${API_URL}/content/report/${id}`, {
+      reason,
+      details,
+      userId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error reporting content: ", error);
+  }
+};
+
+export const getReports = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/content/reports`);
+    return response.data as Report[];
+  } catch (error) {
+    console.error("Error getting reports: ", error);
     throw error;
   }
 };

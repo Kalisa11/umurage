@@ -87,8 +87,8 @@ export const proverbRelations = relations(proverbs, ({ one }) => ({
 }));
 
 export const reportRelations = relations(report, ({ one }) => ({
-  user: one(users, {
-    fields: [report.userId],
+  createdBy: one(users, {
+    fields: [report.createdBy],
     references: [users.id],
   }),
   content: one(content, {

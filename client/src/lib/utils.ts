@@ -131,3 +131,12 @@ export function extractCoordinatesFromUrl(
     return null;
   }
 }
+
+export const options = [
+  { label: "Inappropriate content", value: "Inappropriate content" },
+  { label: "Spam or misleading", value: "Spam or misleading" },
+  { label: "Copyright violation", value: "Copyright violation" },
+  { label: "Harassment or bullying", value: "Harassment or bullying" },
+  { label: "Violence or threats", value: "Violence or threats" },
+  { label: "Other", value: "Other" },
+];

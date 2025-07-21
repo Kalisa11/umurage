@@ -132,7 +132,7 @@ export const proverbs = pgTable("proverbs", {
 
 export const report = pgTable("report", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid()
+  createdBy: uuid()
     .references(() => users.id)
     .notNull(),
   contentId: uuid()

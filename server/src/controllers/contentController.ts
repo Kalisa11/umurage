@@ -98,6 +98,7 @@ const ContentController = {
           contributorEmail: users.email,
           contributorRegion: users.region,
           contributorBio: users.bio,
+          contributorImage: users.avatar,
         })
         .from(stories)
         .leftJoin(content, and(eq(stories.contentId, content.id)))
@@ -131,6 +132,7 @@ const ContentController = {
               email: story.contributorEmail,
               region: story.contributorRegion,
               bio: story.contributorBio,
+              avatar: story.contributorImage,
             }
           : null,
       }));
@@ -178,6 +180,7 @@ const ContentController = {
           contributorEmail: users.email,
           contributorRegion: users.region,
           contributorBio: users.bio,
+          contributorImage: users.avatar,
         })
         .from(stories)
         .where(eq(stories.contentId, id))
@@ -213,6 +216,7 @@ const ContentController = {
               email: story.contributorEmail,
               region: story.contributorRegion,
               bio: story.contributorBio,
+              avatar: story.contributorImage,
             }
           : null,
       }));
@@ -645,6 +649,7 @@ const ContentController = {
               email: art.contributorEmail,
               region: art.contributorRegion,
               bio: art.contributorBio,
+              avatar: art.contributorAvatar,
             }
           : null,
       }));
@@ -881,6 +886,7 @@ const ContentController = {
               email: music.contributorEmail,
               region: music.contributorRegion,
               bio: music.contributorBio,
+              avatar: music.contributorAvatar,
             }
           : null,
       }));
@@ -1013,7 +1019,12 @@ const ContentController = {
           .from(content)
           .innerJoin(joinTable, joinCondition)
           .leftJoin(users, eq(content.contributorId, users.id))
-          .where(eq(content.contributorId, contributorId));
+          .where(
+            and(
+              eq(content.contributorId, contributorId),
+              eq(content.status, "approved")
+            )
+          );
       };
 
       // Define content-specific fields

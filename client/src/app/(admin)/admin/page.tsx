@@ -39,6 +39,7 @@ import {
   approveContent,
   getApprovedContent,
   getPendingContent,
+  getReports,
   rejectContent,
 } from "@/services/contentService";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -113,6 +114,11 @@ export default function AdminDashboard() {
 
   const { mutate: logout, isPending: isLoggingOut } = useMutation({
     mutationFn: signOut,
+  });
+
+  const { data: reports } = useQuery({
+    queryKey: ["reports"],
+    queryFn: getReports,
   });
 
   const filteredSubmissions = pendingContent?.filter(
@@ -202,11 +208,13 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader className="pt-2">
                 <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Reports
+                  Pending Reports
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-red-600">2</div>
+                <div className="text-3xl font-bold text-primary">
+                  {reports?.filter((r) => r.status === "pending").length || 0}
+                </div>
               </CardContent>
             </Card>
           </div>

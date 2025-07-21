@@ -79,6 +79,7 @@ export default function AdminDashboard() {
     onSuccess: () => {
       toast.success("Content approved successfully");
       refetchPendingContent();
+      refetchApprovedContent();
     },
     onError: () => {
       toast.error("Failed to approve content, please try again");
@@ -91,6 +92,7 @@ export default function AdminDashboard() {
     onSuccess: () => {
       toast.success("Content rejected successfully");
       refetchPendingContent();
+      refetchApprovedContent();
     },
     onError: () => {
       toast.error("Failed to reject content, please try again");

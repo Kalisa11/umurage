@@ -730,6 +730,14 @@ const ContentController = {
         categoryId: art.categoryId,
         createdAt: art.createdAt,
         updatedAt: art.updatedAt,
+        bookingLat: art.bookingLat,
+        bookingLong: art.bookingLong,
+        bookingPhone: art.bookingPhone,
+        bookingEmail: art.bookingEmail,
+        bookingUrl: art.bookingUrl,
+        bookingAddress: art.bookingAddress,
+        bookingHours: art.bookingHours,
+        bookingName: art.bookingName,
         contributor: art.contributorId
           ? {
               id: art.contributorId,

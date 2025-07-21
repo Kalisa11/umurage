@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getArt, getArtById } from "@/services/contentService";
 import ReportContent from "@/components/report-content";
 import Contributor from "@/components/contributor";
+import { CATEGORIES, generateGoogleMapsEmbedUrl } from "@/lib/utils";
 
 export default function ArtDetailPage({
   params,
@@ -47,10 +48,16 @@ export default function ArtDetailPage({
   const hasBooking =
     art?.bookingName &&
     art?.bookingAddress &&
-    art?.bookingHours &&
-    art?.bookingPhone &&
-    art?.bookingEmail &&
+    art?.bookingLat &&
+    art?.bookingLong &&
     art?.bookingUrl;
+
+  // Generate dynamic Google Maps embed URL
+  const mapEmbedUrl = generateGoogleMapsEmbedUrl(
+    art?.bookingLat,
+    art?.bookingLong,
+    art?.bookingAddress
+  );
 
   if (isLoading || relatedContentLoading) {
     return (
@@ -60,11 +67,13 @@ export default function ArtDetailPage({
     );
   }
 
+  console.log({ art });
+
   return (
     <div className="container mx-auto py-12">
       <div className="mb-6">
         <Link
-          href="/categories/art"
+          href={`/categories/${CATEGORIES.ART}`}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -117,25 +126,30 @@ export default function ArtDetailPage({
               <CardContent>
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
-                    <h4 className="font-medium mb-3">{art?.bookingName}</h4>
+                    <h4 className="font-medium mb-3">
+                      {art?.bookingName ?? "N/A"}
+                    </h4>
                     <div className="space-y-2 text-sm text-muted-foreground mb-4">
                       <p className="flex items-start gap-2">
                         <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                        {art?.bookingAddress}
+                        {art?.bookingAddress ?? "N/A"}
                       </p>
                       <p>
-                        <strong>Hours:</strong> {art?.bookingHours}
+                        <strong>Hours:</strong> {art?.bookingHours ?? "N/A"}
                       </p>
                       <p>
-                        <strong>Phone:</strong> {art?.bookingPhone}
+                        <strong>Phone:</strong> {art?.bookingPhone ?? "N/A"}
                       </p>
                       <p>
-                        <strong>Email:</strong> {art?.bookingEmail}
+                        <strong>Email:</strong>{" "}
+                        {art?.bookingEmail && art?.bookingEmail !== ""
+                          ? art?.bookingEmail
+                          : "N/A"}
                       </p>
                     </div>
                     <Button asChild className="w-full">
                       <a
-                        href={art?.bookingUrl}
+                        href={art?.bookingUrl ?? "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2"
@@ -146,17 +160,18 @@ export default function ArtDetailPage({
                     </Button>
                   </div>
                   <div>
-                    {/* Google Map Embed */}
+                    {/* Google Map Embed using lat and long */}
+                    {/* https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d996.6084722178041!2d29.739984269525262!3d-2.360122999851197!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMsKwMjEnMzYuNCJTIDI5wrA0NCcyNi4zIkU!5e0!3m2!1sen!2srw!4v1751901859624!5m2!1sen!2srw */}
                     <div className="h-48 w-full rounded-lg overflow-hidden border">
                       <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d996.6084722178041!2d29.739984269525262!3d-2.360122999851197!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMsKwMjEnMzYuNCJTIDI5wrA0NCcyNi4zIkU!5e0!3m2!1sen!2srw!4v1751901859624!5m2!1sen!2srw"
+                        src={mapEmbedUrl}
                         width="600"
                         height="450"
                         style={{ border: 0 }}
                         allowFullScreen
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
-                      />
+                      ></iframe>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2 text-center">
                       Click map to open in Google Maps

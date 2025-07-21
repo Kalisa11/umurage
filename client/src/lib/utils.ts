@@ -67,11 +67,11 @@ export function generateGoogleMapsEmbedUrl(
   // If we have coordinates, use them for precise location
   if (lat && lng) {
     // Use a simpler embed URL format that properly centers on coordinates
-    return `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${lat},${lng}&zoom=14`;
+    return `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${lat},${lng}&zoom=16`;
   }
   if (address) {
     const encodedAddress = encodeURIComponent(address);
-    return `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${encodedAddress}&zoom=14`;
+    return `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${encodedAddress}&zoom=16`;
   }
 
   // If we have an address but no coordinates, use the address

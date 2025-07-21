@@ -120,7 +120,7 @@ export default function ArtDetailPage({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 pt-4">
                   <Navigation className="h-5 w-5" />
-                  Visit the Museum
+                  Visit the Artwork
                 </CardTitle>
               </CardHeader>
               <CardContent>

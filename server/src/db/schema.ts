@@ -17,6 +17,13 @@ export const submissionStatusEnum = pgEnum("submission_status", [
   "approved",
   "rejected",
 ]);
+
+export const reportStatusEnum = pgEnum("report_status", [
+  "pending",
+  "resolved",
+  "dismissed",
+]);
+
 export const contentTypeEnum = pgEnum("content_type", [
   "story",
   "proverb",
@@ -133,6 +140,7 @@ export const report = pgTable("report", {
     .notNull(),
   reason: text().notNull(),
   details: text(),
+  status: reportStatusEnum().default("pending"),
   createdOn: timestamp().defaultNow(),
   updatedOn: timestamp().defaultNow(),
 });

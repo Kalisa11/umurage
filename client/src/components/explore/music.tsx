@@ -123,7 +123,7 @@ const MusicView = ({
                 href={`/content/music/${song.id}`}
                 className="flex items-center text-sm font-medium text-primary"
               >
-                <Card className="overflow-hidden transition-all hover:shadow-md h-full">
+                <Card className="overflow-hidden transition-all hover:shadow-md h-full w-full">
                   <CardHeader className="relative h-48 p-0">
                     <Image
                       src={song.coverImage || "/placeholder.png"}

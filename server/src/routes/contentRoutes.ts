@@ -24,5 +24,6 @@ router.put("/reject/:id", ContentController.rejectContent);
 router.get("/approved", ContentController.getApprovedContent);
 router.post("/report/:id", ContentController.reportContent);
 router.get("/reports", ContentController.getReports);
+router.put("/reports/:id", ContentController.updateReportStatus);
 
 export default router;

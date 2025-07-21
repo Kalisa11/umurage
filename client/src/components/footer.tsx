@@ -1,3 +1,4 @@
+import { CATEGORIES } from "@/lib/utils";
 import Link from "next/link";
 
 export default function Footer() {
@@ -17,7 +18,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/categories/stories"
+                  href={`/categories/${CATEGORIES.STORY}`}
                   className="text-sm text-muted-foreground hover:text-primary"
                 >
                   Stories
@@ -25,7 +26,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/categories/proverbs"
+                  href={`/categories/${CATEGORIES.PROVERB}`}
                   className="text-sm text-muted-foreground hover:text-primary"
                 >
                   Proverbs
@@ -33,26 +34,18 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/categories/songs"
+                  href={`/categories/${CATEGORIES.MUSIC}`}
                   className="text-sm text-muted-foreground hover:text-primary"
                 >
-                  Songs
+                  Music
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/categories/art"
+                  href={`/categories/${CATEGORIES.ART}`}
                   className="text-sm text-muted-foreground hover:text-primary"
                 >
                   Art
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/categories/language"
-                  className="text-sm text-muted-foreground hover:text-primary"
-                >
-                  Language
                 </Link>
               </li>
             </ul>

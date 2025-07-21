@@ -1519,6 +1519,8 @@ const ContentController = {
       return res.status(400).json({ message: "Content ID is required" });
     }
 
+    console.log("rejecting content", id);
+
     try {
       const [updatedContent] = await db
         .update(content)
@@ -1630,6 +1632,33 @@ const ContentController = {
       console.error("Error getting reports:", error);
       return res.status(500).json({
         message: "Error getting reports",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+
+  async updateReportStatus(req: Request, res: Response) {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!id || !status) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    try {
+      const [updatedReport] = await db
+        .update(report)
+        .set({ status })
+        .where(eq(report.id, id))
+        .returning({ id: report.id });
+
+      return res.status(200).json({
+        message: "Report status updated successfully",
+        report: updatedReport,
+      });
+    } catch (error) {
+      console.error("Error updating report status: ", error);
+      return res.status(500).json({
+        message: "Error updating report status",
         error: error instanceof Error ? error.message : String(error),
       });
     }

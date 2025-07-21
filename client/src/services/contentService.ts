@@ -383,3 +383,14 @@ export const getReports = async () => {
     throw error;
   }
 };
+
+export const updateReportStatus = async (id: string, status: string) => {
+  try {
+    const response = await axios.put(`${API_URL}/content/reports/${id}`, {
+      status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating report status: ", error);
+  }
+};

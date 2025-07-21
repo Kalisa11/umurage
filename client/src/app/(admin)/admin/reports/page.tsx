@@ -42,10 +42,17 @@ import {
   Eye,
   Trash,
 } from "lucide-react";
-import { getReports } from "@/services/contentService";
-import { useQuery } from "@tanstack/react-query";
+import {
+  getReports,
+  rejectContent,
+  updateReportStatus,
+} from "@/services/contentService";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { getCategoryColor, getCategoryIcon, getStatusColor } from "@/utils";
+import toast from "react-hot-toast";
+import { reportFilters } from "@/lib/utils";
+import { signOut } from "@/services/authService";
 // Mock data based on the actual schema
 const mockReports = [
   {
@@ -142,31 +149,46 @@ export default function ReportsPage() {
     data: reports,
     isLoading,
     error,
+    refetch: refetchReports,
   } = useQuery({
     queryKey: ["reports"],
     queryFn: getReports,
   });
 
-  console.log({ reports });
+  const { mutate: updateReport } = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateReportStatus(id, status),
+    onSuccess: () => {
+      toast.success("Report status updated successfully");
+      refetchReports();
+    },
+    onError: () => {
+      toast.error("Failed to update report status");
+    },
+  });
 
+  const { mutate: removeContent } = useMutation({
+    mutationFn: (id: string) => rejectContent(id, ""),
+    onError: () => {
+      toast.error("Failed to remove content");
+    },
+  });
+  const { mutate: logout, isPending: isLoggingOut } = useMutation({
+    mutationFn: signOut,
+  });
   const handleResolveReport = (id: string) => {
-    console.log("Resolving report:", id);
-    // Implementation for resolving report
+    updateReport({ id, status: "resolved" });
   };
 
   const handleDismissReport = (id: string) => {
-    console.log("Dismissing report:", id);
-    // Implementation for dismissing report
+    updateReport({ id, status: "dismissed" });
   };
 
-  const handleRemoveContent = (contentId: string) => {
-    console.log("Removing content:", contentId);
-    // Implementation for removing content
-  };
-
-  const handleViewContent = (contentId: string) => {
-    console.log("Viewing content:", contentId);
-    // Implementation for viewing content
+  const handleRemoveContent = (contentId: string, reportId: string) => {
+    removeContent(contentId);
+    // mark the report as resolved
+    updateReport({ id: reportId, status: "resolved" });
+    refetchReports();
   };
 
   const filteredReports = reports?.filter((report) => {
@@ -184,14 +206,6 @@ export default function ReportsPage() {
 
     return matchesSearch && matchesStatus;
   });
-
-  const pendingCount = mockReports.filter((r) => r.status === "pending").length;
-  const resolvedCount = mockReports.filter(
-    (r) => r.status === "resolved"
-  ).length;
-  const dismissedCount = mockReports.filter(
-    (r) => r.status === "dismissed"
-  ).length;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -219,7 +233,13 @@ export default function ReportsPage() {
                 </div>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="w-fit">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-fit"
+              disabled={isLoggingOut}
+              onClick={() => logout()}
+            >
               <LogOut className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Logout</span>
               <span className="sm:hidden">Exit</span>
@@ -295,10 +315,11 @@ export default function ReportsPage() {
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Reports</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="resolved">Resolved</SelectItem>
-              <SelectItem value="dismissed">Dismissed</SelectItem>
+              {reportFilters.map((filter) => (
+                <SelectItem key={filter.value} value={filter.value}>
+                  {filter.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -461,25 +482,57 @@ export default function ReportsPage() {
                     {/* Actions */}
                     {/* <div className="flex flex-row lg:flex-col gap-2 lg:ml-4"> */}
                     <div className="grid grid-cols-2 gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewContent(report.contentId)}
+                      <Link
+                        href={`/content/${report.category?.name.toLowerCase()}/${
+                          report.reportedContent?.id
+                        }`}
+                        target="_blank"
                       >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Content
-                      </Button>
-
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Content
+                        </Button>
+                      </Link>
                       {report.status === "pending" && (
                         <>
-                          <Button
-                            onClick={() => handleResolveReport(report.reportId)}
-                            className="bg-green-600 hover:bg-green-700"
-                            size="sm"
-                          >
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Resolve
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                <span className="hidden sm:inline">
+                                  Resolve
+                                </span>
+                                <span className="sm:hidden">Resolve</span>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Resolve Report
+                                </AlertDialogTitle>
+                              </AlertDialogHeader>
+                              <AlertDialogDescription>
+                                Are you sure you want to resolve this report?
+                                The content will remain published and the report
+                                will be marked as resolved.
+                              </AlertDialogDescription>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() =>
+                                    handleResolveReport(report.reportId)
+                                  }
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  Resolve Report
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="outline" size="sm">
@@ -532,7 +585,10 @@ export default function ReportsPage() {
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() =>
-                                    handleRemoveContent(report.contentId)
+                                    handleRemoveContent(
+                                      report.contentId,
+                                      report.reportId
+                                    )
                                   }
                                   className="bg-red-600 hover:bg-red-700"
                                 >

@@ -140,3 +140,10 @@ export const options = [
   { label: "Violence or threats", value: "Violence or threats" },
   { label: "Other", value: "Other" },
 ];
+
+export const reportFilters = [
+  { label: "All reports", value: "all" },
+  { label: "Pending", value: "pending" },
+  { label: "Resolved", value: "resolved" },
+  { label: "Dismissed", value: "dismissed" },
+];

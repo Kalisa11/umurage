@@ -159,7 +159,7 @@ export default function AboutPage() {
             <Link href="/contribute">Contribute Content</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="/contact">Contact Us</Link>
+            <Link href="#">Contact Us</Link>
           </Button>
         </div>
       </div>

@@ -296,10 +296,10 @@ export default function ActivitiesPage() {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <Button asChild size="lg">
-            <Link href="/organize-event">Organize an Event</Link>
+            <Link href="#">Organize an Event</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="/contact">Contact Us</Link>
+            <Link href="#">Contact Us</Link>
           </Button>
         </div>
       </div>

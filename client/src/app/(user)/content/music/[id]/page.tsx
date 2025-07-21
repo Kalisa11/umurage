@@ -238,7 +238,15 @@ export default function SongDetailPage({
                     <div className="text-sm text-muted-foreground">Genre</div>
                   </div>
                 </div>
-
+                <div className="flex items-center gap-3">
+                  <Music className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <div className="font-medium">
+                      {songData?.tempo || "Unknown"}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Tempo</div>
+                  </div>
+                </div>
                 <div className="flex items-center gap-3">
                   <Volume2 className="h-5 w-5 text-muted-foreground" />
                   <div>

@@ -970,18 +970,17 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="duration">
-                          Duration
-                          <span className="text-red-500 font-bold">*</span>
+                        <Label htmlFor="tempo">
+                          Tempo
                         </Label>
                         <Input
-                          id="duration"
-                          placeholder="e.g., 4:32"
-                          {...register("duration")}
+                          id="tempo"
+                          placeholder="e.g., Slow, Medium, Fast"
+                          {...register("tempo")}
                         />
-                        {errors.duration && (
+                        {errors.tempo && (
                           <p className="text-sm text-red-500">
-                            {errors.duration.message}
+                            {errors.tempo.message}
                           </p>
                         )}
                       </div>
@@ -997,7 +996,7 @@ export default function ContributePage() {
                               placeholder="Add a tag"
                               value={newTag}
                               onChange={(e) => setNewTag(e.target.value)}
-                              onKeyPress={(e) =>
+                              onKeyDown={(e) =>
                                 e.key === "Enter" &&
                                 (e.preventDefault(), addTag())
                               }

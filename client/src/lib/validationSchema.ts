@@ -66,9 +66,9 @@ export const contributeSchema = z
 
     // Song specific fields
     audioFile: z.any().optional(), // File validation handled separately
-    genre: z.string().optional(),
+    tempo: z.string().optional(),
     tags: z.array(z.string()).optional(),
-    duration: z.string().optional(),
+    genre: z.string().optional(),
 
     // Difficulty field (used by multiple categories)
     difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
@@ -135,9 +135,6 @@ export const contributeSchema = z
           return false;
         }
         if (!data.genre) {
-          return false;
-        }
-        if (!data.duration) {
           return false;
         }
       }

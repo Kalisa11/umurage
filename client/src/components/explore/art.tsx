@@ -116,7 +116,7 @@ const ArtView = ({ art, loading }: { art: Art[]; loading: boolean }) => {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent>
                 <h3 className="line-clamp-1 text-xl font-bold">{item.title}</h3>
                 <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
                   {item.description}

@@ -137,7 +137,7 @@ export default function Home() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-6">
+                  <CardContent>
                     <h3 className="line-clamp-1 text-xl font-bold">
                       {item.title}
                     </h3>
@@ -265,7 +265,12 @@ export default function Home() {
                       <span className="text-muted-foreground"> per person</span>
                     )}
                   </div>
-                  <Button size="sm">Register</Button>
+                  <Link
+                    target="_blank"
+                    href={`https://www.eventbrite.com/d/rwanda/all-events/?page=1`}
+                  >
+                    <Button size="sm">Register</Button>
+                  </Link>
                 </CardFooter>
               </Card>
             ))}

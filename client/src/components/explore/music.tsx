@@ -1,5 +1,5 @@
 import type { Music as MusicType } from "@/types";
-import { Loader2 } from "lucide-react";
+import { Loader2, Music } from "lucide-react";
 import Image from "next/image";
 import {
   Card,
@@ -131,46 +131,47 @@ const MusicView = ({
                       fill
                       className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-between p-4">
-                      <Badge className={`bg-primary`}>{song.genre}</Badge>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                      {song.isFeatured && (
+                        <Badge className="bg-primary text-white">
+                          Featured
+                        </Badge>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="flex-1">
                     <CardTitle className="line-clamp-2 mb-2 text-lg">
                       {song.title}
                     </CardTitle>
-                    <CardDescription className="line-clamp-3 mb-4">
+                    <CardDescription className="line-clamp-2 mb-4">
                       {song.description}
                     </CardDescription>
 
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        <span>
-                          By {song.contributor?.firstName}{" "}
-                          {song.contributor?.lastName}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>{song.region}</span>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-1">
+                    <div className="mt-4 flex flex-wrap gap-1 justify-between">
+                      <div className="flex flex-wrap gap-1">
                       {song?.tags?.slice(0, 3).map((tag) => (
                         <Badge key={tag} variant="outline" className="text-xs">
                           {tag}
-                        </Badge>
-                      ))}
+                          </Badge>
+                        ))}
+                      </div>
+                      {song.tempo && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Music className="h-4 w-4" />
+                          {song.tempo}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
-                    {song.tempo && (
-                      <div className="text-sm text-muted-foreground">
-                        {song.tempo}
-                      </div>
-                    )}
+                    <div className="text-xs text-muted-foreground">
+                      By {song.contributor?.firstName}{" "}
+                      {song.contributor?.lastName}
+                    </div>
+                    <div className="flex items-center text-sm font-medium text-primary">
+                      View{" "}
+                      <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </div>
                   </CardFooter>
                 </Card>
               </Link>

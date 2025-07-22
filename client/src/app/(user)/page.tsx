@@ -28,6 +28,7 @@ import { formatDate } from "date-fns";
 import { getFeaturedContent } from "@/services/contentService";
 import { CATEGORIES } from "@/lib/utils";
 import { getTypeColor, getTypeIcon } from "@/utils/utils";
+import FeaturedContentLoader from "@/components/loaders/featured-content";
 
 export default function Home() {
   const {
@@ -100,7 +101,9 @@ export default function Home() {
           </p>
         </div>
 
-        {featuredContent && featuredContent.length > 0 ? (
+        {featuredContentLoading ? (
+          <FeaturedContentLoader />
+        ) : featuredContent && featuredContent.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {/* Featured Story */}
             {featuredContent?.slice(0, 3).map((item: any) => (

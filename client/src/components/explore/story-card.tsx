@@ -37,7 +37,7 @@ export const StoryCard = ({ story, layout }: Props) => {
               )}
             </div>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
             <h3 className="line-clamp-1 text-xl font-bold">{story.title}</h3>
             <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
               {story.description}

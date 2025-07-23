@@ -970,9 +970,7 @@ export default function ContributePage() {
                         )}
                       </div>
                       <div className="grid gap-2">
-                        <Label htmlFor="tempo">
-                          Tempo
-                        </Label>
+                        <Label htmlFor="tempo">Tempo</Label>
                         <Input
                           id="tempo"
                           placeholder="e.g., Slow, Medium, Fast"

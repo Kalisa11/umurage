@@ -782,7 +782,7 @@ const ContentController = {
         !description ||
         !coverImage ||
         !tags ||
-        !isFeatured ||
+        isFeatured === undefined ||
         !region ||
         !contributorId ||
         !genre ||

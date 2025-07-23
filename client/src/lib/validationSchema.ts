@@ -27,6 +27,26 @@ export const loginSchema = z.object({
 
 export type LoginSchema = z.infer<typeof loginSchema>;
 
+export const passwordResetSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
+export type PasswordResetSchema = z.infer<typeof passwordResetSchema>;
+
+export const newPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
+  confirmPassword: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+export type NewPasswordSchema = z.infer<typeof newPasswordSchema>;
+
 // Contribute form schema with conditional validation
 export const contributeSchema = z
   .object({

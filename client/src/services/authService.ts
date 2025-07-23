@@ -1,5 +1,7 @@
 import {
   LoginSchema,
+  NewPasswordSchema,
+  PasswordResetSchema,
   ProfileSchema,
   ProfileSubmissionSchema,
   SignupSchema,
@@ -134,6 +136,36 @@ export const updateUser = async (data: ProfileSchema) => {
     return response.data;
   } catch (error) {
     console.log("updateUser error", error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (data: PasswordResetSchema) => {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+      redirectTo: `${window.location.origin}/newPassword`,
+    });
+    if (error) {
+      throw error;
+    }
+    return { success: true };
+  } catch (error) {
+    console.log("resetPassword error", error);
+    throw error;
+  }
+};
+
+export const updatePassword = async (data: NewPasswordSchema) => {
+  try {
+    const { data: userData, error } = await supabase.auth.updateUser({
+      password: data.password,
+    });
+    if (error) {
+      throw error;
+    }
+    return userData;
+  } catch (error) {
+    console.log("updatePassword error", error);
     throw error;
   }
 };

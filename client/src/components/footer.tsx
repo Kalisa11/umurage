@@ -91,7 +91,12 @@ export default function Footer() {
             <h3 className="text-lg font-medium">Contact</h3>
             <ul className="space-y-2">
               <li className="text-sm text-muted-foreground">
-                Email: info@umurage.rw
+                <Link
+                  href="mailto:info@umurage.rw"
+                  className="text-sm text-muted-foreground hover:text-primary"
+                >
+                  Email: info@umurage.rw
+                </Link>
               </li>
               <li className="text-sm text-muted-foreground">
                 Phone: +250 782 051 980

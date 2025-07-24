@@ -188,7 +188,6 @@ export default function ActivitiesPage() {
                           </span>
                         )}
                       </div>
-                      <Button size="sm">Register</Button>
                     </CardFooter>
                   </Card>
                 ))}
@@ -275,11 +274,6 @@ export default function ActivitiesPage() {
                     <span className="text-muted-foreground"> per person</span>
                   )}
                 </div>
-                <Button size="sm">
-                  <Link href={`/activities/${event.id}?register=true`}>
-                    Register
-                  </Link>
-                </Button>
               </CardFooter>
             </Card>
           ))}
@@ -296,10 +290,12 @@ export default function ActivitiesPage() {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <Button asChild size="lg">
-            <Link href="#">Organize an Event</Link>
+            <Link href="https://sinc.today/" target="_blank">
+              Organize an Event
+            </Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="#">Contact Us</Link>
+            <Link href="mailto:info@umurage.rw">Contact Us</Link>
           </Button>
         </div>
       </div>

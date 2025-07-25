@@ -50,7 +50,7 @@ const Contributor = ({ contributor }: { contributor: Contributor | null }) => {
         </div>
 
         {contributor?.bio && (
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
             {contributor?.bio}
           </p>
         )}

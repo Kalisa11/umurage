@@ -213,10 +213,10 @@ export default function ProverbDetailPage({
                 <Link
                   key={proverb.id}
                   href={`/content/proverbs/${proverb.id}`}
-                  className="p-4 border rounded-lg hover:shadow-sm transition-all duration-300"
+                  className="p-4 border rounded-lg hover:shadow-lg transition-all duration-300"
                 >
                   <div className="flex items-start gap-2 mb-2">
-                    <Quote className="h-4 w-4 text-muted-foreground mt-1 flex-shrink-0" />
+                    <Quote className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-medium line-clamp-1">
                         {proverb.title}

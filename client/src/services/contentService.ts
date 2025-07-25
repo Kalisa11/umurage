@@ -360,7 +360,7 @@ export const reportContent = async (
   id: string,
   reason: string,
   details: string,
-  userId: string
+  userId: string | null
 ) => {
   try {
     const response = await axios.post(`${API_URL}/content/report/${id}`, {

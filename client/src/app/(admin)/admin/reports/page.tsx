@@ -120,6 +120,8 @@ export default function ReportsPage() {
     return matchesSearch && matchesStatus;
   });
 
+  console.log(filteredReports);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
@@ -316,8 +318,9 @@ export default function ReportsPage() {
                               Reported by:
                             </span>
                             <span className="text-xs sm:text-sm">
-                              {report.reporter?.firstName}{" "}
-                              {report.reporter?.lastName}
+                              {report.reporter
+                                ? `${report.reporter?.firstName} ${report.reporter?.lastName}`
+                                : "Anonymous User"}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -339,8 +342,9 @@ export default function ReportsPage() {
                               Content by:
                             </span>{" "}
                             <span className="text-xs sm:text-sm">
-                              {report.contributor?.firstName}{" "}
-                              {report.contributor?.lastName}
+                              {report.contributor
+                                ? `${report.contributor?.firstName} ${report.contributor?.lastName}`
+                                : "Anonymous User"}
                             </span>
                           </div>
                           <div>

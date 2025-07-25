@@ -1545,7 +1545,7 @@ const ContentController = {
     const { id } = req.params;
     const { reason, details, userId } = req.body;
 
-    if (!id || !reason || !userId) {
+    if (!id || !reason) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -1554,7 +1554,7 @@ const ContentController = {
         .insert(report)
         .values({
           contentId: id,
-          createdBy: userId,
+          createdBy: userId || null,
           reason,
           details,
         })

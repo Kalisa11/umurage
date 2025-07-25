@@ -48,7 +48,7 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
   const userId = user?.id;
 
   const { mutate: report, isPending: isReporting } = useMutation({
-    mutationFn: (data: ReportSchema & { userId: string }) =>
+    mutationFn: (data: ReportSchema & { userId: string | null }) =>
       reportContent(contentId, data.reason, data.details, data.userId),
     onSuccess: () => {
       toast.success("Report submitted successfully");
@@ -61,13 +61,9 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
 
   const onSubmit = async (data: ReportSchema) => {
     try {
-      if (!userId) {
-        toast.error("Please login to report content");
-        return;
-      }
       const reportData = {
         ...data,
-        userId: userId,
+        userId: userId || null,
       };
       report(reportData);
     } catch (error) {
@@ -87,7 +83,7 @@ const ReportContent = ({ contentId }: { contentId: string }) => {
           variant="outline"
           size="sm"
           className="gap-2 bg-transparent"
-          disabled={isReporting || !userId}
+          disabled={isReporting}
         >
           <Flag className="h-4 w-4" />
           Report

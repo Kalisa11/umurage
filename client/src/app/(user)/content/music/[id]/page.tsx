@@ -174,14 +174,14 @@ export default function SongDetailPage({
                 </div>
               </CardContent>
             </Card>
-            {songData?.audioUrl && (
+            {
               <audio
-                key={songData.audioUrl}
+                key={songData?.audioUrl}
                 ref={audioRef}
-                src={songData.audioUrl}
+                src={songData?.audioUrl || ""}
                 preload="metadata"
               />
-            )}
+            }
           </div>
 
           {/* content */}

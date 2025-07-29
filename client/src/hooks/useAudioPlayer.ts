@@ -12,6 +12,8 @@ export const useAudioPlayer = (audioUrl: string | undefined) => {
     const audio = audioRef.current;
     if (!audio || !audioUrl) return;
 
+    audio.src = audioUrl;
+
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
     const handleEnded = () => setIsPlaying(false);
